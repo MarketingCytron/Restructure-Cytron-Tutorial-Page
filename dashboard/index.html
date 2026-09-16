@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tutorial Category Cleanup — Cytron</title>
+<meta name="description" content="Progress board for the Cytron tutorial category clean-up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='28'%3E🗂%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="brandrow">
+      <h1>Tutorial Category Cleanup</h1>
+      <span class="sub">930 tutorials &middot; Cytron</span>
+      <span class="livedot" id="live"><i></i><span id="liveTxt">starting</span></span>
+    </div>
+    <div class="meter">
+      <div class="bar" id="bar" role="img" aria-label="Progress through the tutorials needing a fix">
+        <span class="b-done" id="bDone" style="width:0%"></span>
+        <span class="b-doing" id="bDoing" style="width:0%"></span>
+        <span class="b-skip" id="bSkip" style="width:0%"></span>
+      </div>
+      <div class="mstat"><b id="mDone">0</b> / <span id="mNeed">0</span> fixed <span id="mRest"></span></div>
+    </div>
+    <div class="tools">
+      <button class="chip" data-band="all" aria-pressed="true">All <span class="n" id="cAll"></span></button>
+      <button class="chip" data-band="1" aria-pressed="false"><i class="dotc" style="background:var(--urgent)"></i>Uncategorised <span class="n" id="c1"></span></button>
+      <button class="chip" data-band="2" aria-pressed="false"><i class="dotc" style="background:var(--accent)"></i>Missing category <span class="n" id="c2"></span></button>
+      <button class="chip" data-band="4" aria-pressed="false"><i class="dotc" style="background:var(--border-strong)"></i>Review only <span class="n" id="c4"></span></button>
+      <button class="chip" data-band="0" aria-pressed="false">No change needed <span class="n" id="c0"></span></button>
+    </div>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Search title, slug, tag or category…" aria-label="Search tutorials">
+      <select id="fStatus" aria-label="Filter by status">
+        <option value="">Any status</option>
+        <option value="todo">To do</option>
+        <option value="doing">In progress</option>
+        <option value="done">Done</option>
+        <option value="skip">Skipped</option>
+      </select>
+      <select id="fOwner" aria-label="Filter by person"><option value="">Anyone</option></select>
+      <select id="fSort" aria-label="Sort order">
+        <option value="prio">Priority, then views</option>
+        <option value="views">Most viewed</option>
+        <option value="title">Title A–Z</option>
+        <option value="recent">Recently updated</option>
+      </select>
+      <span class="spacer"></span>
+      <button class="btn" id="btnCsv">Export CSV</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="banner warn" id="setup" hidden></div>
+  <div class="countline" id="count"></div>
+  <div class="list" id="list"><div class="loading">Loading 930 tutorials…</div></div>
+  <button class="btn more" id="btnMore" hidden>Show more</button>
+  <footer id="foot"></footer>
+</div>
+
+<datalist id="ownerList"></datalist>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
