@@ -1,27 +1,46 @@
 # Redesign notes — Cytron Tutorial Page
 
-Companion to `tutorial-page-audit.md`. This explains what the `/new` prototype changes, why, and
-how the prototype is built so IT can lift the pieces into the live system.
+Companion to `tutorial-page-audit.md`. This explains what the two redesign prototypes change, why,
+and how they are built so IT can lift the pieces into the live system.
+
+There are **two options**, built on the same data and the same shared filtering code:
+
+| | Option A — `/new` | Option B — `/new-b` |
+|---|---|---|
+| Model | Hub page: hero, sticky filter bar, "browse by platform" shelf, one big filterable grid | Random-Nerd-Tutorials model: board chips under the header, featured slider + latest list, then one 4-card row **per platform** with "View All" |
+| Look | Cytron cyan/orange on a cool grey ground; Barlow Condensed headings, IBM Plex body | Plain Helvetica 18px on white, dark navy header bar, one link colour (Cytron cyan, darkened) |
+| Discovery | Filter first: level / type / platform apply instantly | Scan first: every platform visible on the homepage; filters live on the category page |
+| Category page | Dark hero, sub-category chips, filter bar, grid | Title + toolbar (search · level · type · sort · sub-chips), 3-col grid, right sidebar (most viewed, browse by board) |
+| Article | Article card + sticky rail (TOC, hardware, tags) | Wide article + sidebar (parts used, latest, more in platform) + related row |
+| Best for | Visitors who know what they want and want to narrow fast | Visitors browsing by board — mirrors how most maker sites are organised, so it feels familiar |
+
+Both fix every problem in the audit table below; they differ in *how* the archive is presented,
+not in *whether* the fixes are present.
 
 ## What's in this repo
 
 ```
-index.html                 Compare view: current vs new, side by side, desktop / tablet / phone
+index.html                 Compare view: any two of current / A / B side by side, desktop / tablet / phone
 current/                   Faithful static mirror of my.cytron.io/tutorial (Sep 2026)
   index.html               Listing + sidebar filters + pagination  (?q= &categories= &post_type= &project_level= &page=)
   tutorial.html            Article template                        (?slug=)
-new/                       Proposed redesign
+new/                       Option A (hub + filter bar)
   index.html               Hub + results                           (?q= &cat= &type= &level= &aud= &sort= &page=)
   category.html            Platform landing page                   (?id=  [&cat=child-id])
   tutorial.html            Article template                        (?slug=)
   new.css                  Design tokens at the top (:root), then components
+new-b/                     Option B (Random-Nerd-Tutorials style)
+  index.html               Board chips, featured slider, Latest Posts, 12 platform rows
+  category.html            Platform / search / all-posts listing   (?id= [&cat=] [&q=] [&level=] [&type=] [&sort=] [&page=])
+  tutorial.html            Article template                         (?slug=)
+  newb.css                 Tokens in :root; plain type scale
 shared/data.js             Filtering, sorting, pagination — shared by both versions
 data/
   tutorials.js / .json     All 930 posts scraped from the live site (title, slug, cover, author, date,
                            type, level, categories, audience, tags, views, likes, word count, has-video)
   taxonomy.js / .json      Category tree with IDs and counts, post types, levels
   articles.js / .json      Full HTML body + hardware list for 5 sample articles
-docs/                      Audit, these notes, screenshots
+docs/                      Audit and these notes
 ```
 
 Everything is plain HTML + CSS + vanilla JS with no build step. Open `index.html` from a local
@@ -56,7 +75,21 @@ page shows the real metadata and links back to the original.
 | 12 | "Success Stories" not in the type filter | Added as a type. |
 | 13 | Dead sidebar column on scroll | No sidebar on listing pages; article pages get a sticky rail with on-page TOC, hardware list, tags. |
 
-## Design system (for IT)
+## Option B specifics
+
+- **Board chips** (`CHIPS` in `newb.js`): the 11 platforms with meaningful volume, in archive-size order, plus Home and All.
+  Miscellaneous is not a chip; it appears as the last homepage row ("News & Events").
+- **Featured slider**: the five most-viewed posts whose title contains "Getting Started" / "Beginner's guide" / "Introduction to" — RNT leads
+  with getting-started guides, and Cytron has plenty. Auto-advances every 6s, stops under `prefers-reduced-motion`.
+- **Latest Posts**: newest five across the archive.
+- **Platform rows**: 4 latest posts per platform, sub-categories with ≥3 posts listed under the heading, "View All *n* »" to the category page.
+  Twelve rows is long, but that *is* the RNT pattern — the page is meant to be scanned, not read.
+- **Resources band**: the six kit hubs and four programs — the equivalent of RNT's courses/eBooks block.
+- **Category page** carries the audit's mobile fix: the toolbar (search, level, type, sort) is always present, so phones can filter.
+- **Typography**: Helvetica/Arial only, 18px/27px body, 36px section headings at weight 600 — matched to RNT's measured values.
+  Links use `#087FA8` (Cytron cyan darkened to pass 4.5:1 on white); brand cyan `#0DA9DD` is the hover.
+
+## Design system — Option A (for IT)
 
 Defined once in `new/new.css` under `:root`:
 
