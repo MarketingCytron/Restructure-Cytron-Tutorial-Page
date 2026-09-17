@@ -29,7 +29,10 @@
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
     burger: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     filter: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>',
-    cart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>'
+    cart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>',
+    heart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    bookmark: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+    share: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
   };
   const latest = l => sort(l, 'latest');
   const inCat = id => filter({ categories: [id] });
@@ -84,12 +87,22 @@
     document.addEventListener('click', e => { document.querySelectorAll('nav.main details[open], .fsel[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
   }
 
+  /* quick actions on card thumbnails (prototype state: page only) */
+  const liked = new Set(), saved = new Set();
+  document.addEventListener('click', e => {
+    const l = e.target.closest('[data-qlike]'), b = e.target.closest('[data-qbookmark]');
+    if (l) { e.preventDefault(); const id = +l.dataset.qlike, on = !liked.has(id); on ? liked.add(id) : liked.delete(id); l.setAttribute('aria-pressed', String(on)); const base = T[id]?.likes ?? 0; l.querySelector('span').textContent = base + (on ? 1 : 0); }
+    if (b) { e.preventDefault(); const id = +b.dataset.qbookmark, on = !saved.has(id); on ? saved.add(id) : saved.delete(id); b.setAttribute('aria-pressed', String(on)); }
+  });
+
   /* ---------- pieces ---------- */
   function card(t) {
     const pc = primaryCat(t);
     const nums = [t.views != null ? `${fmtNum(t.views)} views` : '', t.words ? readTime(t.words) : ''].filter(Boolean);
     return `<article class="card">
-  <a class="cover" href="${href(t)}" tabindex="-1" aria-hidden="true">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}</a>
+  <div class="cover"><a href="${href(t)}" tabindex="-1" aria-hidden="true">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}</a>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}
+    <div class="quick"><button type="button" class="qa" data-qlike="${t.id}" aria-pressed="${liked.has(t.id)}" aria-label="Like ${esc(t.title)}">${I.heart}<span>${(t.likes ?? 0) + (liked.has(t.id) ? 1 : 0)}</span></button><button type="button" class="qa" data-qbookmark="${t.id}" aria-pressed="${saved.has(t.id)}" aria-label="Bookmark ${esc(t.title)}">${I.bookmark}</button></div>
+  </div>
   <div class="body">
     <div class="kind"><span class="type">${esc(TYPE_LABEL[t.type] || t.type || 'Post')}</span>${pc ? `<a class="cat" href="${catHref(pc.parentId || pc.id, pc.parentId ? pc.id : null)}">${esc(pc.parentId ? catById[pc.parentId].name + ' · ' + pc.name : pc.name)}</a>` : ''}</div>
     <h3><a href="${href(t)}">${esc(t.title)}</a></h3>
@@ -336,7 +349,8 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
   <article class="article">
     <div class="kind"><span class="type">${esc(TYPE_LABEL[t.type] || t.type || 'Post')}</span>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}</div>
     <h1>${esc(t.title)}</h1>
-    <div class="byline"><span>By <b>${esc(t.author || '')}</b></span><span>${esc(t.date || '')}</span><span class="nums">${t.views != null ? `<span>${fmtNum(t.views)} views</span>` : ''}${t.likes != null ? `<span>♥ ${t.likes}</span>` : ''}${t.words ? `<span>${readTime(t.words)}</span>` : ''}</span></div>
+    <div class="byline"><span>By <b>${esc(t.author || '')}</b></span><span>${esc(t.date || '')}</span>${t.views != null ? `<span class="mono">${fmtNum(t.views)} views</span>` : ''}${t.words ? `<span class="mono">${readTime(t.words)}</span>` : ''}
+      <div class="actions"><button type="button" class="act" data-like aria-pressed="false" aria-label="Like">${I.heart}<span data-like-n>${t.likes ?? 0}</span></button><button type="button" class="act" data-bookmark aria-pressed="false" aria-label="Bookmark">${I.bookmark}</button><button type="button" class="act" data-share aria-label="Share">${I.share}<span class="tip" data-share-tip hidden>Link copied</span></button></div></div>
     ${(art && art.hero) || t.hero ? `<img class="hero-img" src="${esc((art && art.hero) || t.hero)}" alt="">` : ''}
     <div class="prose">${body}</div>
     <div class="prevnext">${older ? `<a href="${href(older)}"><small>‹ Older</small>${esc(older.title)}</a>` : '<span></span>'}${newer ? `<a class="next" href="${href(newer)}"><small>Newer ›</small>${esc(newer.title)}</a>` : ''}</div>
@@ -350,6 +364,13 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
 </div>
 ${related.length ? `<section class="related"><div class="wrap"><h2>Related in ${esc(parent.name)}</h2><div class="grid">${related.map(card).join('')}</div></div></section>` : ''}` + footer();
     wireHeader();
+    // article actions (prototype: state lives in the page only)
+    const like = app.querySelector('[data-like]'), n = app.querySelector('[data-like-n]');
+    like.addEventListener('click', () => { const on = like.getAttribute('aria-pressed') !== 'true'; like.setAttribute('aria-pressed', String(on)); n.textContent = (t.likes ?? 0) + (on ? 1 : 0); });
+    const bm = app.querySelector('[data-bookmark]');
+    bm.addEventListener('click', () => { bm.setAttribute('aria-pressed', String(bm.getAttribute('aria-pressed') !== 'true')); });
+    const sh = app.querySelector('[data-share]'), tip = app.querySelector('[data-share-tip]');
+    sh.addEventListener('click', async () => { const url = `${LIVE}/tutorial/${slug}`; try { if (navigator.share) { await navigator.share({ title: t.title, url }); return; } await navigator.clipboard.writeText(url); } catch (e) { } tip.hidden = false; setTimeout(() => { tip.hidden = true; }, 1600); });
   }
 
   window.NEWC = { renderHome, renderCategory, renderDetail };
