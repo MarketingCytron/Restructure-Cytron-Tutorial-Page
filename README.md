@@ -2,19 +2,21 @@
 
 A working prototype for redesigning **https://my.cytron.io/tutorial**.
 
-The live page is mirrored as a static site (`/current`), and two redesign options are built beside it
+The live page is mirrored as a static site (`/current`), and three redesign options are built beside it
 on the same real data — all **930 tutorials**, their categories, tags and view counts — so they can be
 compared page for page and handed to IT as a concrete reference.
 
 - **Option A — `/new`**: hub page with a sticky filter bar and a "browse by platform" shelf; Barlow Condensed + IBM Plex.
 - **Option B — `/new-b`**: Random-Nerd-Tutorials model — board chips, featured slider, one row of four posts per platform; plain Helvetica on white.
+- **Option C — `/new-c`** *(preferred direction)*: A and B merged — B's board chips, featured + latest hero and per-platform rows, on top of A's instant filter bar, platform tiles, rich cards and article rail; white ground, soft shadows, sentence-case Barlow Condensed headings.
 
 ## Open it
 
-- **`index.html`** — compare view: pick any two of Current / Option A / Option B for the left and right panes,
+- **`index.html`** — compare view: pick any two of Current / A / B / C for the left and right panes,
   switch desktop / tablet / phone, and jump between listing, search, article and category pages.
 - `current/index.html` — mirror of today's listing page. `current/tutorial.html?slug=…` — article.
 - `new/index.html` — Option A hub. `new/category.html?id=13` — platform page. `new/tutorial.html?slug=…` — article.
+- `new-c/index.html` — Option C home. `new-c/category.html?id=13` — platform page (`?q=` search, no `id` for all). `new-c/tutorial.html?slug=…` — article.
 - `new-b/index.html` — Option B home. `new-b/category.html?id=13` — platform page (also `?q=` for search, no `id` for all posts). `new-b/tutorial.html?slug=…` — article.
 
 Serve the folder with any static server (or enable GitHub Pages on this repo). Opening `index.html`
@@ -57,4 +59,6 @@ directly from disk also works because the data ships as `.js` files.
 | `/current` mirror (listing + article) | Done |
 | `/new` Option A (hub, category pages, article) | Done — v1 for review |
 | `/new-b` Option B (RNT-style home, category, article) | Done — v1 for review |
-| Pick a direction with IT / iterate | Next |
+| `/new-c` Option C (A + B merged, modern surface) | Done — current preferred direction |
+| Category clean-up (separate task) | Review sheet done; awaiting CMS approval |
+| Refine Option C with IT | Next |

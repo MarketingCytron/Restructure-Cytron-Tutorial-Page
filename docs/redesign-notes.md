@@ -17,10 +17,27 @@ There are **two options**, built on the same data and the same shared filtering 
 Both fix every problem in the audit table below; they differ in *how* the archive is presented,
 not in *whether* the fixes are present.
 
+### Option C — `/new-c` — the merge (current preferred direction)
+
+After reviewing A and B side by side, the decision was to combine them. Option C takes:
+
+| From A | From B | New in C |
+|---|---|---|
+| Sticky filter bar (search · level · type · platform · sort), instant apply, removable chips, URL state, bottom sheet on phones | Board chip row under the header (with counts) | White ground `#F7F9FB`, 16px radii, layered shadows instead of hard borders |
+| Platform tile grid with live counts and sub-category chips (lightened: white tiles, cyan edge) | Featured guide + Latest list hero | Translucent sticky header; chips and controls as pills |
+| Rich card: type · platform › sub · title · excerpt · author · date · views · read time | One row of four per platform with "View all n →" (top 6 platforms on the home page; the rest via tiles) | Sentence-case Barlow Condensed headings (A used all-caps) |
+| Article layout with sticky rail: on-page TOC, hardware list, tags | Category page sidebar (most viewed here, browse by platform) and article rail extras (more in platform) | Kits & programs band restyled as a navy panel with a cyan glow |
+| "Most viewed" strip (now ranked 1–5) | Light category hero with sub-category pills | Hover lift on cards/tiles; `prefers-reduced-motion` respected |
+
+Behaviour: the home page collapses to a results grid as soon as any filter or search is active (hero,
+tiles and rows hide), and returns when filters are cleared — so the same URL serves both browsing and
+searching. Category pages carry the same filter bar scoped to that platform, with sub-category pills
+that write `&cat=` to the URL.
+
 ## What's in this repo
 
 ```
-index.html                 Compare view: any two of current / A / B side by side, desktop / tablet / phone
+index.html                 Compare view: any two of current / A / B / C side by side, desktop / tablet / phone
 current/                   Faithful static mirror of my.cytron.io/tutorial (Sep 2026)
   index.html               Listing + sidebar filters + pagination  (?q= &categories= &post_type= &project_level= &page=)
   tutorial.html            Article template                        (?slug=)
@@ -29,6 +46,11 @@ new/                       Option A (hub + filter bar)
   category.html            Platform landing page                   (?id=  [&cat=child-id])
   tutorial.html            Article template                        (?slug=)
   new.css                  Design tokens at the top (:root), then components
+new-c/                     Option C — A + B merged (preferred)
+  index.html               Chips, featured + latest, filter bar, tiles, most viewed, 6 platform rows, kits band
+  category.html            Platform / search / all listing with sidebar  (?id= [&cat=] [&q=] [&level=] [&type=] [&aud=] [&sort=] [&page=])
+  tutorial.html            Article + rail (TOC, hardware, tags, more in platform) + related row
+  newc.css                 Tokens in :root — the design system to hand to IT
 new-b/                     Option B (Random-Nerd-Tutorials style)
   index.html               Board chips, featured slider, Latest Posts, 12 platform rows
   category.html            Platform / search / all-posts listing   (?id= [&cat=] [&q=] [&level=] [&type=] [&sort=] [&page=])
