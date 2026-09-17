@@ -22,7 +22,7 @@
     24: { ref: 'MSC', chip: 'News', title: 'News & events', blurb: 'News, seminars and workshops.' }
   };
   const ORDER = [2, 1, 13, 19, 16, 28, 4, 10, 7, 11, 31, 24];
-  const HOME_ROWS = [2, 1, 13, 4, 19, 16]; // platform rows on the home page (B); the rest are reached via tiles
+  const HOME_ROWS = ORDER; // one row per platform on the home page, like Option B (archive-size order)
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
   const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];
   const I = {
@@ -117,14 +117,30 @@
 </div></section>`;
   }
   function featured() {
+    // B's slider: five most-viewed "getting started" guides, auto-rotating, with Read More »
     let pool = T.filter(t => /getting started|get started|beginner'?s guide|introduction to/i.test(t.title) && (t.hero || t.cover));
-    pool = HAS_VIEWS ? sort(pool, 'popular') : latest(pool);
-    const t = pool[0] || latest(T)[0];
-    const pc = primaryCat(t);
-    return `<a class="featured" href="${href(t)}"><img src="${esc(t.hero || t.cover)}" alt="">${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}<div class="cap"><span class="eyebrow">Featured guide${pc ? ` · ${esc(pc.parentId ? catById[pc.parentId].name : pc.name)}` : ''}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</span><h2>${esc(t.title)}</h2><p>${esc(t.excerpt || '')}</p><span class="btn">Read the guide →</span></div></a>`;
+    pool = (HAS_VIEWS ? sort(pool, 'popular') : latest(pool)).slice(0, 5);
+    if (pool.length < 3) pool = latest(T.filter(t => t.hero || t.cover)).slice(0, 5);
+    return `<div class="featured slider" data-slider aria-roledescription="carousel">
+  ${pool.map((t, i) => { const pc = primaryCat(t); return `<div class="slide ${i === 0 ? 'on' : ''}" role="group" aria-label="${i + 1} of ${pool.length}"><img src="${esc(t.hero || t.cover)}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}<div class="cap"><span class="eyebrow">Featured guide${pc ? ` · ${esc(pc.parentId ? catById[pc.parentId].name : pc.name)}` : ''}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</span><h2><a href="${href(t)}">${esc(t.title)}</a></h2><p>${esc(t.excerpt || '')}</p><a class="btn" href="${href(t)}">Read More »</a></div></div>`; }).join('')}
+  <button class="arrow prev" aria-label="Previous" data-prev>‹</button><button class="arrow next" aria-label="Next" data-next>›</button>
+  <div class="dots">${pool.map((_, i) => `<button aria-label="Slide ${i + 1}" class="${i === 0 ? 'on' : ''}" data-dot="${i}"></button>`).join('')}</div>
+</div>`;
+  }
+  function wireSlider() {
+    const s = document.querySelector('[data-slider]'); if (!s) return;
+    const slides = [...s.querySelectorAll('.slide')], dots = [...s.querySelectorAll('[data-dot]')]; let i = 0, tm;
+    const go = n => { i = (n + slides.length) % slides.length; slides.forEach((x, k) => x.classList.toggle('on', k === i)); dots.forEach((x, k) => x.classList.toggle('on', k === i)); };
+    const auto = () => { clearInterval(tm); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) tm = setInterval(() => go(i + 1), 6000); };
+    s.querySelector('[data-prev]').addEventListener('click', () => { go(i - 1); auto(); });
+    s.querySelector('[data-next]').addEventListener('click', () => { go(i + 1); auto(); });
+    dots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.dot); auto(); }));
+    s.addEventListener('mouseenter', () => clearInterval(tm)); s.addEventListener('mouseleave', auto);
+    s.addEventListener('focusin', () => clearInterval(tm)); s.addEventListener('focusout', auto);
+    auto();
   }
   function latestPanel() {
-    return `<div class="latest"><div class="lh"><h2>Latest</h2><a href="${ROOT}/category.html">All tutorials →</a></div><ul>${latest(T).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
+    return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html">All tutorials →</a></div><ul>${latest(T).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
   }
   function popularStrip() {
     if (!HAS_VIEWS) return '';
@@ -245,25 +261,22 @@
   /* ---------- home ---------- */
   function renderHome() {
     const s = readState(); const app = document.getElementById('app');
-    const years = T.map(t => t.iso).filter(Boolean).sort();
     const draw = (keepFocus) => {
       const list = run(s); const f = isFiltering(s);
       history.replaceState(null, '', location.pathname + (toQuery(s) ? '?' + toQuery(s) : ''));
       const pos = keepFocus ? document.querySelector('[data-q]')?.selectionStart : null;
       app.innerHTML = header('home') + `
-<h1 class="sr-only">Cytron Tutorials — ${fmtNum(T.length)} electronics and digital-making guides</h1>
+${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(T.length)} electronics and digital-making guides</h1>` : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">Step-by-step builds for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`}
 ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${featured()}${latestPanel()}</div>
-  <div class="stats"><div><b>${fmtNum(T.length)}</b>tutorials</div><div><b>${ORDER.length}</b>platforms</div><div><b>${fmtNum(T.reduce((a, t) => a + (t.views || 0), 0))}</b>reads</div><div><b>${years.length ? years[0].slice(0, 4) : ''}</b>first post</div></div>
 </div></section>`}` +
         filterbar(s, list) +
         (f ? resultsBlock(s, list, 'Results') :
-          `<section class="sec"><div class="wrap"><div class="sec-head"><div><h2>Browse by platform</h2><p>Start from the board or kit in your hands.</p></div></div>${tiles()}</div></section>` +
           popularStrip() +
           HOME_ROWS.map(platformRow).join('') +
           band() +
           `<div style="height:30px"></div>`) + footer();
       document.title = f ? 'Search · Cytron Tutorials' : 'Cytron Tutorials — Learn Raspberry Pi, Arduino, ESP32, micro:bit and more';
-      wireHeader(); wireFilters(s, draw);
+      wireHeader(); wireFilters(s, draw); wireSlider();
       if (keepFocus) { const q = document.querySelector('[data-q]'); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) { } }
     };
     draw();
