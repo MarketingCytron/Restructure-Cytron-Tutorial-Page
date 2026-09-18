@@ -1,7 +1,7 @@
 """Regenerate dashboard/data/tutorials.json for the category clean-up board.
 
 Usage:  python3 tools/build_dashboard.py dashboard/data/tutorials.json dashboard/data/tutorials.json
-        (reads the mirror's data/tutorials.json + data/taxonomy.json for the current categories)
+        (reads the mirror's data/tutorials.json, data/taxonomy.json and data/cms-overrides.json)
 
 Keeps the 16 Sep audit findings (suggested / questionable categories) per post, re-evaluated against
 the categories the CMS holds now, and adds findings for posts that are new or whose categories changed.
@@ -30,6 +30,8 @@ NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
 PARENT = {c['name']: NAME[c['parent']] for c in CATS if c['parent']}
 T = json.load(open(f'{SITE}/tutorials.json'))
+# the board tracks the CMS, so put back the categories the prototype hides and flag them for removal
+OVR = json.load(open(f'{SITE}/cms-overrides.json'))
 
 # --- keyword rules reconstructed from the audit's own reason strings -------------------------
 rules = collections.defaultdict(set)
@@ -56,7 +58,8 @@ oldrow = {r[F['slug']]: r for r in old['rows']}
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
 
 def evaluate(t, prev):
-    cur = by_id([NAME[i] for i in t['categories'] if i in NAME])
+    removed = [NAME[i] for i in OVR.get(t['slug'], {}).get('removed', []) if i in NAME]
+    cur = by_id([NAME[i] for i in t['categories'] if i in NAME] + removed)
     tt = (t['title'] + ' ' + ' '.join(t['tags'])).lower()
     ex = (t.get('excerpt') or '').lower()
     segs = {}                      # category -> reason segment
@@ -66,6 +69,9 @@ def evaluate(t, prev):
         padd_raw = split(prev[F['add']])
         padd = [rn(x) for x in padd_raw if x not in RENAME and rn(x) in ID]
         for seg in prev[F['reason']].split(' ; '):
+            if seg.startswith('✓ applied'):                       # carry the "applied since audit" note forward
+                applied_since += [rn(x) for x in seg.split(': ', 1)[1].split(', ') if rn(x) in cur and rn(x) not in applied_since]
+                continue
             m = re.match(r'([+?])(.+?) — (.*)$', seg)
             if not m or m.group(2) in RENAME: continue          # segments about a merged/renamed category are re-derived below
             c = m.group(2)
@@ -81,7 +87,8 @@ def evaluate(t, prev):
                 if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)}'
         # suggestions still open
         for c in padd:
-            if c in cur: applied_since.append(c)
+            if c in cur:
+                if c not in applied_since: applied_since.append(c)
             elif c not in add: add.append(c)
         # questionable categories still present
         quest = [c for c in pquest if c in cur]
@@ -111,6 +118,9 @@ def evaluate(t, prev):
         for c in cur:
             if not kw_hits(c, tt) and not kw_hits(c, ex) and not any(PARENT.get(k) == c for k in cur):
                 quest.append(c); segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
+    for c in removed:                 # intended taxonomy: these should come off in the CMS
+        if c not in quest: quest.append(c)
+        segs[c] = f'?{c} — remove in CMS: RDK X5 posts belong only in RDK X5 (the prototype already hides it here)'
     # parents of suggested children
     for c in list(add):
         p = PARENT.get(c)

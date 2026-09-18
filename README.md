@@ -59,6 +59,10 @@ chip and category page in every option; a new **ZOOM:BIT** sub-category under mi
 merged into Robotics** — Sumo, Soccer, Battle and Line Following Robot are now Robotics sub-categories and the
 Robot Kits section is gone (12 platforms).
 
+**Prototype override:** RDK X5 posts are shown only in the RDK X5 section. Three of them are still also filed under
+Other Controllers / PIC Microcontroller in the CMS; the prototype hides those memberships (`data/cms-overrides.json`,
+rule in `tools/build_data.py`) and the clean-up dashboard flags them for removal. The Excel export reports the CMS as is.
+
 **`data/cytron-tutorials-export.xlsx`** — the same data as a spreadsheet: one row per tutorial with title,
 description, publish date, category / sub-category, views, likes, author, type, level, link, tags and audience,
 plus Summary and Notes sheets. Bookmark and thumbs-up/down counts are not shown publicly by the site, so those

@@ -77,6 +77,10 @@ Category membership was captured from the live `/tutorial-search?categories=N` e
 count in the prototype is real (refreshed 17–18 Sep 2026: new RDK X5 and ZOOM:BIT categories, Robot Kits merged into Robotics). 37 posts have no category on the live site. There are no posts
 tagged "Expert"; 78 have no skill level.
 
+One deliberate departure from the live data: RDK X5 posts are hidden from Other Controllers (and its children) so
+the RDK X5 section is their only home — `data/cms-overrides.json` lists the three posts affected until the CMS
+catches up.
+
 Only five articles carry their full body text (one per template variant). Every other article
 page shows the real metadata and links back to the original.
 

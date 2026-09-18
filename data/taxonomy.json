@@ -225,7 +225,7 @@
      "id": 22,
      "name": "PIC Microcontroller",
      "parent": 19,
-     "count": 2
+     "count": 0
     },
     {
      "id": 23,
@@ -234,7 +234,7 @@
      "count": 33
     }
    ],
-   "count": 126
+   "count": 123
   },
   {
    "id": 24,

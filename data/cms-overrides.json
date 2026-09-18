@@ -1,0 +1,19 @@
+{
+ "startup-guide-to-yahboom-ros-robot-control-board": {
+  "removed": [
+   19,
+   22
+  ]
+ },
+ "rdk-x5-vision-based-robotic-series": {
+  "removed": [
+   19
+  ]
+ },
+ "getting-started-with-ros-using-rdk-x5": {
+  "removed": [
+   19,
+   22
+  ]
+ }
+}
