@@ -10,9 +10,8 @@
   const PLATFORM = {
     1: { ref: 'ARD', blurb: 'Arduino boards, Maker UNO, Maker Nano and the classic getting-started projects.' },
     2: { ref: 'RPI', blurb: 'Raspberry Pi single-board computers, Pico microcontrollers, cameras, HATs and edge AI.' },
-    4: { ref: 'MBT', blurb: 'micro:bit and Cytron’s classroom kits — EDU:BIT, REKA:BIT and SUMO:BIT.' },
-    31: { ref: 'RBK', blurb: 'Competition-ready robot kits: sumo, soccer, line following and battle robots.' },
-    7: { ref: 'ROB', blurb: 'Motor drivers, rero and the mechanics of making things move.' },
+    4: { ref: 'MBT', blurb: 'micro:bit and Cytron’s classroom kits — EDU:BIT, ZOOM:BIT, REKA:BIT and SUMO:BIT.' },
+    7: { ref: 'ROB', blurb: 'Motor drivers, sumo, soccer, line-following and battle robots — the mechanics of making things move.' },
     10: { ref: '3DM', blurb: '3D modelling and printing: designing enclosures, mounts and parts.' },
     11: { ref: 'NVA', blurb: 'NVIDIA Jetson Nano and Orin NX — computer vision and AI at the edge.' },
     13: { ref: 'IOT', blurb: 'Wireless and IoT: ESP32, Maker ESP32, LoRa, MQTT dashboards and cloud services.' },

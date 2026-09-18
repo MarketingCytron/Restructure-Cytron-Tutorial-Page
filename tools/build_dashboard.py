@@ -1,7 +1,7 @@
 """Regenerate dashboard/data/tutorials.json for the category clean-up board.
 
 Usage:  python3 tools/build_dashboard.py dashboard/data/tutorials.json dashboard/data/tutorials.json
-        (reads the mirror's data/tutorials.json for the current categories)
+        (reads the mirror's data/tutorials.json + data/taxonomy.json for the current categories)
 
 Keeps the 16 Sep audit findings (suggested / questionable categories) per post, re-evaluated against
 the categories the CMS holds now, and adds findings for posts that are new or whose categories changed.
@@ -15,11 +15,17 @@ SITE = os.environ.get('SITE_DATA') or os.path.join(os.path.dirname(os.path.abspa
 
 old = json.load(open(OLD))
 F = {k: i for i, k in enumerate(old['fields'])}
-CATS = old['cats']
-# categories created on the live site after the 16 Sep audit (id, name, parent id)
-for cid, cname, cparent in [(43, 'RDK X5', 0)]:
-    if not any(c['id'] == cid for c in CATS):
-        CATS.insert(0, {'id': cid, 'name': cname, 'parent': cparent})
+# The category list follows the mirror's taxonomy (data/taxonomy.json), i.e. the live site as last scraped,
+# so categories created, renamed, re-parented or merged in the CMS flow through automatically.
+TAX = json.load(open(f'{SITE}/taxonomy.json'))
+CATS = []
+for pc in TAX['categories']:
+    CATS.append({'id': pc['id'], 'name': pc['name'], 'parent': 0})
+    for ch in pc.get('children', []):
+        CATS.append({'id': ch['id'], 'name': ch['name'], 'parent': pc['id']})
+# names used in earlier findings that no longer exist on the site -> their replacement
+RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics'}   # Robot Kits merged into Robotics, 18 Sep 2026
+def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
 PARENT = {c['name']: NAME[c['parent']] for c in CATS if c['parent']}
@@ -31,11 +37,13 @@ for r in old['rows']:
     for seg in r[F['reason']].split(' ; '):
         m = re.match(r'\+(.+?) — (?:title/tag|excerpt) mentions (.+)$', seg)
         if m:
-            for k in m.group(2).split(','): rules[m.group(1)].add(k.strip())
+            for k in m.group(2).split(','): rules[rn(m.group(1))].add(k.strip())
 rules['Maker ESP32'].add('maker esp32')
 rules['Motor Driver'].add('mddrc5'); rules['Motor Driver'].add('mddrc10')
 rules['Sumo Robot'].add('robot sumo')
 rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
+rules['ZOOM:BIT'].update(['zoom:bit', 'zoombit', 'zoom bit']); rules['Robotics'].discard('zoombit')
+rules = {c: ks for c, ks in rules.items() if c in ID}
 
 def kw_hits(cat, text):
     return sorted(k for k in rules.get(cat, ()) if re.search(r'(?<![a-z0-9])' + re.escape(k) + r'(?![a-z0-9])', text))
@@ -54,14 +62,27 @@ def evaluate(t, prev):
     segs = {}                      # category -> reason segment
     add, quest, applied_since = [], [], []
     if prev:
-        pcur, padd, pquest = split(prev[F['current']]), split(prev[F['add']]), split(prev[F['quest']])
+        pcur, pquest = ([rn(x) for x in split(prev[F[k]]) if rn(x) in ID] for k in ('current', 'quest'))
+        padd_raw = split(prev[F['add']])
+        padd = [rn(x) for x in padd_raw if x not in RENAME and rn(x) in ID]
         for seg in prev[F['reason']].split(' ; '):
-            m = re.match(r'[+?](.+?) — ', seg)
-            if m: segs[m.group(1)] = seg
+            m = re.match(r'([+?])(.+?) — (.*)$', seg)
+            if not m or m.group(2) in RENAME: continue          # segments about a merged/renamed category are re-derived below
+            c = m.group(2)
+            if c not in ID: continue
+            segs[c] = seg
+        for c in pquest:                                         # renamed review-only categories keep their segment
+            if c not in segs: segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
+        if any(x in RENAME for x in padd_raw):                   # a suggestion pointed at a merged/renamed category: re-run the keyword rules
+            for c in rules:
+                if c in cur or c in padd: continue
+                h = kw_hits(c, tt); where = 'title/tag'
+                if not h: h = kw_hits(c, ex); where = 'excerpt'
+                if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)}'
         # suggestions still open
         for c in padd:
             if c in cur: applied_since.append(c)
-            else: add.append(c)
+            elif c not in add: add.append(c)
         # questionable categories still present
         quest = [c for c in pquest if c in cur]
         # categories removed since the audit: re-check whether keywords still ask for them

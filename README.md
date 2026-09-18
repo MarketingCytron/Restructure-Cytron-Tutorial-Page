@@ -36,27 +36,28 @@ directly from disk also works because the data ships as `.js` files.
 2. **Mobile header is broken** — nav items overlap the logo and search bar at 375px.
 3. **No `<h1>` on the listing page**, and no per-category landing pages — poor SEO surface for 932 posts.
 4. **"Sort By" has one option** (Latest), so the front page is always the newest 15 and the archive's depth is invisible.
-5. **Categories are named by product, not by task** — and several sub-categories are nearly empty (rero 0, IRIV IOC 0, Teensy 1, Battle Robot 1).
+5. **Categories are named by product, not by task** — and several sub-categories are nearly empty (rero 0, IRIV IOC 0, Teensy 1, Battle Robot 1, ZOOM:BIT 1).
 
 ## Data snapshot (17 Sep 2026)
 
 | Platform | Posts | Platform | Posts |
 |---|---|---|---|
 | Raspberry Pi | 315 | Industry | 93 |
-| Arduino Ecosystem | 170 | micro:bit | 89 |
-| Wireless & IoT | 158 | 3D Modelling | 78 |
-| Other Controllers | 127 | Robotics | 75 |
+| Arduino Ecosystem | 169 | micro:bit | 89 |
+| Wireless & IoT | 158 | Robotics *(now includes the former Robot Kits)* | 89 |
+| Other Controllers | 126 | 3D Modelling | 78 |
 | Components | 110 | NVIDIA AI | 44 |
-| Miscellaneous | 42 | Robot Kits | 32 |
-| **RDK X5** *(new, 18 Sep)* | 12 | | |
+| Miscellaneous | 42 | **RDK X5** *(new, 18 Sep)* | 12 |
 
-700 Tutorials · 110 Protips · 74 Projects · 43 Success Stories · 5 Uncategorized. 634 Beginner · 175 Intermediate · 45 Advanced · 78 unrated. 38 posts have no category.
+700 Tutorials · 110 Protips · 74 Projects · 43 Success Stories · 5 Uncategorized. 634 Beginner · 175 Intermediate · 45 Advanced · 78 unrated. 37 posts have no category.
 
 Refreshed 17 Sep 2026 from the live site (first capture 15 Sep 2026): two new posts
 (*Build a Robot Sumo 500g R/C with MDDRC5*, *ESP32 IoT Gate using Blynk*), four re-published getting-started
 guides, one author correction, 14 category re-assignments (the ESP32 getting-started series moved to Maker ESP32)
-and fresh view counts for all 932 articles. On 18 Sep a new top-level category **RDK X5** (id 43, 12 posts) appeared
-on the live site; it has its own row, chip and category page in every option.
+and fresh view counts for all 932 articles. On 18 Sep the live taxonomy changed: a new top-level category **RDK X5** (id 43, 12 posts) with its own row,
+chip and category page in every option; a new **ZOOM:BIT** sub-category under micro:bit (id 44); and **Robot Kits
+merged into Robotics** — Sumo, Soccer, Battle and Line Following Robot are now Robotics sub-categories and the
+Robot Kits section is gone (12 platforms).
 
 **`data/cytron-tutorials-export.xlsx`** — the same data as a spreadsheet: one row per tutorial with title,
 description, publish date, category / sub-category, views, likes, author, type, level, link, tags and audience,

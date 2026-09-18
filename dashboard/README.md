@@ -139,14 +139,16 @@ id, title, slug, prio, current, add, quest, reason, type, level, date, views, ta
 
 | Band | Count | Meaning |
 |---|---|---|
-| Uncategorised | 38 | No category at all — invisible in every section of the tutorial page |
-| Missing category | 444 | The title or tags name a board the post is not filed under |
-| Review only | 37 | An assigned category with no keyword support — skim, don't bulk-action |
-| No change needed | 413 | Clean; excluded from the progress meter |
+| Uncategorised | 37 | No category at all — invisible in every section of the tutorial page |
+| Missing category | 429 | The title or tags name a board the post is not filed under |
+| Review only | 38 | An assigned category with no keyword support — skim, don't bulk-action |
+| No change needed | 428 | Clean; excluded from the progress meter |
 
-Counts as of 18 Sep 2026, after the new **RDK X5** category (id 43) was created on the live site
-(16 Sep audit: 41 / 437 / 36 / 416). New categories are declared at the top of
-`tools/build_dashboard.py` so the board can offer them as chips.
+Counts as of 18 Sep 2026 (16 Sep audit: 41 / 437 / 36 / 416), after three taxonomy changes on the
+live site: the new **RDK X5** category (id 43), the new **ZOOM:BIT** sub-category under micro:bit
+(id 44), and **Robot Kits merged into Robotics** (its four sub-categories now sit under Robotics).
+The board's category chips follow the mirror's `data/taxonomy.json`; names that no longer exist
+(Robot Kits, Edu:bit, Reka:bit) are mapped to their replacements in `tools/build_dashboard.py`.
 
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an
