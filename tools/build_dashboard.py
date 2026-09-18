@@ -16,6 +16,10 @@ SITE = os.environ.get('SITE_DATA') or os.path.join(os.path.dirname(os.path.abspa
 old = json.load(open(OLD))
 F = {k: i for i, k in enumerate(old['fields'])}
 CATS = old['cats']
+# categories created on the live site after the 16 Sep audit (id, name, parent id)
+for cid, cname, cparent in [(43, 'RDK X5', 0)]:
+    if not any(c['id'] == cid for c in CATS):
+        CATS.insert(0, {'id': cid, 'name': cname, 'parent': cparent})
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
 PARENT = {c['name']: NAME[c['parent']] for c in CATS if c['parent']}
@@ -31,6 +35,7 @@ for r in old['rows']:
 rules['Maker ESP32'].add('maker esp32')
 rules['Motor Driver'].add('mddrc5'); rules['Motor Driver'].add('mddrc10')
 rules['Sumo Robot'].add('robot sumo')
+rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
 
 def kw_hits(cat, text):
     return sorted(k for k in rules.get(cat, ()) if re.search(r'(?<![a-z0-9])' + re.escape(k) + r'(?![a-z0-9])', text))
@@ -115,7 +120,7 @@ for t in T:
 order = {1: 0, 2: 1, 4: 2, 0: 3}
 rows.sort(key=lambda r: (order[r[3]], -r[11]))
 out = {'generated': date.today().isoformat(),
-       'source': f'data/tutorials.json ({len(rows)} posts, re-scraped 17 Sep 2026; findings from the 16 Sep audit re-checked against the CMS)',
+       'source': f'data/tutorials.json ({len(rows)} posts, re-scraped 17 Sep 2026, categories re-read {date.today().strftime("%-d %b %Y")}; findings from the 16 Sep audit re-checked against the CMS)',
        'fields': old['fields'], 'cats': CATS, 'rows': rows}
 json.dump(out, open(OUT, 'w'), ensure_ascii=False)
 bands = collections.Counter(r[3] for r in rows)

@@ -19,9 +19,10 @@
     7: { ref: 'ROB', chip: 'Robotics', title: 'Robotics', blurb: 'Motor drivers, rero and the mechanics of making things move.' },
     11: { ref: 'NVA', chip: 'NVIDIA AI', title: 'NVIDIA Jetson', blurb: 'Jetson Nano and Orin NX — computer vision and AI at the edge.' },
     31: { ref: 'RBK', chip: 'Robot kits', title: 'Robot kits', blurb: 'Sumo, soccer, line-following and battle robot kits.' },
+    43: { ref: 'RDK', chip: 'RDK X5', title: 'RDK X5', blurb: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.' },
     24: { ref: 'MSC', chip: 'News', title: 'News & events', blurb: 'News, seminars and workshops.' }
   };
-  const ORDER = [2, 1, 13, 19, 16, 28, 4, 10, 7, 11, 31, 24];
+  const ORDER = [2, 1, 13, 19, 16, 28, 4, 10, 7, 11, 31, 43, 24];
   const HOME_ROWS = ORDER; // one row per platform on the home page, like Option B (archive-size order)
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
   const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];

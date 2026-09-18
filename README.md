@@ -48,13 +48,15 @@ directly from disk also works because the data ships as `.js` files.
 | Other Controllers | 127 | Robotics | 75 |
 | Components | 110 | NVIDIA AI | 44 |
 | Miscellaneous | 42 | Robot Kits | 32 |
+| **RDK X5** *(new, 18 Sep)* | 12 | | |
 
-700 Tutorials · 110 Protips · 74 Projects · 43 Success Stories · 5 Uncategorized. 634 Beginner · 175 Intermediate · 45 Advanced · 78 unrated. 47 posts have no category.
+700 Tutorials · 110 Protips · 74 Projects · 43 Success Stories · 5 Uncategorized. 634 Beginner · 175 Intermediate · 45 Advanced · 78 unrated. 38 posts have no category.
 
 Refreshed 17 Sep 2026 from the live site (first capture 15 Sep 2026): two new posts
 (*Build a Robot Sumo 500g R/C with MDDRC5*, *ESP32 IoT Gate using Blynk*), four re-published getting-started
-guides, one author correction, 14 category re-assignments (the ESP32 getting-started series moved to Maker ESP32;
-the RDK X5 posts lost their category) and fresh view counts for all 932 articles.
+guides, one author correction, 14 category re-assignments (the ESP32 getting-started series moved to Maker ESP32)
+and fresh view counts for all 932 articles. On 18 Sep a new top-level category **RDK X5** (id 43, 12 posts) appeared
+on the live site; it has its own row, chip and category page in every option.
 
 **`data/cytron-tutorials-export.xlsx`** — the same data as a spreadsheet: one row per tutorial with title,
 description, publish date, category / sub-category, views, likes, author, type, level, link, tags and audience,

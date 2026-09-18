@@ -74,7 +74,7 @@ Images are hot-linked from `static.cytron.io`; Google Fonts are used for the new
 ## Data note
 
 Category membership was captured from the live `/tutorial-search?categories=N` endpoint, so every
-count in the prototype is real (refreshed 17 Sep 2026). 47 posts have no category on the live site. There are no posts
+count in the prototype is real (refreshed 17–18 Sep 2026, including the new RDK X5 category). 38 posts have no category on the live site. There are no posts
 tagged "Expert"; 78 have no skill level.
 
 Only five articles carry their full body text (one per template variant). Every other article

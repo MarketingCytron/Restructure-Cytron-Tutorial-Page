@@ -139,12 +139,14 @@ id, title, slug, prio, current, add, quest, reason, type, level, date, views, ta
 
 | Band | Count | Meaning |
 |---|---|---|
-| Uncategorised | 47 | No category at all — invisible in every section of the tutorial page |
-| Missing category | 442 | The title or tags name a board the post is not filed under |
+| Uncategorised | 38 | No category at all — invisible in every section of the tutorial page |
+| Missing category | 444 | The title or tags name a board the post is not filed under |
 | Review only | 37 | An assigned category with no keyword support — skim, don't bulk-action |
-| No change needed | 406 | Clean; excluded from the progress meter |
+| No change needed | 413 | Clean; excluded from the progress meter |
 
-Counts as of the 17 Sep 2026 re-scrape (16 Sep audit: 41 / 437 / 36 / 416).
+Counts as of 18 Sep 2026, after the new **RDK X5** category (id 43) was created on the live site
+(16 Sep audit: 41 / 437 / 36 / 416). New categories are declared at the top of
+`tools/build_dashboard.py` so the board can offer them as chips.
 
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an

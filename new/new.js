@@ -19,6 +19,7 @@
     28: { ref: 'IND', blurb: 'Industrial controllers from the IRIV family, LoRaWAN and factory-floor monitoring.' },
     16: { ref: 'CMP', blurb: 'Sensors, modules and DIY electronics fundamentals.' },
     19: { ref: 'MCU', blurb: 'Other controllers: Maker boards, Teensy, PIC and Python for microcontrollers.' },
+    43: { ref: 'RDK', blurb: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.' },
     24: { ref: 'MSC', blurb: 'News, seminars and workshops.' }
   };
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
