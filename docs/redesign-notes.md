@@ -58,10 +58,11 @@ new-b/                     Option B (Random-Nerd-Tutorials style)
   newb.css                 Tokens in :root; plain type scale
 shared/data.js             Filtering, sorting, pagination — shared by both versions
 data/
-  tutorials.js / .json     All 930 posts scraped from the live site (title, slug, cover, author, date,
+  tutorials.js / .json     All 932 posts scraped from the live site (title, slug, cover, author, date,
                            type, level, categories, audience, tags, views, likes, word count, has-video)
   taxonomy.js / .json      Category tree with IDs and counts, post types, levels
   articles.js / .json      Full HTML body + hardware list for 5 sample articles
+  cytron-tutorials-export.xlsx  Spreadsheet export of every post (Tutorials · Summary · Notes sheets)
 docs/                      Audit and these notes
 ```
 
@@ -73,7 +74,7 @@ Images are hot-linked from `static.cytron.io`; Google Fonts are used for the new
 ## Data note
 
 Category membership was captured from the live `/tutorial-search?categories=N` endpoint, so every
-count in the prototype is real. 41 posts have no category on the live site. There are no posts
+count in the prototype is real (refreshed 17 Sep 2026). 47 posts have no category on the live site. There are no posts
 tagged "Expert"; 78 have no skill level.
 
 Only five articles carry their full body text (one per template variant). Every other article

@@ -4,7 +4,7 @@
    "id": 1,
    "name": "Arduino Ecosystem",
    "children": [],
-   "count": 172
+   "count": 170
   },
   {
    "id": 2,
@@ -73,7 +73,7 @@
      "count": 13
     }
    ],
-   "count": 34
+   "count": 32
   },
   {
    "id": 7,
@@ -133,16 +133,16 @@
      "id": 15,
      "name": "ESP32",
      "parent": 13,
-     "count": 45
+     "count": 38
     },
     {
      "id": 42,
      "name": "Maker ESP32",
      "parent": 13,
-     "count": 14
+     "count": 22
     }
    ],
-   "count": 157
+   "count": 158
   },
   {
    "id": 28,
@@ -229,7 +229,7 @@
      "count": 33
     }
    ],
-   "count": 130
+   "count": 127
   },
   {
    "id": 24,

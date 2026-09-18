@@ -81,7 +81,7 @@
     ${dd('Educational Programs', ['RAC2026 Competition', 'EDU:BIT Certification Program', 'ZOOM:BIT Certification Program', 'EDU PICO Certification Program'])}
     ${dd('Community', ['micro:bit', 'Arduino/Maker Boards', 'Raspberry Pi', '3D Printing', 'Nvidia Jetson'])}
   </nav>
-  <form class="search" action="${ROOT}/index.html" method="get" role="search"><input type="search" name="q" placeholder="Search 930 tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
+  <form class="search" action="${ROOT}/index.html" method="get" role="search"><input type="search" name="q" placeholder="Search 932 tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
   <a class="cart" href="${LIVE}/" aria-label="Cart">${I.cart}</a>
   <button class="burger" aria-label="Menu" aria-expanded="false" data-burger>${I.burger}</button>
   <details class="mobile-nav" data-mnav>
