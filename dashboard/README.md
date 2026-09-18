@@ -1,7 +1,8 @@
 # Tutorial Category Cleanup — dashboard
 
-A progress board for the Cytron tutorial category clean-up: all 930 tutorials, with the category
-problems found in the 16 Sep 2026 audit, and a place for the content team to record what they fixed.
+A progress board for the Cytron tutorial category clean-up: all 932 tutorials, with the category
+problems found in the 16 Sep 2026 audit (re-checked against the CMS on 17 Sep), and a place for the
+content team to record what they fixed.
 
 Runs as a static site on GitHub Pages. A Google Sheet, exposed through Apps Script, holds the
 progress so everyone sees the same board.
@@ -16,7 +17,7 @@ progress so everyone sees the same board.
 | `styles.css` | All styling, light and dark, as CSS custom properties on `:root` | Yes |
 | `app.js` | Board logic — filters, rendering, sync | Yes |
 | `config.js` | **The only file you must edit.** Backend URL, shared token, poll interval | Yes |
-| `data/tutorials.json` | The 930 tutorials and their findings | Regenerated, don't hand-edit |
+| `data/tutorials.json` | The 932 tutorials and their findings | Regenerated, don't hand-edit |
 | `apps-script/Code.gs` | The backend, pasted into Apps Script | Yes |
 
 ---
@@ -108,9 +109,13 @@ If that is not acceptable, the options are:
 
 ## Regenerating the tutorial data
 
-`data/tutorials.json` is a snapshot of the 15 Sep 2026 scrape plus the category findings. After the
-CMS is fixed and the site is re-scraped, regenerate it and commit the new file — the board picks it
-up on the next load.
+`data/tutorials.json` is the 17 Sep 2026 re-scrape plus the category findings from the 16 Sep audit,
+re-checked against what the CMS holds now. After more of the CMS is fixed and the site is re-scraped,
+run `tools/build_dashboard.py <old data/tutorials.json> <new data/tutorials.json>` from the repo root
+(it reads `data/tutorials.json` of the mirror) and commit the new file — the board picks it up on the
+next load. The script keeps every earlier finding, drops suggestions that have since been applied
+(noted in `reason` as "✓ applied in CMS since the 15 Sep audit"), and re-flags a category that was
+removed although the title or tags still call for it.
 
 Progress is keyed on `id`, the first 10 hex characters of `sha1(slug)`. This survives regeneration
 and re-ordering. **A tutorial whose slug changes gets a new id and loses its recorded progress**, so
@@ -134,10 +139,12 @@ id, title, slug, prio, current, add, quest, reason, type, level, date, views, ta
 
 | Band | Count | Meaning |
 |---|---|---|
-| Uncategorised | 41 | No category at all — invisible in every section of the tutorial page |
-| Missing category | 437 | The title or tags name a board the post is not filed under |
-| Review only | 36 | An assigned category with no keyword support — skim, don't bulk-action |
-| No change needed | 416 | Clean; excluded from the progress meter |
+| Uncategorised | 47 | No category at all — invisible in every section of the tutorial page |
+| Missing category | 442 | The title or tags name a board the post is not filed under |
+| Review only | 37 | An assigned category with no keyword support — skim, don't bulk-action |
+| No change needed | 406 | Clean; excluded from the progress meter |
+
+Counts as of the 17 Sep 2026 re-scrape (16 Sep audit: 41 / 437 / 36 / 416).
 
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an
