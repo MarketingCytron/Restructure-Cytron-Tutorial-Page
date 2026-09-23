@@ -8,20 +8,22 @@
   const HAS_VIEWS = T.some(t => t.views != null);
 
   const PLATFORM = {
-    2: { ref: 'RPI', chip: 'Raspberry Pi', title: 'Raspberry Pi', blurb: 'Raspberry Pi single-board computers, Pico microcontrollers, cameras, HATs and edge AI.' },
+    2: { ref: 'RPI', chip: 'Raspberry Pi', title: 'Raspberry Pi', blurb: 'Raspberry Pi single-board computers, Pico and RP2040 microcontrollers, Zero, cameras, HATs and edge AI.' },
+    27: { ref: 'RPX', chip: 'Pi in Industry', title: 'Raspberry Pi in Industry', blurb: 'Raspberry Pi on the factory floor — IRIV PiControl, monitoring, signage, automation and reliability.' },
     1: { ref: 'ARD', chip: 'Arduino', title: 'Arduino', blurb: 'Arduino boards, Maker UNO, Maker Nano and the classic getting-started projects.' },
     13: { ref: 'IOT', chip: 'ESP32 & IoT', title: 'ESP32 & IoT', blurb: 'ESP32, Maker ESP32, LoRa, MQTT dashboards and cloud services.' },
-    19: { ref: 'MCU', chip: 'Maker boards', title: 'Maker boards', blurb: 'Maker boards, Teensy, PIC and Python for microcontrollers.' },
+    19: { ref: 'MCU', chip: 'Maker boards', title: 'Maker boards', blurb: 'Maker boards, PIC and Python for microcontrollers.' },
     16: { ref: 'CMP', chip: 'Sensors', title: 'Sensors & components', blurb: 'Sensors, modules and DIY electronics fundamentals.' },
     28: { ref: 'IND', chip: 'Industry', title: 'Industry', blurb: 'IRIV industrial controllers, LoRaWAN and factory-floor monitoring.' },
     4: { ref: 'MBT', chip: 'micro:bit', title: 'micro:bit', blurb: 'micro:bit and Cytron’s classroom kits — EDU:BIT, ZOOM:BIT, REKA:BIT and SUMO:BIT.' },
     10: { ref: '3DM', chip: '3D printing', title: '3D printing', blurb: 'Designing enclosures, mounts and parts for your builds.' },
     7: { ref: 'ROB', chip: 'Robotics', title: 'Robotics', blurb: 'Motor drivers, sumo, soccer, line-following and battle robots — the mechanics of making things move.' },
-    11: { ref: 'NVA', chip: 'NVIDIA AI', title: 'NVIDIA Jetson', blurb: 'Jetson Nano and Orin NX — computer vision and AI at the edge.' },
+    9: { ref: 'AI', chip: 'AI', title: 'Artificial Intelligence (AI)', blurb: 'AI tools, agents and models applied to maker projects.' },
+    11: { ref: 'NVA', chip: 'NVIDIA AI', title: 'NVIDIA Jetson', blurb: 'Jetson Nano, Orin Nano and Orin NX — computer vision and AI at the edge.' },
     43: { ref: 'RDK', chip: 'RDK X5', title: 'RDK X5', blurb: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.' },
     24: { ref: 'MSC', chip: 'News', title: 'News & events', blurb: 'News, seminars and workshops.' }
   };
-  const ORDER = [2, 1, 13, 19, 16, 28, 4, 10, 7, 11, 43, 24];
+  const ORDER = [2, 1, 13, 19, 16, 28, 4, 7, 10, 27, 11, 43, 9, 24];
   const HOME_ROWS = ORDER; // one row per platform on the home page, like Option B (archive-size order)
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
   const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];

@@ -9,15 +9,17 @@
   /* Platform copy + silkscreen-style refs (abbreviations, not sequence numbers) */
   const PLATFORM = {
     1: { ref: 'ARD', blurb: 'Arduino boards, Maker UNO, Maker Nano and the classic getting-started projects.' },
-    2: { ref: 'RPI', blurb: 'Raspberry Pi single-board computers, Pico microcontrollers, cameras, HATs and edge AI.' },
+    2: { ref: 'RPI', blurb: 'Raspberry Pi single-board computers, Pico and RP2040 microcontrollers, Zero, cameras, HATs and edge AI.' },
+    27: { ref: 'RPX', blurb: 'Raspberry Pi on the factory floor — IRIV PiControl, monitoring, signage, automation and reliability.' },
+    9: { ref: 'AI', blurb: 'AI tools, agents and models applied to maker projects.' },
     4: { ref: 'MBT', blurb: 'micro:bit and Cytron’s classroom kits — EDU:BIT, ZOOM:BIT, REKA:BIT and SUMO:BIT.' },
     7: { ref: 'ROB', blurb: 'Motor drivers, sumo, soccer, line-following and battle robots — the mechanics of making things move.' },
     10: { ref: '3DM', blurb: '3D modelling and printing: designing enclosures, mounts and parts.' },
-    11: { ref: 'NVA', blurb: 'NVIDIA Jetson Nano and Orin NX — computer vision and AI at the edge.' },
+    11: { ref: 'NVA', blurb: 'NVIDIA Jetson Nano, Orin Nano and Orin NX — computer vision and AI at the edge.' },
     13: { ref: 'IOT', blurb: 'Wireless and IoT: ESP32, Maker ESP32, LoRa, MQTT dashboards and cloud services.' },
     28: { ref: 'IND', blurb: 'Industrial controllers from the IRIV family, LoRaWAN and factory-floor monitoring.' },
     16: { ref: 'CMP', blurb: 'Sensors, modules and DIY electronics fundamentals.' },
-    19: { ref: 'MCU', blurb: 'Other controllers: Maker boards, Teensy, PIC and Python for microcontrollers.' },
+    19: { ref: 'MCU', blurb: 'Other controllers: Maker boards, PIC and Python for microcontrollers.' },
     43: { ref: 'RDK', blurb: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.' },
     24: { ref: 'MSC', blurb: 'News, seminars and workshops.' }
   };
@@ -81,7 +83,7 @@
     ${dd('Educational Programs', ['RAC2026 Competition', 'EDU:BIT Certification Program', 'ZOOM:BIT Certification Program', 'EDU PICO Certification Program'])}
     ${dd('Community', ['micro:bit', 'Arduino/Maker Boards', 'Raspberry Pi', '3D Printing', 'Nvidia Jetson'])}
   </nav>
-  <form class="search" action="${ROOT}/index.html" method="get" role="search"><input type="search" name="q" placeholder="Search 932 tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
+  <form class="search" action="${ROOT}/index.html" method="get" role="search"><input type="search" name="q" placeholder="Search 933 tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
   <a class="cart" href="${LIVE}/" aria-label="Cart">${I.cart}</a>
   <button class="burger" aria-label="Menu" aria-expanded="false" data-burger>${I.burger}</button>
   <details class="mobile-nav" data-mnav>

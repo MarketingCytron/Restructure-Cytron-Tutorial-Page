@@ -7,9 +7,9 @@
   const PER = 24;
 
   /* Board chips shown in the row under the header: parent id → short label. Order = archive size. */
-  const CHIPS = [[2, 'Raspberry Pi'], [1, 'Arduino'], [13, 'ESP32 & IoT'], [19, 'Maker boards'], [16, 'Sensors'], [28, 'Industry'], [4, 'micro:bit'], [10, '3D printing'], [7, 'Robotics'], [11, 'NVIDIA AI'], [43, 'RDK X5']];
-  const SECTION_TITLE = { 2: 'Raspberry Pi Projects', 1: 'Arduino Projects', 13: 'ESP32 & IoT Projects', 19: 'Maker Board Projects', 16: 'Sensor & Component Guides', 28: 'Industrial Guides', 4: 'micro:bit Projects', 10: '3D Printing Guides', 7: 'Robotics Guides', 11: 'NVIDIA Jetson Projects', 43: 'RDK X5 Projects', 24: 'News & Events' };
-  const BLURB = { 2: 'Raspberry Pi single-board computers, Pico microcontrollers, cameras, HATs and edge AI.', 1: 'Arduino boards, Maker UNO, Maker Nano and the classic getting-started projects.', 13: 'ESP32, Maker ESP32, LoRa, MQTT dashboards and cloud services.', 19: 'Maker boards, Teensy, PIC and Python for microcontrollers.', 16: 'Sensors, modules and DIY electronics fundamentals.', 28: 'IRIV industrial controllers, LoRaWAN and factory-floor monitoring.', 4: 'micro:bit and Cytron’s classroom kits — EDU:BIT, ZOOM:BIT, REKA:BIT and SUMO:BIT.', 10: 'Designing enclosures, mounts and parts for your builds.', 7: 'Motor drivers, sumo, soccer, line-following and battle robots — the mechanics of making things move.', 11: 'Jetson Nano and Orin NX — computer vision and AI at the edge.', 43: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.', 24: 'News, seminars and workshops.' };
+  const CHIPS = [[2, 'Raspberry Pi'], [1, 'Arduino'], [13, 'ESP32 & IoT'], [19, 'Maker boards'], [16, 'Sensors'], [28, 'Industry'], [4, 'micro:bit'], [10, '3D printing'], [7, 'Robotics'], [27, 'Pi in Industry'], [11, 'NVIDIA AI'], [43, 'RDK X5'], [9, 'AI']];
+  const SECTION_TITLE = { 2: 'Raspberry Pi Projects', 1: 'Arduino Projects', 13: 'ESP32 & IoT Projects', 19: 'Maker Board Projects', 16: 'Sensor & Component Guides', 28: 'Industrial Guides', 4: 'micro:bit Projects', 10: '3D Printing Guides', 7: 'Robotics Guides', 11: 'NVIDIA Jetson Projects', 27: 'Raspberry Pi in Industry', 43: 'RDK X5 Projects', 9: 'Artificial Intelligence (AI)', 24: 'News & Events' };
+  const BLURB = { 2: 'Raspberry Pi single-board computers, Pico and RP2040 microcontrollers, Zero, cameras, HATs and edge AI.', 27: 'Raspberry Pi on the factory floor — IRIV PiControl, monitoring, signage, automation and reliability.', 9: 'AI tools, agents and models applied to maker projects.', 1: 'Arduino boards, Maker UNO, Maker Nano and the classic getting-started projects.', 13: 'ESP32, Maker ESP32, LoRa, MQTT dashboards and cloud services.', 19: 'Maker boards, PIC and Python for microcontrollers.', 16: 'Sensors, modules and DIY electronics fundamentals.', 28: 'IRIV industrial controllers, LoRaWAN and factory-floor monitoring.', 4: 'micro:bit and Cytron’s classroom kits — EDU:BIT, ZOOM:BIT, REKA:BIT and SUMO:BIT.', 10: 'Designing enclosures, mounts and parts for your builds.', 7: 'Motor drivers, sumo, soccer, line-following and battle robots — the mechanics of making things move.', 11: 'Jetson Nano, Orin Nano and Orin NX — computer vision and AI at the edge.', 43: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.', 24: 'News, seminars and workshops.' };
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story' };
   const HAS_VIEWS = T.some(t => t.views != null);
   const I = {
@@ -109,7 +109,7 @@
     const app = document.getElementById('app');
     const recent = latest(T).slice(0, 5);
     const years = T.map(t => t.iso).filter(Boolean).sort();
-    const order = [2, 1, 13, 19, 16, 28, 4, 10, 7, 11, 43, 24];
+    const order = [2, 1, 13, 19, 16, 28, 4, 7, 10, 27, 11, 43, 9, 24];
     app.innerHTML = header('home') + `
 <div class="wrap hero">
   ${slider()}

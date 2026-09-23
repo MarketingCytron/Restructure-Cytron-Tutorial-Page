@@ -1,6 +1,6 @@
 # Tutorial Category Cleanup — dashboard
 
-A progress board for the Cytron tutorial category clean-up: all 932 tutorials, with the category
+A progress board for the Cytron tutorial category clean-up: all 933 tutorials, with the category
 problems found in the 16 Sep 2026 audit (re-checked against the CMS on 17 Sep), and a place for the
 content team to record what they fixed.
 
@@ -17,7 +17,7 @@ progress so everyone sees the same board.
 | `styles.css` | All styling, light and dark, as CSS custom properties on `:root` | Yes |
 | `app.js` | Board logic — filters, rendering, sync | Yes |
 | `config.js` | **The only file you must edit.** Backend URL, shared token, poll interval | Yes |
-| `data/tutorials.json` | The 932 tutorials and their findings | Regenerated, don't hand-edit |
+| `data/tutorials.json` | The 933 tutorials and their findings | Regenerated, don't hand-edit |
 | `apps-script/Code.gs` | The backend, pasted into Apps Script | Yes |
 
 ---
@@ -139,16 +139,19 @@ id, title, slug, prio, current, add, quest, reason, type, level, date, views, ta
 
 | Band | Count | Meaning |
 |---|---|---|
-| Uncategorised | 37 | No category at all — invisible in every section of the tutorial page |
-| Missing category | 429 | The title or tags name a board the post is not filed under |
-| Review only | 38 | An assigned category with no keyword support — skim, don't bulk-action |
-| No change needed | 428 | Clean; excluded from the progress meter |
+| Uncategorised | 30 | No category at all — invisible in every section of the tutorial page |
+| Missing category | 459 | The title or tags name a board the post is not filed under |
+| Review only | 40 | An assigned category with no keyword support — skim, don't bulk-action |
+| No change needed | 404 | Clean; excluded from the progress meter |
 
-Counts as of 18 Sep 2026 (16 Sep audit: 41 / 437 / 36 / 416), after three taxonomy changes on the
-live site: the new **RDK X5** category (id 43), the new **ZOOM:BIT** sub-category under micro:bit
-(id 44), and **Robot Kits merged into Robotics** (its four sub-categories now sit under Robotics).
-The board's category chips follow the mirror's `data/taxonomy.json`; names that no longer exist
-(Robot Kits, Edu:bit, Reka:bit) are mapped to their replacements in `tools/build_dashboard.py`.
+Counts as of 23 Sep 2026, 933 posts (16 Sep audit: 41 / 437 / 36 / 416). The taxonomy has been reworked on
+the live site since the audit: **RDK X5**, **Raspberry Pi in Industry** and **Artificial Intelligence (AI)**
+are new top-level categories; **Raspberry Pi Pico**, **Raspberry Pi Zero**, **ZOOM:BIT** and **Jetson Orin
+Nano** are new sub-categories; Robot Kits was merged into Robotics; Teensy and rero were deleted;
+RP2040/PICO became RP2040. New sub-categories get keyword rules that run over every post, which is why
+"Missing category" grew — 76 posts mention a Pico, 12 a Pi Zero and 23 an Orin Nano without being filed
+there. The chips follow the mirror's `data/taxonomy.json`; retired names are mapped in
+`tools/build_dashboard.py`; *Raspberry Pi in Industry* and *AI* are treated as curated (no keyword check).
 
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an

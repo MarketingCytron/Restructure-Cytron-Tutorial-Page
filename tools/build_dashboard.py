@@ -24,7 +24,10 @@ for pc in TAX['categories']:
     for ch in pc.get('children', []):
         CATS.append({'id': ch['id'], 'name': ch['name'], 'parent': pc['id']})
 # names used in earlier findings that no longer exist on the site -> their replacement
-RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics'}   # Robot Kits merged into Robotics, 18 Sep 2026
+RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics',   # Robot Kits merged into Robotics, 18 Sep 2026
+          'RP2040/PICO': 'RP2040'}                                                    # renamed 23 Sep 2026; Teensy and rero were deleted (names simply drop out)
+# curated categories: membership is an editorial choice, so no keyword support is not a finding
+CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)'}
 def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
@@ -45,6 +48,8 @@ rules['Motor Driver'].add('mddrc5'); rules['Motor Driver'].add('mddrc10')
 rules['Sumo Robot'].add('robot sumo')
 rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
 rules['ZOOM:BIT'].update(['zoom:bit', 'zoombit', 'zoom bit']); rules['Robotics'].discard('zoombit')
+rules['Raspberry Pi Pico'].update(['raspberry pi pico', 'pi pico']); rules['Raspberry Pi Zero'].update(['raspberry pi zero', 'pi zero'])
+rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
 rules = {c: ks for c, ks in rules.items() if c in ID}
 
 def kw_hits(cat, text):
@@ -55,6 +60,11 @@ def by_id(names): return sorted(set(names), key=lambda n: ID[n])
 def pid(slug): return hashlib.sha1(slug.encode()).hexdigest()[:10]
 
 oldrow = {r[F['slug']]: r for r in old['rows']}
+# categories the audit never saw (created since): their keyword rules run over every post
+seen = set()
+for r in old['rows']:
+    for k in ('current', 'add', 'quest'): seen.update(rn(x) for x in split(r[F[k]]))
+NEW_CATS = [c for c in ID if c not in seen and c in rules]
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
 
 def evaluate(t, prev):
@@ -76,6 +86,7 @@ def evaluate(t, prev):
             if not m or m.group(2) in RENAME: continue          # segments about a merged/renamed category are re-derived below
             c = m.group(2)
             if c not in ID: continue
+            for a, b in RENAME.items(): seg = seg.replace(f'parent of {a}', f'parent of {b}')
             segs[c] = seg
         for c in pquest:                                         # renamed review-only categories keep their segment
             if c not in segs: segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
@@ -85,6 +96,11 @@ def evaluate(t, prev):
                 h = kw_hits(c, tt); where = 'title/tag'
                 if not h: h = kw_hits(c, ex); where = 'excerpt'
                 if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)}'
+        for c in NEW_CATS:                                       # new categories: apply their rules everywhere
+            if c in cur or c in padd: continue
+            h = kw_hits(c, tt); where = 'title/tag'
+            if not h: h = kw_hits(c, ex); where = 'excerpt'
+            if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)} (category created after the 16 Sep audit)'
         # suggestions still open
         for c in padd:
             if c in cur:
@@ -102,7 +118,7 @@ def evaluate(t, prev):
                     pass
         # categories added since the audit with no keyword support
         for c in cur:
-            if c not in pcur and c not in quest and not kw_hits(c, tt) and not kw_hits(c, ex):
+            if c not in pcur and c not in quest and c not in CURATED and not kw_hits(c, tt) and not kw_hits(c, ex):
                 child_ok = any(PARENT.get(k) == c for k in cur if kw_hits(k, tt) or kw_hits(k, ex))
                 if not child_ok:
                     quest.append(c); segs[c] = f'?{c} — no keyword support in title, excerpt or tags (added since the 15 Sep audit)'
@@ -116,7 +132,7 @@ def evaluate(t, prev):
                 h = kw_hits(c, ex)
                 if h: add.append(c); segs[c] = f'+{c} — excerpt mentions {", ".join(h)}'
         for c in cur:
-            if not kw_hits(c, tt) and not kw_hits(c, ex) and not any(PARENT.get(k) == c for k in cur):
+            if c not in CURATED and not kw_hits(c, tt) and not kw_hits(c, ex) and not any(PARENT.get(k) == c for k in cur):
                 quest.append(c); segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
     for c in removed:                 # intended taxonomy: these should come off in the CMS
         if c not in quest: quest.append(c)
@@ -151,9 +167,10 @@ for t in T:
 order = {1: 0, 2: 1, 4: 2, 0: 3}
 rows.sort(key=lambda r: (order[r[3]], -r[11]))
 out = {'generated': date.today().isoformat(),
-       'source': f'data/tutorials.json ({len(rows)} posts, re-scraped 17 Sep 2026, categories re-read {date.today().strftime("%-d %b %Y")}; findings from the 16 Sep audit re-checked against the CMS)',
+       'source': f'data/tutorials.json ({len(rows)} posts; listing and categories re-read {date.today().strftime("%-d %b %Y")}, views from 17 Sep 2026; findings from the 16 Sep audit re-checked against the CMS)',
        'fields': old['fields'], 'cats': CATS, 'rows': rows}
 json.dump(out, open(OUT, 'w'), ensure_ascii=False)
+print('new categories ruled everywhere:', NEW_CATS)
 bands = collections.Counter(r[3] for r in rows)
 print('rows', len(rows), 'bands', dict(bands), 'need fix', sum(v for k, v in bands.items() if k), 'changes', dict(changes))
 gone = [s for s in oldrow if s not in {t['slug'] for t in T}]

@@ -1,9 +1,11 @@
 # Redesign notes — Cytron Tutorial Page
 
-Companion to `tutorial-page-audit.md`. This explains what the two redesign prototypes change, why,
-and how they are built so IT can lift the pieces into the live system.
+Companion to `tutorial-page-audit.md`. This explains what the redesign changes, why, and how it is built so
+IT can lift the pieces into the live system.
 
-There are **two options**, built on the same data and the same shared filtering code:
+**As of 23 Sep 2026 only `/new-c` remains in the repo.** It was formed by merging two earlier explorations,
+Option A (`/new`) and Option B (`/new-b`), which were removed once the direction was settled — they are still in
+the git history. The A/B comparison below is kept because it records the reasoning behind C:
 
 | | Option A — `/new` | Option B — `/new-b` |
 |---|---|---|
@@ -17,7 +19,7 @@ There are **two options**, built on the same data and the same shared filtering 
 Both fix every problem in the audit table below; they differ in *how* the archive is presented,
 not in *whether* the fixes are present.
 
-### Option C — `/new-c` — the merge (current preferred direction)
+### Option C — `/new-c` — the merge (the redesign that was kept)
 
 After reviewing A and B side by side, the decision was to combine them. Option C takes:
 
@@ -37,32 +39,26 @@ that write `&cat=` to the URL.
 ## What's in this repo
 
 ```
-index.html                 Compare view: any two of current / A / B / C side by side, desktop / tablet / phone
+index.html                 Compare view: current / redesign side by side, desktop / tablet / phone
 current/                   Faithful static mirror of my.cytron.io/tutorial (Sep 2026)
   index.html               Listing + sidebar filters + pagination  (?q= &categories= &post_type= &project_level= &page=)
   tutorial.html            Article template                        (?slug=)
-new/                       Option A (hub + filter bar)
-  index.html               Hub + results                           (?q= &cat= &type= &level= &aud= &sort= &page=)
-  category.html            Platform landing page                   (?id=  [&cat=child-id])
-  tutorial.html            Article template                        (?slug=)
-  new.css                  Design tokens at the top (:root), then components
-new-c/                     Option C — A + B merged (preferred)
-  index.html               Chips, featured + latest, filter bar, tiles, most viewed, 6 platform rows, kits band
+new-c/                     The redesign (Option C)
+  index.html               Chips, title block, featured slider + Latest Posts, filter bar, most viewed, one row per platform, kits band
   category.html            Platform / search / all listing with sidebar  (?id= [&cat=] [&q=] [&level=] [&type=] [&aud=] [&sort=] [&page=])
   tutorial.html            Article + rail (TOC, hardware, tags, more in platform) + related row
   newc.css                 Tokens in :root — the design system to hand to IT
-new-b/                     Option B (Random-Nerd-Tutorials style)
-  index.html               Board chips, featured slider, Latest Posts, 12 platform rows
-  category.html            Platform / search / all-posts listing   (?id= [&cat=] [&q=] [&level=] [&type=] [&sort=] [&page=])
-  tutorial.html            Article template                         (?slug=)
-  newb.css                 Tokens in :root; plain type scale
-shared/data.js             Filtering, sorting, pagination — shared by both versions
+  newc.js                  PLATFORM map (chip label, ref, blurb per category id) and ORDER (row order) at the top
+shared/data.js             Filtering, sorting, pagination
 data/
-  tutorials.js / .json     All 932 posts scraped from the live site (title, slug, cover, author, date,
+  tutorials.js / .json     All 933 posts scraped from the live site (title, slug, cover, author, date,
                            type, level, categories, audience, tags, views, likes, word count, has-video)
   taxonomy.js / .json      Category tree with IDs and counts, post types, levels
   articles.js / .json      Full HTML body + hardware list for 5 sample articles
+  cms-overrides.json       Prototype-only departures from the CMS (currently: RDK X5 posts hidden from Other Controllers)
   cytron-tutorials-export.xlsx  Spreadsheet export of every post (Tutorials · Summary · Notes sheets)
+dashboard/                 Category clean-up progress board (GitHub Pages + Google Sheet backend)
+tools/                     build_taxonomy.py → build_data.py → build_xlsx.py → build_dashboard.py (refresh pipeline)
 docs/                      Audit and these notes
 ```
 
@@ -74,7 +70,7 @@ Images are hot-linked from `static.cytron.io`; Google Fonts are used for the new
 ## Data note
 
 Category membership was captured from the live `/tutorial-search?categories=N` endpoint, so every
-count in the prototype is real (refreshed 17–18 Sep 2026: new RDK X5 and ZOOM:BIT categories, Robot Kits merged into Robotics). 37 posts have no category on the live site. There are no posts
+count in the prototype is real (refreshed 23 Sep 2026 — see the README for the taxonomy changes since the audit). 30 posts have no category on the live site. There are no posts
 tagged "Expert"; 78 have no skill level.
 
 One deliberate departure from the live data: RDK X5 posts are hidden from Other Controllers (and its children) so
@@ -86,7 +82,7 @@ page shows the real metadata and links back to the original.
 
 ## The problems the redesign fixes (from the audit)
 
-| # | Problem on the live page | What `/new` does |
+| # | Problem on the live page | What the redesign does |
 |---|---|---|
 | 1 | Filter sidebar is `hidden-xs` — **phones have no search or filters** | Filter bar is sticky and present at every width. On phones it collapses to search + a **Filters** bottom sheet. |
 | 2 | Mobile header overlaps the logo | Header collapses to a hamburger with search inside; no overflow. |
@@ -94,7 +90,7 @@ page shows the real metadata and links back to the original.
 | 4 | 930 posts, 62 pages, sequential paging is the only route in | **Browse by platform** shelf with live counts; category landing pages; sub-category chips. |
 | 5 | Filters apply only after clicking "Search"; no chips, no URL state | Filters apply instantly, show as removable chips with a result count, and are reflected in the URL (shareable, back-button safe). |
 | 6 | "Sort By" has one option | Latest · Most viewed · Most liked · Easiest first · Oldest · A–Z. View counts come from the article pages. |
-| 7 | Categories are product-named and deep | Platform tiles carry short blurbs and surface the sub-categories that have ≥3 posts; near-empty ones (rero 0, IRIV IOC 0, Teensy 1, Battle Robot 1) are folded away instead of listed. |
+| 7 | Categories are product-named and deep | Platform tiles carry short blurbs and surface the sub-categories that have ≥3 posts; near-empty ones (IRIV IOC 0, Battle Robot 1, ZOOM:BIT 1) are folded away instead of listed. |
 | 8 | Fixed 430px card with empty space | Card height follows content; 2-line excerpt clamp keeps rows even. |
 | 9 | Justified text | Left-aligned throughout, including inside article bodies. |
 | 10 | Cards show no category/tags | Card shows type, platform › sub-category (linked), views and read time. |

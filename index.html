@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cytron Tutorial Page — Current vs Redesign Options</title>
+<title>Cytron Tutorial Page — Current vs Redesign</title>
 <style>
   :root{--ink:#10233a;--ink-2:#48596b;--line:#dce4ea;--cyan:#0da9dd;--orange:#ff5516;--paper:#f5f8fa}
   *{box-sizing:border-box}
@@ -34,9 +34,9 @@
 </head>
 <body>
 <div class="bar">
-  <h1>Cytron Tutorial Page <small>current site mirrored beside three redesign options</small></h1>
-  <label>Left <select id="left"><option value="current">Current (mirror)</option><option value="new">Option A — hub</option><option value="new-b">Option B — RNT style</option><option value="new-c">Option C — merged</option></select></label>
-  <label>Right <select id="right"><option value="current">Current (mirror)</option><option value="new">Option A — hub</option><option value="new-b">Option B — RNT style</option><option value="new-c" selected>Option C — merged</option><option value="">— none (single) —</option></select></label>
+  <h1>Cytron Tutorial Page <small>current site mirrored beside the redesign</small></h1>
+  <label>Left <select id="left"><option value="current">Current (mirror)</option><option value="new-c">Redesign (Option C)</option></select></label>
+  <label>Right <select id="right"><option value="current">Current (mirror)</option><option value="new-c" selected>Redesign (Option C)</option><option value="">— none (single) —</option></select></label>
   <div class="seg" id="vp"><button data-w="desktop" class="on">Desktop</button><button data-w="tablet">Tablet</button><button data-w="mobile">Phone</button></div>
   <select id="page">
     <option value="home">Listing / home</option>
@@ -57,15 +57,15 @@
 </div>
 <script>
   const $=s=>document.querySelector(s);
-  const LABEL={current:'<b>Current</b> — mirror of my.cytron.io/tutorial',new:'<b class="a">Option A</b> — hub with filter bar and platform shelf','new-b':'<b class="b">Option B</b> — Random-Nerd-Tutorials style, board-first sections','new-c':'<b class="c">Option C</b> — A + B merged: filter bar, tiles, platform rows, modern surface'};
+  const LABEL={current:'<b>Current</b> — mirror of my.cytron.io/tutorial','new-c':'<b class="c">Redesign</b> — board chips, featured + latest, instant filter bar, one row per platform'};
   const PAGES={
-    home:{current:'index.html',new:'index.html','new-b':'index.html','new-c':'index.html'},
-    search:{current:'index.html?q=esp32',new:'index.html?q=esp32','new-b':'category.html?q=esp32','new-c':'index.html?q=esp32'},
+    home:{current:'index.html','new-c':'index.html'},
+    search:{current:'index.html?q=esp32','new-c':'index.html?q=esp32'},
     art1:{all:'tutorial.html?slug=esp32-smart-home-dashboard-with-real-time-sensor-data'},
     art2:{all:'tutorial.html?slug=mddrc5-500g-rc-sumo-rovation-2026'},
     art3:{all:'tutorial.html?slug=ai-animal-sound-detection-using-jetson-orin-nx'},
-    cat13:{current:'index.html?categories=13',new:'category.html?id=13','new-b':'category.html?id=13','new-c':'category.html?id=13'},
-    cat4:{current:'index.html?categories=4',new:'category.html?id=4','new-b':'category.html?id=4','new-c':'category.html?id=4'}
+    cat13:{current:'index.html?categories=13','new-c':'category.html?id=13'},
+    cat4:{current:'index.html?categories=4','new-c':'category.html?id=4'}
   };
   function url(v,p){const m=PAGES[p];return v+'/'+(m.all||m[v]);}
   function render(){
