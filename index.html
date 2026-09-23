@@ -40,6 +40,8 @@
   <div class="seg" id="vp"><button data-w="desktop" class="on">Desktop</button><button data-w="tablet">Tablet</button><button data-w="mobile">Phone</button></div>
   <select id="page">
     <option value="home">Listing / home</option>
+    <option value="first">First visit (Education / Industry popup)</option>
+    <option value="industry">Home — Industry view</option>
     <option value="search">Search: “esp32”</option>
     <option value="art1">Article: ESP32 Smart Home Dashboard</option>
     <option value="art2">Article: MDDRC5 success story</option>
@@ -60,6 +62,8 @@
   const LABEL={current:'<b>Current</b> — mirror of my.cytron.io/tutorial','new-c':'<b class="c">Redesign</b> — board chips, featured + latest, instant filter bar, one row per platform'};
   const PAGES={
     home:{current:'index.html','new-c':'index.html'},
+    first:{current:'index.html','new-c':'index.html?mode=reset'},
+    industry:{current:'index.html','new-c':'index.html?mode=industry'},
     search:{current:'index.html?q=esp32','new-c':'index.html?q=esp32'},
     art1:{all:'tutorial.html?slug=esp32-smart-home-dashboard-with-real-time-sensor-data'},
     art2:{all:'tutorial.html?slug=mddrc5-500g-rc-sumo-rovation-2026'},

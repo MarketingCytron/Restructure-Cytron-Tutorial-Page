@@ -23,8 +23,34 @@
     43: { ref: 'RDK', chip: 'RDK X5', title: 'RDK X5', blurb: 'D-Robotics RDK X5 AI board — ROS, computer vision and edge-AI robot builds.' },
     24: { ref: 'MSC', chip: 'News', title: 'News & events', blurb: 'News, seminars and workshops.' }
   };
-  const ORDER = [2, 1, 13, 19, 16, 28, 4, 7, 10, 27, 11, 43, 9, 24];
-  const HOME_ROWS = ORDER; // one row per platform on the home page, like Option B (archive-size order)
+  const ORDER = [2, 1, 13, 19, 16, 28, 4, 7, 10, 27, 11, 43, 9, 24];           // education / guest: archive-size order
+  const ORDER_INDUSTRY = [28, 27, 11, 43, 9, 13, 2, 1, 19, 16, 7, 10, 4, 24];  // industry: industrial platforms first
+  const rowOrder = () => AUD === 'industry' ? ORDER_INDUSTRY : ORDER;
+
+  /* ---------- audience (the "Personalize Your Cytron Experience" choice) ----------
+     The live site asks Education / Industry once and keeps it in the session; the tutorial page
+     ignores it today. Here the choice personalises the page without hiding anything:
+     industry visitors get industrial platforms first, an industry-led slider / latest / most-viewed,
+     and industry posts ranked first inside every row and result list. Stored per browser. */
+  const AUD_KEY = 'cy_audience';
+  let AUD = null;                         // 'education' | 'industry' | 'guest' | null (not asked yet)
+  try { AUD = localStorage.getItem(AUD_KEY) || null; } catch (e) { }
+  (function () {                          // ?mode=industry|education|guest|reset — for demos and the compare view
+    const m = qs('mode', ''); if (!m) return;
+    if (m === 'reset') { AUD = null; try { localStorage.removeItem(AUD_KEY); } catch (e) { } }
+    else if (['industry', 'education', 'guest'].includes(m)) setAudience(m, false);
+    history.replaceState(null, '', location.pathname + location.search.replace(/([?&])mode=[^&]*&?/, '$1').replace(/[?&]$/, ''));
+  })();
+  function setAudience(a, rerender) {
+    AUD = a; try { localStorage.setItem(AUD_KEY, a); } catch (e) { }
+    document.documentElement.setAttribute('data-audience', a);
+    if (rerender && currentRender) currentRender();
+  }
+  let currentRender = null;
+  const isInd = t => t.audience.includes('industry');
+  const bias = list => AUD === 'industry' ? list.filter(isInd).concat(list.filter(t => !isInd(t))) : list;   // stable: industry first
+  const audPool = () => AUD === 'industry' ? T.filter(isInd) : T;
+  document.documentElement.setAttribute('data-audience', AUD || 'unset');
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
   const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];
   const I = {
@@ -56,16 +82,18 @@
     ${dd('Community', ['micro:bit', 'Arduino/Maker Boards', 'Raspberry Pi', '3D Printing', 'Nvidia Jetson'])}
   </nav>
   <form class="search" action="${ROOT}/category.html" method="get" role="search"><input type="search" name="q" placeholder="Search ${fmtNum(T.length)} tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
+  <div class="aud-switch" role="group" aria-label="I am here for">${[['education', 'Education'], ['industry', 'Industry']].map(([a, l]) => `<button type="button" class="${AUD === a ? 'on' : ''}" data-aud="${a}" aria-pressed="${AUD === a}">${l}</button>`).join('')}</div>
   <a class="store" href="${LIVE}/">${I.cart} Store</a>
   <button class="burger" aria-label="Menu" aria-expanded="false" data-burger>${I.burger}</button>
   <details class="mnav" data-mnav><summary>Menu</summary>
     <form class="msearch" action="${ROOT}/category.html" method="get" role="search"><input type="search" name="q" placeholder="Search tutorials" aria-label="Search tutorials"><button type="submit" aria-label="Search">${I.search}</button></form>
-    <a href="${ROOT}/index.html">Tutorials</a>${ORDER.slice(0, 8).map(id => `<a href="${catHref(id)}">${PLATFORM[id].chip}</a>`).join('')}<a href="${ROOT}/category.html">All tutorials</a><a href="${LIVE}/">Store</a>
+    <div class="aud-switch m" role="group" aria-label="I am here for"><span>I'm here for</span>${[['education', 'Education'], ['industry', 'Industry']].map(([a, l]) => `<button type="button" class="${AUD === a ? 'on' : ''}" data-aud="${a}" aria-pressed="${AUD === a}">${l}</button>`).join('')}</div>
+    <a href="${ROOT}/index.html">Tutorials</a>${rowOrder().slice(0, 8).map(id => `<a href="${catHref(id)}">${PLATFORM[id].chip}</a>`).join('')}<a href="${ROOT}/category.html">All tutorials</a><a href="${LIVE}/">Store</a>
   </details>
 </div></header>
 <div class="boards"><div class="wrap"><ul>
   <li><a class="${active === 'home' ? 'on' : ''}" href="${ROOT}/index.html">Home</a></li>
-  ${ORDER.filter(id => id !== 24).map(id => `<li><a class="${active === id ? 'on' : ''}" href="${catHref(id)}">${PLATFORM[id].chip}<span class="n">${inCat(id).length}</span></a></li>`).join('')}
+  ${rowOrder().filter(id => id !== 24).map(id => `<li><a class="${active === id ? 'on' : ''}" href="${catHref(id)}">${PLATFORM[id].chip}<span class="n">${inCat(id).length}</span></a></li>`).join('')}
   <li><a class="${active === 'all' ? 'on' : ''}" href="${ROOT}/category.html">All<span class="n">${fmtNum(T.length)}</span></a></li>
 </ul></div></div>`;
   }
@@ -87,6 +115,25 @@
     const b = document.querySelector('[data-burger]'), m = document.querySelector('[data-mnav]');
     if (b && m) b.addEventListener('click', () => { m.open = !m.open; b.setAttribute('aria-expanded', String(m.open)); });
     document.addEventListener('click', e => { document.querySelectorAll('nav.main details[open], .fsel[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
+    document.querySelectorAll('[data-aud]').forEach(b => b.addEventListener('click', () => { if (AUD !== b.dataset.aud) setAudience(b.dataset.aud, true); }));
+    document.querySelectorAll('[data-welcome]').forEach(b => b.addEventListener('click', () => setAudience(b.dataset.welcome, true)));
+  }
+  /* first-visit dialog, modelled on the live site's "Let's Personalize Your Cytron Experience" */
+  function welcome() {
+    if (AUD) return '';
+    const edu = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>';
+    const ind = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V9l6 4V9l6 4V4h4v17z"/><path d="M7 17h2M11 17h2M15 17h2"/></svg>';
+    return `<div class="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-h"><div class="welcome-card">
+  <p class="eyebrow">Cytron</p>
+  <h2 id="welcome-h">Welcome! Let's personalize your Cytron experience</h2>
+  <p class="q">What type of project are you working on?</p>
+  <div class="choices">
+    <button type="button" class="choice" data-welcome="education">${edu}<b>Education</b><span>For students, teachers and makers</span></button>
+    <button type="button" class="choice ind" data-welcome="industry">${ind}<b>Industry / Enterprise</b><span>For engineers, business owners and professionals</span></button>
+  </div>
+  <p class="note">Don't worry — you can switch any time from the header.</p>
+  <button type="button" class="guest" data-welcome="guest">Continue as guest</button>
+</div></div>`;
   }
 
   /* quick actions on card thumbnails (prototype state: page only) */
@@ -128,16 +175,21 @@
     const kids = (catById[id].children || []).map(ch => ({ ch, n: inCat(ch.id).length })).filter(x => x.n >= 3);
     return `<section class="sec"><div class="wrap">
   <div class="sec-head"><div><h2>${esc(PLATFORM[id].title)}</h2><p>${esc(PLATFORM[id].blurb)}</p>${kids.length ? `<div class="sub">${kids.map(k => `<a href="${catHref(id, k.ch.id)}">${esc(k.ch.name)} · ${k.n}</a>`).join('')}</div>` : ''}</div><a class="viewall" href="${catHref(id)}">View all ${fmtNum(list.length)} →</a></div>
-  <div class="grid">${latest(list).slice(0, 4).map(card).join('')}</div>
+  <div class="grid">${bias(latest(list)).slice(0, 4).map(card).join('')}</div>
 </div></section>`;
   }
   function featured() {
     // B's slider: five most-viewed "getting started" guides, auto-rotating, with Read More »
-    let pool = T.filter(t => /getting started|get started|beginner'?s guide|introduction to/i.test(t.title) && (t.hero || t.cover));
-    pool = (HAS_VIEWS ? sort(pool, 'popular') : latest(pool)).slice(0, 5);
+    let pool;
+    if (AUD === 'industry') {           // industry: the most-read industrial guides
+      pool = (HAS_VIEWS ? sort(audPool().filter(t => t.hero || t.cover), 'popular') : latest(audPool())).slice(0, 5);
+    } else {
+      pool = T.filter(t => /getting started|get started|beginner'?s guide|introduction to/i.test(t.title) && (t.hero || t.cover));
+      pool = (HAS_VIEWS ? sort(pool, 'popular') : latest(pool)).slice(0, 5);
+    }
     if (pool.length < 3) pool = latest(T.filter(t => t.hero || t.cover)).slice(0, 5);
     return `<div class="featured slider" data-slider aria-roledescription="carousel">
-  ${pool.map((t, i) => { const pc = primaryCat(t); return `<div class="slide ${i === 0 ? 'on' : ''}" role="group" aria-label="${i + 1} of ${pool.length}"><img src="${esc(t.hero || t.cover)}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}<div class="cap"><span class="eyebrow">Featured guide${pc ? ` · ${esc(pc.parentId ? catById[pc.parentId].name : pc.name)}` : ''}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</span><h2><a href="${href(t)}">${esc(t.title)}</a></h2><p>${esc(t.excerpt || '')}</p><a class="btn" href="${href(t)}">Read More »</a></div></div>`; }).join('')}
+  ${pool.map((t, i) => { const pc = primaryCat(t); return `<div class="slide ${i === 0 ? 'on' : ''}" role="group" aria-label="${i + 1} of ${pool.length}"><img src="${esc(t.hero || t.cover)}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}<div class="cap"><span class="eyebrow">${AUD === 'industry' ? 'Featured for industry' : 'Featured guide'}${pc ? ` · ${esc(pc.parentId ? catById[pc.parentId].name : pc.name)}` : ''}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</span><h2><a href="${href(t)}">${esc(t.title)}</a></h2><p>${esc(t.excerpt || '')}</p><a class="btn" href="${href(t)}">Read More »</a></div></div>`; }).join('')}
   <button class="arrow prev" aria-label="Previous" data-prev>‹</button><button class="arrow next" aria-label="Next" data-next>›</button>
   <div class="dots">${pool.map((_, i) => `<button aria-label="Slide ${i + 1}" class="${i === 0 ? 'on' : ''}" data-dot="${i}"></button>`).join('')}</div>
 </div>`;
@@ -155,12 +207,14 @@
     auto();
   }
   function latestPanel() {
-    return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html">All tutorials →</a></div><ul>${latest(T).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
+    const ind = AUD === 'industry';
+    return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html${ind ? '?aud=industry' : ''}">${ind ? 'All industry tutorials →' : 'All tutorials →'}</a></div><ul>${latest(audPool()).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
   }
   function popularStrip() {
     if (!HAS_VIEWS) return '';
-    const top = sort(T.filter(t => t.type !== 'Success Stories'), 'popular').slice(0, 5);
-    return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>All-time favourites across the archive.</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular">See ranking →</a></div><div class="row">${top.map(mini).join('')}</div></div></section>`;
+    const ind = AUD === 'industry';
+    const top = sort(audPool().filter(t => t.type !== 'Success Stories'), 'popular').slice(0, 5);
+    return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>${ind ? 'Most read by engineers and integrators.' : 'All-time favourites across the archive.'}</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular${ind ? '&aud=industry' : ''}">See ranking →</a></div><div class="row">${top.map(mini).join('')}</div></div></section>`;
   }
   function band() {
     return `<section class="band"><div class="wrap"><div class="band-inner">
@@ -189,7 +243,7 @@
   const isFiltering = s => !!(s.q || s.cats.length || s.types.length || s.levels.length || s.aud.length);
   function run(s) {
     const scoped = s.cats.length ? s.cats : (s.fixedCat ? [s.fixedCat] : []);
-    return sort(filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud }), s.sort);
+    return bias(sort(filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud }), s.sort));
   }
   function filterbar(s, list) {
     const all = s.fixedCat ? inCat(s.fixedCat) : T;
@@ -281,19 +335,22 @@
       history.replaceState(null, '', location.pathname + (toQuery(s) ? '?' + toQuery(s) : ''));
       const pos = keepFocus ? document.querySelector('[data-q]')?.selectionStart : null;
       app.innerHTML = header('home') + `
-${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(T.length)} electronics and digital-making guides</h1>` : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">Step-by-step builds for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`}
+${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(T.length)} electronics and digital-making guides</h1>` : (AUD === 'industry'
+  ? `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron · Industry view</p><h1>Tutorials for <em>industry</em></h1><p class="lead">Step-by-step guides for IRIV controllers, Raspberry Pi and edge AI on the factory floor — with the full maker archive one click away.</p></div></section>`
+  : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">Step-by-step builds for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`)}
 ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${featured()}${latestPanel()}</div>
 </div></section>`}` +
         filterbar(s, list) +
         (f ? resultsBlock(s, list, 'Results') :
           popularStrip() +
-          HOME_ROWS.map(platformRow).join('') +
-          band() +
-          `<div style="height:30px"></div>`) + footer();
+          rowOrder().map(platformRow).join('') +
+          (AUD === 'industry' ? '' : band()) +
+          `<div style="height:30px"></div>`) + footer() + welcome();
       document.title = f ? 'Search · Cytron Tutorials' : 'Cytron Tutorials — Learn Raspberry Pi, Arduino, ESP32, micro:bit and more';
       wireHeader(); wireFilters(s, draw); wireSlider();
       if (keepFocus) { const q = document.querySelector('[data-q]'); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) { } }
     };
+    currentRender = () => draw();
     draw();
   }
 
@@ -322,13 +379,14 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
   <div>${resultsBlock(s, list, esc(title), true).replace('<div class="wrap">', '<div>')}</div>
   <aside class="side">
     ${HAS_VIEWS ? `<div class="panel"><h4>Most viewed${c ? ' here' : ''}</h4><ul>${sort(all, 'popular').slice(0, 5).map(t => `<li><a href="${href(t)}">${esc(t.title)}</a><small>${fmtNum(t.views)} views</small></li>`).join('')}</ul></div>` : ''}
-    <div class="panel"><h4>Browse by platform</h4><ul class="cats">${ORDER.map(x => ({ x, n: inCat(x).length })).filter(o => o.n).map(({ x, n }) => `<li><a href="${catHref(x)}" ${x === id ? 'style="color:var(--cyan-ink)"' : ''}>${esc(PLATFORM[x].title)}</a><span>${n}</span></li>`).join('')}</ul></div>
+    <div class="panel"><h4>Browse by platform</h4><ul class="cats">${rowOrder().map(x => ({ x, n: inCat(x).length })).filter(o => o.n).map(({ x, n }) => `<li><a href="${catHref(x)}" ${x === id ? 'style="color:var(--cyan-ink)"' : ''}>${esc(PLATFORM[x].title)}</a><span>${n}</span></li>`).join('')}</ul></div>
   </aside>
-</div>` + footer();
+</div>` + footer() + welcome();
       document.title = `${title} · Cytron Tutorials`;
       wireHeader(); wireFilters(s, draw);
       if (keepFocus) { const q = document.querySelector('[data-q]'); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) { } }
     };
+    currentRender = () => draw();
     draw();
   }
 
@@ -364,7 +422,8 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     ${parent ? `<div class="panel"><h4>More in ${esc(parent.name)}</h4><ul>${sort(inCat(parent.id).filter(x => x !== t), HAS_VIEWS ? 'popular' : 'latest').slice(0, 5).map(x => `<li><a href="${href(x)}">${esc(x.title)}</a>${x.views != null ? `<small>${fmtNum(x.views)} views</small>` : ''}</li>`).join('')}</ul><a class="viewall" style="margin-top:14px;width:100%;justify-content:center" href="${catHref(parent.id)}">View all →</a></div>` : ''}
   </aside>
 </div>
-${related.length ? `<section class="related"><div class="wrap"><h2>Related in ${esc(parent.name)}</h2><div class="grid">${related.map(card).join('')}</div></div></section>` : ''}` + footer();
+${related.length ? `<section class="related"><div class="wrap"><h2>Related in ${esc(parent.name)}</h2><div class="grid">${related.map(card).join('')}</div></div></section>` : ''}` + footer() + welcome();
+    currentRender = renderDetail;
     wireHeader();
     // article actions (prototype: state lives in the page only)
     const like = app.querySelector('[data-like]'), n = app.querySelector('[data-like-n]');

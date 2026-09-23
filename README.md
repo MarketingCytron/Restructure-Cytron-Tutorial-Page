@@ -11,6 +11,15 @@ hero, an instant filter bar (search · level · type · platform · sort, URL-ba
 of four posts per platform, rich cards with Like/Bookmark on hover, and an article layout with a sticky rail
 (TOC, hardware list, tags, more in platform). White ground, soft shadows, sentence-case Barlow Condensed headings.
 
+**Education / Industry personalisation (23 Sep 2026).** Like the live site, the redesign asks first-time visitors
+*"What type of project are you working on?"* — Education, Industry / Enterprise, or continue as guest. On the live
+site that choice only changes the store; here it personalises the tutorial page without hiding anything: an
+Industry visitor gets the industrial platforms (Industry, Raspberry Pi in Industry, NVIDIA Jetson, RDK X5, AI)
+first, an industry-led featured slider, Latest Posts and Most viewed, and industry posts ranked first inside every
+row and result list. Education and guest keep the maker-first layout. The choice is remembered in the browser and
+can be switched any time from the Education / Industry toggle in the header. For demos: `new-c/index.html?mode=reset`
+shows the popup again, `?mode=industry` / `?mode=education` forces a view.
+
 Two earlier explorations — Option A (hub + filter bar) and Option B (Random-Nerd-Tutorials style) — were merged
 into C and removed from the repo on 23 Sep 2026; they remain in the git history (`git log -- new new-b`) and are
 described in `docs/redesign-notes.md`.

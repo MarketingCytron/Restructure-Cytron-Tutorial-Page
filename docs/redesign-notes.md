@@ -129,6 +129,26 @@ Defined once in `new/new.css` under `:root`:
 - **Radii / shadow** — 12px cards, 8px controls, one soft shadow token.
 - Keyboard focus is visible everywhere; `prefers-reduced-motion` disables transitions.
 
+## Audience personalisation (Education / Industry)
+
+The live site's first-visit dialog stores the visitor's choice in the server session (`common/home/personalizeExp`)
+and switches the store; the tutorial listing ignores it. The redesign keeps the dialog (same three choices) and
+uses the answer as a **ranking signal, never a filter**:
+
+| | Education / guest | Industry |
+|---|---|---|
+| Platform rows and board chips | archive-size order | Industry · Raspberry Pi in Industry · NVIDIA Jetson · RDK X5 · AI first, then the rest |
+| Featured slider | most-viewed getting-started guides | most-viewed industry-flagged posts |
+| Latest Posts / Most viewed | whole archive | industry-flagged posts (link goes to `category.html?aud=industry`) |
+| Inside each row and every result list | latest / chosen sort | industry-flagged posts first, then the same order |
+| Title block | "Tutorials for digital makers" | "Tutorials for industry" |
+| Kits & programs band | shown | hidden |
+
+Every tutorial stays reachable in both views. The audience flag per post comes from the live `post_type=education|industry`
+filter (820 / 111 posts). State: `localStorage.cy_audience` (`education` · `industry` · `guest`), `<html data-audience>`
+for styling, header toggle to switch, `?mode=` query for demos. In production the same rule set would read the
+existing session context instead.
+
 ## Behaviour worth carrying into the real build
 
 - Search matches title, excerpt, tags and author; 220ms debounce.
