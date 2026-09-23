@@ -16,8 +16,9 @@ of four posts per platform, rich cards with Like/Bookmark on hover, and an artic
 site that choice only changes the store; here it personalises the tutorial page without hiding anything: an
 Industry visitor gets the industrial platforms (Industry, Raspberry Pi in Industry, NVIDIA Jetson, RDK X5, AI)
 first, an industry-led featured slider, Latest Posts and Most viewed, and industry posts ranked first inside every
-row and result list. Education and guest keep the maker-first layout. The choice is remembered in the browser and
-can be switched any time from the Education / Industry toggle in the header. For demos: `new-c/index.html?mode=reset`
+row and result list. Education and guest keep the maker-first layout. The dialog appears once, on the home page only; the choice is remembered in the browser (and carried
+between pages even when the files are opened from disk) and can be switched any time from the Education / Industry
+toggle in the header. For demos: `new-c/index.html?mode=reset`
 shows the popup again, `?mode=industry` / `?mode=education` forces a view.
 
 Two earlier explorations — Option A (hub + filter bar) and Option B (Random-Nerd-Tutorials style) — were merged

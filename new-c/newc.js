@@ -34,15 +34,21 @@
      and industry posts ranked first inside every row and result list. Stored per browser. */
   const AUD_KEY = 'cy_audience';
   let AUD = null;                         // 'education' | 'industry' | 'guest' | null (not asked yet)
+  // Stored in localStorage; mirrored in window.name so it also survives page-to-page navigation when the
+  // prototype is opened from disk (file:// pages do not share localStorage in every browser).
+  const readName = () => { try { const m = /cy_audience=(\w+)/.exec(window.name || ''); return m ? m[1] : null; } catch (e) { return null; } };
+  const writeName = a => { try { window.name = (window.name || '').replace(/cy_audience=\w+;?/, '') + `cy_audience=${a};`; } catch (e) { } };
   try { AUD = localStorage.getItem(AUD_KEY) || null; } catch (e) { }
+  if (!AUD) AUD = readName();
+  if (AUD && !['education', 'industry', 'guest'].includes(AUD)) AUD = null;
   (function () {                          // ?mode=industry|education|guest|reset — for demos and the compare view
     const m = qs('mode', ''); if (!m) return;
-    if (m === 'reset') { AUD = null; try { localStorage.removeItem(AUD_KEY); } catch (e) { } }
+    if (m === 'reset') { AUD = null; try { localStorage.removeItem(AUD_KEY); } catch (e) { } try { window.name = (window.name || '').replace(/cy_audience=\w+;?/, ''); } catch (e) { } }
     else if (['industry', 'education', 'guest'].includes(m)) setAudience(m, false);
     history.replaceState(null, '', location.pathname + location.search.replace(/([?&])mode=[^&]*&?/, '$1').replace(/[?&]$/, ''));
   })();
   function setAudience(a, rerender) {
-    AUD = a; try { localStorage.setItem(AUD_KEY, a); } catch (e) { }
+    AUD = a; try { localStorage.setItem(AUD_KEY, a); } catch (e) { } writeName(a);
     document.documentElement.setAttribute('data-audience', a);
     if (rerender && currentRender) currentRender();
   }
@@ -119,8 +125,8 @@
     document.querySelectorAll('[data-welcome]').forEach(b => b.addEventListener('click', () => setAudience(b.dataset.welcome, true)));
   }
   /* first-visit dialog, modelled on the live site's "Let's Personalize Your Cytron Experience" */
-  function welcome() {
-    if (AUD) return '';
+  function welcome(page) {
+    if (AUD || page !== 'home') return '';   // asked once, on the starting page only
     const edu = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg>';
     const ind = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V9l6 4V9l6 4V4h4v17z"/><path d="M7 17h2M11 17h2M15 17h2"/></svg>';
     return `<div class="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-h"><div class="welcome-card">
@@ -345,7 +351,7 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
           popularStrip() +
           rowOrder().map(platformRow).join('') +
           (AUD === 'industry' ? '' : band()) +
-          `<div style="height:30px"></div>`) + footer() + welcome();
+          `<div style="height:30px"></div>`) + footer() + welcome('home');
       document.title = f ? 'Search · Cytron Tutorials' : 'Cytron Tutorials — Learn Raspberry Pi, Arduino, ESP32, micro:bit and more';
       wireHeader(); wireFilters(s, draw); wireSlider();
       if (keepFocus) { const q = document.querySelector('[data-q]'); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) { } }
@@ -381,7 +387,7 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     ${HAS_VIEWS ? `<div class="panel"><h4>Most viewed${c ? ' here' : ''}</h4><ul>${sort(all, 'popular').slice(0, 5).map(t => `<li><a href="${href(t)}">${esc(t.title)}</a><small>${fmtNum(t.views)} views</small></li>`).join('')}</ul></div>` : ''}
     <div class="panel"><h4>Browse by platform</h4><ul class="cats">${rowOrder().map(x => ({ x, n: inCat(x).length })).filter(o => o.n).map(({ x, n }) => `<li><a href="${catHref(x)}" ${x === id ? 'style="color:var(--cyan-ink)"' : ''}>${esc(PLATFORM[x].title)}</a><span>${n}</span></li>`).join('')}</ul></div>
   </aside>
-</div>` + footer() + welcome();
+</div>` + footer();
       document.title = `${title} · Cytron Tutorials`;
       wireHeader(); wireFilters(s, draw);
       if (keepFocus) { const q = document.querySelector('[data-q]'); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) { } }
@@ -422,7 +428,7 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     ${parent ? `<div class="panel"><h4>More in ${esc(parent.name)}</h4><ul>${sort(inCat(parent.id).filter(x => x !== t), HAS_VIEWS ? 'popular' : 'latest').slice(0, 5).map(x => `<li><a href="${href(x)}">${esc(x.title)}</a>${x.views != null ? `<small>${fmtNum(x.views)} views</small>` : ''}</li>`).join('')}</ul><a class="viewall" style="margin-top:14px;width:100%;justify-content:center" href="${catHref(parent.id)}">View all →</a></div>` : ''}
   </aside>
 </div>
-${related.length ? `<section class="related"><div class="wrap"><h2>Related in ${esc(parent.name)}</h2><div class="grid">${related.map(card).join('')}</div></div></section>` : ''}` + footer() + welcome();
+${related.length ? `<section class="related"><div class="wrap"><h2>Related in ${esc(parent.name)}</h2><div class="grid">${related.map(card).join('')}</div></div></section>` : ''}` + footer();
     currentRender = renderDetail;
     wireHeader();
     // article actions (prototype: state lives in the page only)
