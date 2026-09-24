@@ -1,7 +1,7 @@
 /* /new-c — Option C: A + B merged. Static, client-rendered from ../data/*.js.
    Pages: index.html (home), category.html?id=N, tutorial.html?slug=S */
 (function () {
-  const { T, TAX, ARTICLES, esc, qs, qsAll, catById, bySlug, filter, sort, paginate, fmtNum, readTime } = window.CY;
+  const { T, PARTS, SERIES, seriesOf, TAX, ARTICLES, esc, qs, qsAll, catById, bySlug, filter, sort, paginate, fmtNum, readTime } = window.CY;
   const ROOT = document.documentElement.getAttribute('data-root') || '.';
   const LIVE = 'https://my.cytron.io';
   const PER = 20;
@@ -97,8 +97,11 @@
     cart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>',
     heart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
     bookmark: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
-    share: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
+    share: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
+    stack: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 6h16M4 12h16M4 18h10"/></svg>'
   };
+  const isSeries = t => !!(t && t.series && t.part === 0 && SERIES[t.series]);
+  const seriesBadge = t => isSeries(t) ? `<span class="ser">${I.stack} Series · ${t.parts} parts</span>` : '';
   const latest = l => sort(l, 'latest');
   const countIn = (list, p) => list.reduce((n, t) => n + (p(t) ? 1 : 0), 0);
   const href = t => `${ROOT}/tutorial.html?slug=${encodeURIComponent(t.slug)}`;
@@ -189,7 +192,7 @@
     const pc = primaryCat(t);
     const nums = [t.views != null ? `${fmtNum(t.views)} views` : '', t.words ? readTime(t.words) : ''].filter(Boolean);
     return `<article class="card">
-  <div class="cover"><a href="${href(t)}" tabindex="-1" aria-hidden="true">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}</a>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}
+  <div class="cover"><a href="${href(t)}" tabindex="-1" aria-hidden="true">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}</a>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}${seriesBadge(t)}
     <div class="quick"><button type="button" class="qa" data-qlike="${t.id}" aria-pressed="${liked.has(t.id)}" aria-label="Like ${esc(t.title)}">${I.heart}<span>${(t.likes ?? 0) + (liked.has(t.id) ? 1 : 0)}</span></button><button type="button" class="qa" data-qbookmark="${t.id}" aria-pressed="${saved.has(t.id)}" aria-label="Bookmark ${esc(t.title)}">${I.bookmark}</button></div>
   </div>
   <div class="body">
@@ -227,6 +230,18 @@
 </div></div></section>`;
   }
   const storiesHref = () => `${ROOT}/category.html?type=${encodeURIComponent('Success Stories')}`;
+  const seriesHref = () => `${ROOT}/category.html?series=1`;
+  function seriesStrip() {
+    const list = sort(SCOPE().filter(isSeries), HAS_VIEWS ? 'popular' : 'latest');
+    if (!list.length) return '';
+    const top = list.slice(0, 4);
+    return `<section class="sec series-strip"><div class="wrap">
+  <div class="sec-head"><div><h2>Step-by-step series</h2><p>${fmtNum(list.length)} multi-part guides — start at part 1 and work through in order.</p></div><a class="viewall" href="${seriesHref()}">All ${fmtNum(list.length)} series →</a></div>
+  <div class="series-row">${top.map(t => { const S = seriesOf(t); const parts = S ? S.parts : [t]; return `<a class="series-card" href="${href(t)}">
+    <span class="cover">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}<span class="ser">${I.stack} ${parts.length} parts</span></span>
+    <span class="body"><b>${esc(t.title)}</b><ol>${parts.slice(0, 4).map(p => `<li>${esc(p.title)}</li>`).join('')}${parts.length > 4 ? `<li class="more">+ ${parts.length - 4} more</li>` : ''}</ol></span></a>`; }).join('')}</div>
+</div></section>`;
+  }
   function successSection() {
     const all = SCOPE().filter(t => t.type === 'Success Stories');
     const list = latest(all.filter(t => !t.categories.includes(IND_WORKSHOP)));   // workshops already have their own band
@@ -296,7 +311,7 @@
 
   /* ---------- filter bar (A) ---------- */
   function readState(fixed) {
-    return Object.assign({ q: qs('q', ''), cats: qsAll('cat').map(Number).filter(Boolean), types: qsAll('type'), levels: qsAll('level'), aud: qsAll('aud'), sort: qs('sort', 'latest'), page: parseInt(qs('page', '1'), 10) || 1 }, fixed || {});
+    return Object.assign({ q: qs('q', ''), cats: qsAll('cat').map(Number).filter(Boolean), types: qsAll('type'), levels: qsAll('level'), aud: qsAll('aud'), sort: qs('sort', 'latest'), page: parseInt(qs('page', '1'), 10) || 1, series: qs('series', '') === '1' }, fixed || {});
   }
   function toQuery(s, page) {
     const p = new URLSearchParams();
@@ -307,13 +322,15 @@
     if (s.levels.length) p.set('level', s.levels.join(','));
     if (s.aud.length) p.set('aud', s.aud.join(','));
     if (s.sort && s.sort !== 'latest') p.set('sort', s.sort);
+    if (s.series) p.set('series', '1');
     const pg = page == null ? s.page : page; if (pg > 1) p.set('page', pg);
     return p.toString();
   }
   const isFiltering = s => !!(s.q || s.cats.length || s.types.length || s.levels.length || s.aud.length);
   function run(s) {
     const scoped = s.cats.length ? s.cats : (s.fixedCat ? [s.fixedCat] : []);
-    return sort(filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud.length ? s.aud : scopeAud() }), s.sort);
+    const list = filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud.length ? s.aud : scopeAud() });
+    return sort(s.series ? list.filter(isSeries) : list, s.sort);
   }
   function filterbar(s, list) {
     const all = s.fixedCat ? inCat(s.fixedCat) : SCOPE();
@@ -412,7 +429,7 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
 </div></section>`}` +
         filterbar(s, list) +
         (f ? resultsBlock(s, list, 'Results') :
-          popularStrip() +
+          popularStrip() + seriesStrip() +
           (AUD === 'industry' ? industrySections().map(sectionRow).join('') : rowOrder().map(platformRow).join('')) +
           (AUD === 'industry' ? '' : band()) +
           `<div style="height:30px"></div>`) + footer() + welcome('home');
@@ -434,13 +451,13 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
       history.replaceState(null, '', location.pathname + (toQuery(s) ? '?' + toQuery(s) : ''));
       const all = c ? inCat(id) : SCOPE();
       const kids = c ? (c.children || []).map(ch => ({ ch, n: inCat(ch.id).length })).filter(x => x.n > 0) : [];
-      const title = c ? (s.cats.length === 1 ? catById[s.cats[0]].name : PLATFORM[id]?.title || c.name) : (s.q ? `Search: “${s.q}”` : 'All tutorials');
+      const title = c ? (s.cats.length === 1 ? catById[s.cats[0]].name : PLATFORM[id]?.title || c.name) : (s.q ? `Search: “${s.q}”` : s.series ? 'Step-by-step series' : 'All tutorials');
       const pos = keepFocus ? document.querySelector('[data-q]')?.selectionStart : null;
       app.innerHTML = header(c ? (s.cats.length === 1 ? { sub: s.cats[0], id } : id) : (s.types.length === 1 && s.types[0] === 'Success Stories' && !s.q ? 'stories' : 'all')) + `
 <section class="cat-hero"><div class="wrap">
   <ul class="crumbs"><li><a href="${ROOT}/index.html">Tutorials</a></li>${c ? `<li>${esc(c.name)}</li>` : `<li>${s.q ? 'Search' : 'All'}</li>`}</ul>
   ${c ? `<span class="ref">${PLATFORM[id]?.ref || 'CAT'} · PLATFORM</span>` : ''}
-  <h1>${esc(c ? PLATFORM[id]?.title || c.name : (s.q ? `“${s.q}”` : 'All tutorials'))}</h1>
+  <h1>${esc(c ? PLATFORM[id]?.title || c.name : (s.q ? `“${s.q}”` : s.series ? 'Step-by-step series' : 'All tutorials'))}</h1>
   <p>${c ? esc(PLATFORM[id]?.blurb || '') + ' ' : ''}<span class="mono">${fmtNum(all.length)} posts${c ? ' in this platform' : ' in the archive'}${scopeNote()}.</span></p>
   ${kids.length ? `<div class="subs"><a class="${!s.cats.length ? 'on' : ''}" href="?id=${id}" data-sub="">All<small>${all.length}</small></a>${kids.map(k => `<a class="${s.cats.includes(k.ch.id) ? 'on' : ''}" href="?id=${id}&cat=${k.ch.id}" data-sub="${k.ch.id}">${esc(k.ch.name)}<small>${k.n}</small></a>`).join('')}</div>` : ''}
 </div></section>` +
@@ -471,23 +488,25 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     if (!t) { app.innerHTML = header() + `<div class="wrap" style="padding:40px 24px"><h1>Tutorial not found</h1><p><a href="${ROOT}/index.html">Back to tutorials</a></p></div>` + footer(); wireHeader(); return; }
     document.title = `${t.title} · Cytron Tutorials`;
     const art = ARTICLES[slug]; const pc = primaryCat(t); const parent = pc ? (pc.parentId ? catById[pc.parentId] : pc) : null;
-    const idx = T.indexOf(t); const newer = T[idx - 1], older = T[idx + 1];
-    let body = art ? fixLinks(art.body) : `<div class="notice"><strong>Body not mirrored in this prototype.</strong> Five sample articles carry their full text; every other post has its real title, cover, author, level, categories, tags and view count. <a href="${LIVE}/tutorial/${esc(slug)}" target="_blank" rel="noopener">Read the original on my.cytron.io ↗</a></div><h2>Introduction</h2><p>${esc(t.excerpt || '')}</p>`;
+    const S = seriesOf(t); const pos = S ? S.parts.indexOf(t) : -1;
+    const idx = T.indexOf(t); const newer = S ? S.parts[pos + 1] : T[idx - 1], older = S ? S.parts[pos - 1] : T[idx + 1];
+    let body = art ? fixLinks(art.body) : `<div class="notice"><strong>Body not mirrored in this prototype.</strong> Five sample articles carry their full text; every other post has its real title, cover, author, level, categories, tags and view count. <a href="${LIVE}/tutorial/${esc(slug)}" target="_blank" rel="noopener">Read the original on my.cytron.io ↗</a></div>${t.listed === false ? '' : '<h2>Introduction</h2>'}<p>${esc(t.excerpt || '')}</p>`;
     const toc = []; body = body.replace(/<h2>(.*?)<\/h2>/g, (m, txt) => { const id = 'h-' + toc.length + '-' + txt.replace(/<[^>]+>/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); toc.push([id, txt.replace(/<[^>]+>/g, '')]); return `<h2 id="${id}">${txt}</h2>`; });
     const related = parent ? sort(SCOPE().filter(x => x !== t && x.categories.some(id => id === parent.id || catById[id]?.parentId === parent.id)), HAS_VIEWS ? 'popular' : 'latest').slice(0, 4) : [];
     app.innerHTML = header(parent ? parent.id : null) + `
-<div class="wrap"><ul class="crumbs"><li><a href="${ROOT}/index.html">Tutorials</a></li>${parent ? `<li><a href="${catHref(parent.id)}">${esc(parent.name)}</a></li>` : ''}${pc && pc.parentId ? `<li><a href="${catHref(parent.id, pc.id)}">${esc(pc.name)}</a></li>` : ''}<li>${esc(t.title)}</li></ul></div>
+<div class="wrap"><ul class="crumbs"><li><a href="${ROOT}/index.html">Tutorials</a></li>${parent ? `<li><a href="${catHref(parent.id)}">${esc(parent.name)}</a></li>` : ''}${pc && pc.parentId ? `<li><a href="${catHref(parent.id, pc.id)}">${esc(pc.name)}</a></li>` : ''}${S && pos > 0 ? `<li><a href="${href(S.parts[0])}">${esc(S.title)}</a></li>` : ''}<li>${esc(t.title)}</li></ul></div>
 <div class="wrap article-wrap">
   <article class="article">
-    <div class="kind"><span class="type">${esc(TYPE_LABEL[t.type] || t.type || 'Post')}</span>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}</div>
+    <div class="kind"><span class="type">${esc(TYPE_LABEL[t.type] || t.type || 'Post')}</span>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}${S ? `<span class="ser inline">${I.stack} ${pos === 0 ? 'Series' : `Part ${pos + 1} of ${S.parts.length}`}</span>` : ''}</div>
     <h1>${esc(t.title)}</h1>
     <div class="byline"><span>By <b>${esc(t.author || '')}</b></span><span>${esc(t.date || '')}</span>${t.views != null ? `<span class="mono">${fmtNum(t.views)} views</span>` : ''}${t.words ? `<span class="mono">${readTime(t.words)}</span>` : ''}
       <div class="actions"><button type="button" class="act" data-like aria-pressed="false" aria-label="Like">${I.heart}<span data-like-n>${t.likes ?? 0}</span></button><button type="button" class="act" data-bookmark aria-pressed="false" aria-label="Bookmark">${I.bookmark}</button><button type="button" class="act" data-share aria-label="Share">${I.share}<span class="tip" data-share-tip hidden>Link copied</span></button></div></div>
     ${(art && art.hero) || t.hero ? `<img class="hero-img" src="${esc((art && art.hero) || t.hero)}" alt="">` : ''}
     <div class="prose">${body}</div>
-    <div class="prevnext">${older ? `<a href="${href(older)}"><small>‹ Older</small>${esc(older.title)}</a>` : '<span></span>'}${newer ? `<a class="next" href="${href(newer)}"><small>Newer ›</small>${esc(newer.title)}</a>` : ''}</div>
+    <div class="prevnext">${older ? `<a href="${href(older)}"><small>${S ? `‹ Part ${pos}` : '‹ Older'}</small>${esc(older.title)}</a>` : '<span></span>'}${newer ? `<a class="next" href="${href(newer)}"><small>${S ? `Part ${pos + 2} ›` : 'Newer ›'}</small>${esc(newer.title)}</a>` : ''}</div>
   </article>
   <aside class="side">
+    ${S ? `<div class="panel series-panel"><h4>In this series</h4><ol class="series-toc">${S.parts.map((p, i) => `<li class="${p === t ? 'on' : ''}"><a href="${href(p)}"><span class="n">${i + 1}</span><span>${esc(p.title)}</span></a></li>`).join('')}</ol></div>` : ''}
     ${toc.length > 1 ? `<div class="panel"><h4>On this page</h4><ul class="toc">${toc.map(([id, txt]) => `<li><a href="#${id}">${txt}</a></li>`).join('')}</ul></div>` : ''}
     ${art && art.products && art.products.length ? `<div class="panel"><h4>Hardware you'll need</h4><ul class="hw">${art.products.map(p => `<li><img loading="lazy" src="${esc(p.img)}" alt=""><div><a class="n" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><div class="p">${esc(p.price)}${p.oldPrice ? `<s>${esc(p.oldPrice)}</s>` : ''} · ${esc((p.qty || '').replace('x ', '×'))}${p.stock ? ` · ${esc(p.stock)}` : ''}</div></div></li>`).join('')}</ul><a class="btn btn-primary" style="width:100%;margin-top:14px" href="${LIVE}/" target="_blank" rel="noopener">Add all to cart</a></div>` : ''}
     ${(t.tags || []).length ? `<div class="panel"><h4>Tags</h4><div class="tagrow">${t.tags.map(tag => `<a href="${ROOT}/category.html?q=${encodeURIComponent(tag)}">${esc(tag)}</a>`).join('')}</div></div>` : ''}

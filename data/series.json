@@ -1,0 +1,978 @@
+{
+ "getting-started-freertos-esp32": {
+  "title": "Getting Started with FreeRTOS on ESP32",
+  "parts": [
+   "getting-started-freertos-esp32",
+   "getting-started-freertos-esp32-dual-core",
+   "getting-started-freertos-esp32-task-control"
+  ]
+ },
+ "getting-started-with-mddrc5": {
+  "title": "Getting Started with MDDRC5",
+  "parts": [
+   "getting-started-with-mddrc5",
+   "mddrc5-board-layout",
+   "mddrc5-operation",
+   "mddrc5-firmware-programming"
+  ]
+ },
+ "getting-started-with-maker-esp32": {
+  "title": "Getting Started with Maker ESP32",
+  "parts": [
+   "getting-started-with-maker-esp32",
+   "part-1-maker-esp32-hardware-overview",
+   "part-2-setting-up-the-maker-esp32-with-arduino-ide",
+   "part-3-exploring-the-maker-esp32-with-demo-code"
+  ]
+ },
+ "ai-grocery-receipt-analyzer-using-raspberry-pi": {
+  "title": "AI Grocery Receipt Analyzer Using Raspberry Pi",
+  "parts": [
+   "ai-grocery-receipt-analyzer-using-raspberry-pi",
+   "Dashboard-for-AI-Grocery-using-Antigravity"
+  ]
+ },
+ "real-time-object-detection-on-raspberry-pi-4": {
+  "title": "Real-Time Object Detection on Raspberry Pi 4",
+  "parts": [
+   "real-time-object-detection-on-raspberry-pi-4",
+   "part-1-object-detection-on-raspberry-pi-4-with-usb-camera",
+   "part-2-object-detection-on-raspberry-pi-4-with-ai-camera-(sony-imx500)",
+   "part-3-troubleshooting--conclusion"
+  ]
+ },
+ "milesight-beaveriot-quick-start-guide-smarthub": {
+  "title": "Milesight-BeaverIoT Quick Start Guide",
+  "parts": [
+   "milesight-beaveriot-quick-start-guide-smarthub",
+   "part-1-milesight-node-setup-em320-th",
+   "part-2-milesight-gateway-setup-ug65",
+   "part-3-beaveriot--iriv-smarthub-cm"
+  ]
+ },
+ "edupico_with_huskylens": {
+  "title": "AI HuskyLens With EDU PICO V2 : Step-by-Step Guide",
+  "parts": [
+   "edupico_with_huskylens",
+   "huskylens_edupico_chapter_1",
+   "huskylens_edupico_chapter_2",
+   "huskylens-edupico-chapter-3",
+   "huskylens-edupico-chapter-5"
+  ]
+ },
+ "getting-started-with-imd16": {
+  "title": "Getting Started with iMD16 (No Code Setup)",
+  "parts": [
+   "getting-started-with-imd16",
+   "getting-started-with-imd16-with-raspberry-pi"
+  ]
+ },
+ "real-time-plant-disease-detection-on-raspberry-pi-5": {
+  "title": "Real-Time Plant Disease Detection on Raspberry Pi 5",
+  "parts": [
+   "real-time-plant-disease-detection-on-raspberry-pi-5",
+   "part-1-setting-the-software-setup",
+   "part-2-building-the-project-main-file",
+   "part-3-web-application-execution-and-system-autostart",
+   "part-4-final-project-review"
+  ]
+ },
+ "custom-object-detection-on-iriv-edge-ai": {
+  "title": "Custom Object Detection on IRIV Edge AI",
+  "parts": [
+   "custom-object-detection-on-iriv-edge-ai",
+   "data-preparation",
+   "training-the-yolov8s-model",
+   "onnx-to-hef-conversion-options",
+   "onnx-to-hef-conversion",
+   "onnx-to-hef-conversion-using-codespace-in-github",
+   "custom-model-deployment"
+  ]
+ },
+ "getting-started-with-iriv-ioc-mqtt-gateway": {
+  "title": "Getting Started with IRIV-IOC MQTT Gateway",
+  "parts": [
+   "getting-started-with-iriv-ioc-mqtt-gateway",
+   "configuring-the-mqtt-broker-connection",
+   "configuring-io-channels",
+   "field-bus-rs485modbus-rtu",
+   "diagnostic--system-settings",
+   "factory-reset-and-firmware-update-iriv-ioc-mqtt-gateway"
+  ]
+ },
+ "rdk-x5-mission-ready-robotic-series": {
+  "title": "RDK X5 Mission Ready Robotic Series",
+  "parts": [
+   "rdk-x5-mission-ready-robotic-series",
+   "rdk-x5-robot-kit-with-maker-line",
+   "rdk-x5-robot-kit-with-robo-grip-mini"
+  ]
+ },
+ "utilizing-atecc608b-authentication-chip-on-iriv-picontrol": {
+  "title": "Utilizing ATECC608B Authentication Chip on IRIV PiControl",
+  "parts": [
+   "utilizing-atecc608b-authentication-chip-on-iriv-picontrol",
+   "hardware-boot-lock-securing-your-operating-system-on-iriv-picontrol",
+   "lock-node-red-flows-via-atecc608b-on-iriv-picontrol"
+  ]
+ },
+ "Setting_Up_OpenCV_on_Raspberry_Pi": {
+  "title": "Setting Up OpenCV on Raspberry Pi",
+  "parts": [
+   "Setting_Up_OpenCV_on_Raspberry_Pi",
+   "installing-opencv-on-raspberry-pi-4b",
+   "face-detection-on-pi-camera-image-using-opencv-python3-on-raspberry-pi",
+   "reading-qr-code-using-raspberry-pi-camera"
+  ]
+ },
+ "setting_up_4x4_keypad_with_raspberry_pi_series": {
+  "title": "Setting Up 4x4 Keypad with Raspberry Pi Series",
+  "parts": [
+   "setting_up_4x4_keypad_with_raspberry_pi_series",
+   "interface-4x4-keypad-with-raspberry-pi",
+   "raspberry-pi-telegram-keypad-password"
+  ]
+ },
+ "openclaw-advanced-configuration-guide": {
+  "title": "OpenClaw Advanced Configuration Guide",
+  "parts": [
+   "openclaw-advanced-configuration-guide",
+   "configure-web-tools",
+   "add-communication-channels"
+  ]
+ },
+ "Displaying_Text_on_Dot_Matrix_Using_Raspberry_Pi": {
+  "title": "Displaying Text on Dot Matrix Using Raspberry Pi",
+  "parts": [
+   "Displaying_Text_on_Dot_Matrix_Using_Raspberry_Pi",
+   "displaying-max7219-dot-matrix-using-raspberry-pi",
+   "displaying-telegram-message-dot-matrix-using-raspberry-pi",
+   "control-servo-and-display-sensors-reading-using-gui-on-raspberry-pi-2-2"
+  ]
+ },
+ "openclaw-bot-installation-and-setup-guide-for-nvid": {
+  "title": "OpenClaw Bot Installation and Setup Guide for NVIDIA Jetson Orin Nano and Orin NX",
+  "parts": [
+   "openclaw-bot-installation-and-setup-guide-for-nvid",
+   "OpenClaw-Bot-Installation-and-Setup-Guide-for-NVIDIA-Jetson-Orin-Nano",
+   "cloud-installation-deploying-openclaw-bot-using-cl"
+  ]
+ },
+ "getting-started-with-raspberry-pi-arduino-connection": {
+  "title": "Getting Started with Raspberry Pi - Arduino Connection",
+  "parts": [
+   "getting-started-with-raspberry-pi-arduino-connection",
+   "i2c_communication-raspberry-pi-arduino",
+   "i2c-raspberry-pi-arduino-reading-analog-signal",
+   "i2c-raspberry-pi-arduino-controlling-servo-motor"
+  ]
+ },
+ "modbus-configuration-tool-slave-id-and-baudrate-setup": {
+  "title": "Modbus Configuration Tool for Slave ID and Baudrate Setup",
+  "parts": [
+   "modbus-configuration-tool-slave-id-and-baudrate-setup",
+   "modbus-configuration-tool-for-iriv-picontrol",
+   "modbus-configuration-tool-for-iriv-io-controller"
+  ]
+ },
+ "raspberry-pi-ai-kit-custom-object-detection-with-h": {
+  "title": "Custom Object Detection on Raspberry Pi AI HAT with Hailo8L",
+  "parts": [
+   "raspberry-pi-ai-kit-custom-object-detection-with-h",
+   "raspberry-pi-ai-kit-training-models-with-google-co",
+   "raspberry-pi-ai-kit-onnx-to-hef-conversion",
+   "raspberry-pi-ai-kit-custom-model-deployment"
+  ]
+ },
+ "Getting_Started_with_Raspberry_Pi_and_Blynk": {
+  "title": "Getting Started with Raspberry Pi and Blynk",
+  "parts": [
+   "Getting_Started_with_Raspberry_Pi_and_Blynk",
+   "install-blynk-server-on-raspberry-pi",
+   "sending-blynk-notification-using-raspberry-pi-maker-phat",
+   "controlling-led-maker-phat-using-raspberry-pi-blynk",
+   "displaying-sensors-data-blynk-app-using-raspberry-pi"
+  ]
+ },
+ "running-manual-code-on-raspbot": {
+  "title": "Running Manual Code on Raspbot V2",
+  "parts": [
+   "running-manual-code-on-raspbot",
+   "disable-raspbot-auto-run-script-for-manual-control",
+   "how-to-setup-wi-fi-for-raspbot",
+   "program-ai-vision-on-raspbot"
+  ]
+ },
+ "robo-grip-mini-installation-guide": {
+  "title": "Robo Grip Mini Installation Guide",
+  "parts": [
+   "robo-grip-mini-installation-guide",
+   "robo-grip-mini-installation-guide-using-1-servo-motor",
+   "robo-grip-mini-installation-guide-using-2-servo-motor",
+   "robo-grip-mini-installation-guide-using-3-servo-motor"
+  ]
+ },
+ "rdk-x5-vision-based-robotic-series": {
+  "title": "RDK X5 Vision-Based Robotic Series",
+  "parts": [
+   "rdk-x5-vision-based-robotic-series",
+   "differential-line-following-algorithm",
+   "hand-gesture-robot-control",
+   "object-tracking-using-color-segmentation"
+  ]
+ },
+ "mediapipe-alternative-in-trixie": {
+  "title": "MediaPipe Alternatives on Trixie: Body Skeleton Tracking — Part 1",
+  "parts": [
+   "mediapipe-alternative-in-trixie",
+   "MediaPipe-Alternatives-on-Trixie-Hand-Skeleton-Tracking"
+  ]
+ },
+ "4g-5g-internet-for-raspberry-Pi-Series": {
+  "title": "4G/5G Internet For Raspberry Pi Series",
+  "parts": [
+   "4g-5g-internet-for-raspberry-Pi-Series",
+   "part-1-ebd021-4g-lte-cellular-hat",
+   "part-2-ebd050-enhanced-5g-lte-cellular-hat",
+   "part-3-ebd070-5g-cellular-hat",
+   "part-4-raspberry-pi-sms-gateway-using-cellular-hat",
+   "part-5-stress-testing-in-remote-areas-using-cellular-hat"
+  ]
+ },
+ "getting-started-with-blender": {
+  "title": "Getting started with Blender: Navigation",
+  "parts": [
+   "getting-started-with-blender",
+   "getting-started-with-blender-part-two",
+   "getting-started-with-blender-part-three"
+  ]
+ },
+ "iriv-picontrol-to-io-controller-communication-via-modbus-tcp": {
+  "title": "IRIV PiControl to IO Controller Communication via Modbus TCP",
+  "parts": [
+   "iriv-picontrol-to-io-controller-communication-via-modbus-tcp",
+   "setting-up-hardware-for-modbus-tcp-communication",
+   "setting-up-iriv-picontrol-for-modbus-tcp-communication",
+   "setting-up-iriv-io-controller-for-modbus-tcp-communication",
+   "getting-started-with-node-red-flow"
+  ]
+ },
+ "chapter-1-setting-up-beetlebit-with-huskylens-2": {
+  "title": "Chapter 1: Setting Up Beetle:Bit with Huskylens 2",
+  "parts": [
+   "chapter-1-setting-up-beetlebit-with-huskylens-2",
+   "chapter-2-beetlebit-with-huskylens-2-hand-gesture",
+   "chapter-3-beetlebit-with-huskylens-2-optical-character",
+   "chapter-4-beetlebit-with-huskylens-2-pose-recognition",
+   "chapter-5-beetlebit-with-huskylens-2-face-emotion"
+  ]
+ },
+ "chapter-1-setting-up-edubit-with-teachable-machine-tm": {
+  "title": "Chapter 1: Setting Up EDU:BIT with Teachable Machine (TM)",
+  "parts": [
+   "chapter-1-setting-up-edubit-with-teachable-machine-tm",
+   "chapter-2-edubit-with-tm--smart-object-sorting-system",
+   "chapter-3-edubit-with-tm--face-recognition-door-system",
+   "chapter-4-edubit-with-tm-gesture-controlled-fan",
+   "chapter-5-edubit-with-tm-color-controlled-light-system",
+   "chapter-6-edubit-with-tm-color-controlled-light-sy"
+  ]
+ },
+ "getting-started-with-arduino-and-blynk": {
+  "title": "Getting Started with Arduino and Blynk",
+  "parts": [
+   "getting-started-with-arduino-and-blynk",
+   "arduino-blynk-lesson-1-led",
+   "arduino-blynk-lesson-2-notification",
+   "arduino-blynk-lesson-3-servo",
+   "arduino-blynk-lesson-4-timer"
+  ]
+ },
+ "irivpicontrol-adl400-powermeter-mysql-dashboardmonitor": {
+  "title": "IRIV PiControl - 3 Phase Power Meter Data Monitoring PART-1",
+  "parts": [
+   "irivpicontrol-adl400-powermeter-mysql-dashboardmonitor",
+   "irivpicontrol-adl400-powermeter-mysql-dashboardmonitor2"
+  ]
+ },
+ "getting-started-with-machine-learning-on-iriv-picontrol": {
+  "title": "Getting Started with Machine Learning on IRIV PiControl",
+  "parts": [
+   "getting-started-with-machine-learning-on-iriv-picontrol",
+   "introduction-to-machine-learning-concepts",
+   "setting-up-environment-for-ml-on-iriv-picontrol",
+   "collecting-data-with-iriv-picontrol",
+   "data-preprocessing-for-beginner",
+   "building-dashboard-with-ml-model",
+   "gaining-insights-from-the-ml-dashboard"
+  ]
+ },
+ "getting-started-with-cytron-motor-driver": {
+  "title": "Getting Started with Cytron Motor Driver",
+  "parts": [
+   "getting-started-with-cytron-motor-driver",
+   "md10c-arduino",
+   "mdds30-arduino",
+   "getting-started-md13s-with-arduino",
+   "mdd10a-maker-uno-dc-motor-control"
+  ]
+ },
+ "getting-started-with-ros-using-rdk-x5": {
+  "title": "Getting Started with ROS using RDK X5",
+  "parts": [
+   "getting-started-with-ros-using-rdk-x5",
+   "installing-ros-2-on-rdk-x5",
+   "mastering-ros-2-cli-tools",
+   "visualizing-robot-models-with-rviz2"
+  ]
+ },
+ "getting-started-with-arduino-installing-library": {
+  "title": "Getting Started with Arduino: Installing Library",
+  "parts": [
+   "getting-started-with-arduino-installing-library",
+   "method-1-installing-arduino-library-directly-from-arduino-ide",
+   "method-2-installing-arduino-library-manually-extract-and-drop",
+   "method-3-installing-arduino-library-by-winzip-file"
+  ]
+ },
+ "wavego-pi4-kit-tutorial": {
+  "title": "WAVEGO With RPi4 Assembly, Configure & Run Raspberry Pi",
+  "parts": [
+   "wavego-pi4-kit-tutorial",
+   "wavego-colors-tutorial",
+   "wavego-handshake-tutorial"
+  ]
+ },
+ "Yolov4-training-intro": {
+  "title": "Exploration of Yolov4 with IRIV EdgeAI CM5 in Custom Object Detection",
+  "parts": [
+   "Yolov4-training-intro",
+   "Yolov4-training",
+   "Yolov4-training-dataset"
+  ]
+ },
+ "startup-guide-to-yahboom-ros-robot-control-board": {
+  "title": "Startup Guide to Yahboom ROS Robot Control Board",
+  "parts": [
+   "startup-guide-to-yahboom-ros-robot-control-board",
+   "basic-python-control",
+   "servo-control-with-encoder-motor",
+   "face-tracking-with-rdk-camera-module-and-pan-tilt-servo"
+  ]
+ },
+ "getting-started-with-iriv-edgeai-cm5": {
+  "title": "Getting Started with IRIV EdgeAI CM5",
+  "parts": [
+   "getting-started-with-iriv-edgeai-cm5",
+   "how-to-access-iriv-edgeai-cm5",
+   "node-red-on-iriv-edgeai-cm5",
+   "ai-processor-on-iriv-edgeai-cm5",
+   "ai-computer-vision-on-iriv-edgeai-cm5",
+   "how-to-flash-os-into-iriv-edgeai-cm5"
+  ]
+ },
+ "IRIV-node-red-Agriculture-Box-tutorial": {
+  "title": "IRIV PiControl - Setting-Up Dashboard of IRIV Agribox Agriculture Kit",
+  "parts": [
+   "IRIV-node-red-Agriculture-Box-tutorial",
+   "iriv-node-red-water-pump",
+   "iriv-node-red-moist-sensor",
+   "iriv-node-red-update-moist-sen",
+   "iriv-node-red-telegram",
+   "iriv-node-red-sht40-sensor",
+   "iriv-picontrol-modbus-temperature-humidity-sensor"
+  ]
+ },
+ "top-esp32-projects-to-kickstart-your-iot-journey-part-4": {
+  "title": "Top ESP32 Projects to Kickstart Your IoT Journey part 4",
+  "parts": [
+   "top-esp32-projects-to-kickstart-your-iot-journey-part-4",
+   "esp32-line-following-robot",
+   "esp32-gps-tracker-with-oled",
+   "esp32-mini-game-console"
+  ]
+ },
+ "top-esp32-projects-to-kickstart-your-iot-journey-part-3": {
+  "title": "Top ESP32 Projects to Kickstart Your IoT Journey part 3",
+  "parts": [
+   "top-esp32-projects-to-kickstart-your-iot-journey-part-3",
+   "esp32-simple-joystick-and-servo-control",
+   "esp32-smart-water-level-dashboard",
+   "esp32-reverse-parking-module",
+   "esp32-automatic-grow-light-using-light-sensor-module"
+  ]
+ },
+ "top-esp32-projects-to-kickstart-your-iot-journey-part-2": {
+  "title": "Top ESP32 Projects to Kickstart Your IoT Journey part 2",
+  "parts": [
+   "top-esp32-projects-to-kickstart-your-iot-journey-part-2",
+   "esp32-secure-entry-tracker"
+  ]
+ },
+ "top-esp32-projects-to-kickstart-your-iot-journey": {
+  "title": "Top ESP32 Projects to Kickstart Your IoT Journey",
+  "parts": [
+   "top-esp32-projects-to-kickstart-your-iot-journey",
+   "esp32-based-automatic-door-system-with-ir-and-servo"
+  ]
+ },
+ "ojanbot-esp32-tutorial-series": {
+  "title": "OjanBot ESP32 Tutorial Series",
+  "parts": [
+   "ojanbot-esp32-tutorial-series",
+   "assembling-ojanbot-esp32",
+   "ojan-bot-ESP32-basic-movement",
+   "ojan-bot-ESP32-obstacle-detection-and-avoidance",
+   "ojan-bot-ESP32-autonomous-line-following",
+   "ojan-bot-ESP32-servo-motion",
+   "ojan-bot-ESP32-Bluetooth",
+   "ojan-bot-ESP32-wifi"
+  ]
+ },
+ "getting-started-with-motion-2350-pro-robot-kit": {
+  "title": "Getting Started with Motion 2350 Pro Robot Kit",
+  "parts": [
+   "getting-started-with-motion-2350-pro-robot-kit",
+   "how-to-set-up-motion-2350-robot-on-arduino-ide",
+   "control-your-motion-2350-pro-robot-kit-with-usb-joystick-mouse-and-keyboard",
+   "obstacle-avoidance-with-the-motion-2350-pro-robot-kit"
+  ]
+ },
+ "getting-started-guide-with-robo-esp32": {
+  "title": "Getting Started with Robo ESP32",
+  "parts": [
+   "getting-started-guide-with-robo-esp32",
+   "getting-started-guide-with-robo-esp32-arduino-ide",
+   "setting-up-the-robo-esp32-arduino",
+   "power-up-the-robo-esp32",
+   "roboesp32-blink",
+   "roboesp32-rgb",
+   "roboesp32-buttons",
+   "roboesp32-buzzer",
+   "roboesp32-dcmotor",
+   "roboesp32-microservomotor",
+   "roboesp32-readanalog",
+   "roboesp32-digitalread",
+   "roboesp32-oled",
+   "roboesp32-microblocks",
+   "setting-up-the-robo-esp32-microblocks",
+   "power-up-the-robo-esp32-microblocks",
+   "roboesp32-blink-microblocks",
+   "roboesp32-rgb-microblocks",
+   "roboesp32-buttons-microblocks",
+   "roboesp32-buzzer-microblocks",
+   "roboesp32-dcmotor-microblocks",
+   "roboesp32-microservo-microblocks",
+   "roboesp32-digitalread-microblocks",
+   "roboesp32-analogread-microblocks",
+   "roboesp32-oled-microblocks"
+  ]
+ },
+ "robotic-starter-pack-sumo-robot-for-beginners": {
+  "title": "Robotic Starter Pack: Sumo Robot for Beginners",
+  "parts": [
+   "robotic-starter-pack-sumo-robot-for-beginners",
+   "sumo-robot-part-1-microcontroller--the-brain-of-your-robot",
+   "sumo-robot-part-2-sensors"
+  ]
+ },
+ "robo-soccer-with-motion-2350-pro": {
+  "title": "Robo Soccer with Motion 2350 Pro",
+  "parts": [
+   "robo-soccer-with-motion-2350-pro",
+   "robo-soccer-assembly",
+   "robo-soccer-setup"
+  ]
+ },
+ "iriv-smarthub-getting-started": {
+  "title": "IRIV SmartHub CM5 Tutorial Series",
+  "parts": [
+   "iriv-smarthub-getting-started",
+   "iriv-smarthub-getting-started-1",
+   "iriv-smarthub-getting-started-2",
+   "iriv-smarthub-getting-started-3",
+   "iriv-smarthub-getting-started-4",
+   "iriv-smarthub-getting-started-5"
+  ]
+ },
+ "setting-up-smart-ai-lens-and-battery-with-zoombit": {
+  "title": "Chapter 1: Setting Up Smart AI Lens & Battery with ZOOM:BIT",
+  "parts": [
+   "setting-up-smart-ai-lens-and-battery-with-zoombit",
+   "chapter-2-zoombit-with-smart-ai-lens-color-recognition",
+   "chapter-3-zoombit-with-smart-ai-lens-face-recognition",
+   "chapter-4-zoombit-with-smart-ai-lens-card-recognition",
+   "chapter-5-zoombit-with-smart-ai-lens-line-following",
+   "chapter-6-zoombit-with-smart-ai-lens-obstacle-detection"
+  ]
+ },
+ "mastering-wireless-control-with-urc10": {
+  "title": "Mastering Wireless Control with URC10",
+  "parts": [
+   "mastering-wireless-control-with-urc10",
+   "bluetooth-module-control-with-urc10",
+   "ps2-controller-integration-with-URC10",
+   "rc-control-with-urc10"
+  ]
+ },
+ "ojan-bot-tutorial-series": {
+  "title": "OjanBot Tutorial Series",
+  "parts": [
+   "ojan-bot-tutorial-series",
+   "assembling-ojan-bot",
+   "ojan-bot-basic-movement",
+   "ojan-bot-obstacle-detection-and-avoidance",
+   "ojan-bot-autonomous-line-following",
+   "ojan-bot-servo-motion",
+   "ojan-bot-bluetooth",
+   "ojan-bot-task-combination"
+  ]
+ },
+ "getting-started-guide-with-robo-uno-shield": {
+  "title": "Getting Started with Robo Uno Shield",
+  "parts": [
+   "getting-started-guide-with-robo-uno-shield",
+   "getting-started-guide-with-robo-uno-shield-arduino-ide",
+   "setting-up-the-robo-uno-shield-arduino",
+   "power-up-the-robo-uno-shield",
+   "blink",
+   "rgb",
+   "user-button",
+   "buzzer",
+   "dc-motor",
+   "servo-motor",
+   "analog-sensor",
+   "digital-sensor",
+   "oled",
+   "getting-started-guide-with-robo-uno-shield-mblock",
+   "setting-up-the-robo-uno-shield-mblock",
+   "power-up-the-robo-uno-shield",
+   "blink-mblock",
+   "lighting-up-the-rgb-led-mblock",
+   "press-the-button-mblock",
+   "drop-the-beat-mblock",
+   "dc-motor-mblock",
+   "micro-servo-motor-mblock",
+   "read-analog-sensor-value-mblock",
+   "read-digital-sensor-value-mblock",
+   "displaying-text-on-oled-mblock"
+  ]
+ },
+ "make-you-own-smart-home-using-raspberry-pi-5-with-home-assistant": {
+  "title": "Make your own Smart Home using Home Assistant with Raspberry Pi 5!",
+  "parts": [
+   "make-you-own-smart-home-using-raspberry-pi-5-with-home-assistant",
+   "add-bambu-lab-3d-printer-to-your-home-assistant"
+  ]
+ },
+ "build-sumo-robot-with-sumobit": {
+  "title": "Build Sumo Robot with micro:bit (SUMO:BIT)",
+  "parts": [
+   "build-sumo-robot-with-sumobit",
+   "sumobit-robot-assemble",
+   "build-sumo-robot-with-sumobit-checking",
+   "build-sumo-robot-with-sumobit-maintenance",
+   "build-sumo-robot-with-sumobit-autonomous",
+   "build-sumo-robot-with-sumobit-rc",
+   "remote-control-rc-programming-mode"
+  ]
+ },
+ "iriv-Mosquitto-MQTT": {
+  "title": "How to Setup & Install & use a Mosquitto MQTT Broker on Your IRIV",
+  "parts": [
+   "iriv-Mosquitto-MQTT",
+   "iriv-node-red-mqtt",
+   "iriv-Mosquitto-MQTT-l0cal-network"
+  ]
+ },
+ "ai-defect-detection-kit-use-your-own-dataset": {
+  "title": "Raspberry Pi AI Defect Detection Kit: Use Your Own Dataset",
+  "parts": [
+   "ai-defect-detection-kit-use-your-own-dataset",
+   "collecting-and-preparing-dataset-of-defective-materials",
+   "training-model-for-defect-detection-with-google-colab",
+   "converting-onnx-to-hef-model",
+   "raspberry-pi-ai-defect-detection-kit:-deploying-a-custom-model-with-hailo8l"
+  ]
+ },
+ "getting-started-with-iriv-io-controller-with-circuit-python": {
+  "title": "Getting Started with IRIV IO Controller With Circuit Python",
+  "parts": [
+   "getting-started-with-iriv-io-controller-with-circuit-python",
+   "how-to-power-up-the-iriv-io-controller",
+   "how-to-program-iriv-io-controller",
+   "default-program-io-expander-function",
+   "how-to-program-the-circuitpyton-firware",
+   "interfacing-iriv-io-controller-with-buttons-led-and-buzzer",
+   "dIgital-io-on-iriv-io-controller",
+   "analog-inputs-on-iriv-io-controller",
+   "rtc-on-iriv-io-controller",
+   "rs485-modbus-rtu-with-iriv-io-controller",
+   "ethernet-internet-with-iriv-io-controller",
+   "iriv-io-controller-iot-gateway-blynk",
+   "iriv-io-controller-iot-gateway-thingspeak",
+   "iriv-io-controller-iot-gateway-mqtt",
+   "sample-application-automation-of-agriculture-with-iriv-io-controller"
+  ]
+ },
+ "getting-started-with-motion-2350-pro-using-arduino-ide": {
+  "title": "Getting Started with MOTION 2350 Pro using Arduino IDE",
+  "parts": [
+   "getting-started-with-motion-2350-pro-using-arduino-ide",
+   "get-started-motion-2350-pro-arduinoide-setting-up",
+   "get-started-motion-2350-pro-arduinoide-power-up",
+   "get-started-motion-2350-pro-arduinoide-external-switch",
+   "get-started-motion-2350-pro-arduinoide-blink",
+   "get-started-motion-2350-pro-arduinoide-lighting-up-the-rgb-led",
+   "get-started-motion-2350-pro-arduinoide-press-the-buttons",
+   "get-started-motion-2350-pro-arduinoide-turn-on-the-music",
+   "get-started-motion-2350-pro-arduinoide-dc-motor",
+   "get-started-motion-2350-pro-arduinoide-micro-servo-motor",
+   "get-started-motion-2350-pro-arduinoide-read-sensor-value",
+   "get-started-motion-2350-pro-arduinoide-display-text-on-oled",
+   "get-started-motion-2350-pro-arduinoide-usb-host-and-connect-to-remote-controller",
+   "get-started-motion-2350-pro-arduinoide-steppermotor"
+  ]
+ },
+ "nodemcu-kit-using-telegram-weather-monitoring-system": {
+  "title": "NodeMCU Kit using Telegram : Weather Monitoring System",
+  "parts": [
+   "nodemcu-kit-using-telegram-weather-monitoring-system",
+   "nodemcu-kit-using-telegram-smart-security-system",
+   "nodemcu-kit-using-telegram-rain-alert-system",
+   "nodemcu-kit-using-telegram-light-control",
+   "nodemcu-kit-using-telegram-smoke-and-flame-alert-system",
+   "nodemcu-kit-using-telegram-home-automation"
+  ]
+ },
+ "get_start_with_nodemcu": {
+  "title": "Cytron NodeMCU Starter Kit (Blynk)",
+  "parts": [
+   "get_start_with_nodemcu",
+   "weather_monitoring_system1",
+   "smart_security_system",
+   "rain_alert_system",
+   "light_control_using_blynk",
+   "smoke-system",
+   "home_automation_project"
+  ]
+ },
+ "iriv-picontrol-getting-started-with-codesys": {
+  "title": "Getting Started with IRIV PiControl and CODESYS",
+  "parts": [
+   "iriv-picontrol-getting-started-with-codesys",
+   "simple-led-toggle-with-cytron-iriv-picontrol-and-codesys",
+   "digital-input-with-cytron-iriv-picontrol-and-codesys",
+   "digital-output-with-cytron-iriv-picontrol-and-codesys",
+   "analog-output-with-cytron-iriv-picontrol-and-codesys",
+   "peer-to-peer-with-cytron-iriv-picontrol-and-codesys"
+  ]
+ },
+ "ai-with-zoombit-introduction--hardware-setup": {
+  "title": "AI with ZOOM:BIT: Introduction & Hardware Setup",
+  "parts": [
+   "ai-with-zoombit-introduction--hardware-setup",
+   "ai-with-zoombit-face-recognition",
+   "ai-with-zoombit-object-tracking",
+   "ai-with-zoombit-color-detection",
+   "ai-with-zoombit-tag-recognition",
+   "ai-with-zoombit-object-classification"
+  ]
+ },
+ "microblocks-with-edu-pico-installation": {
+  "title": "Microblocks with EDU PICO : CircuitPython Installation",
+  "parts": [
+   "microblocks-with-edu-pico-installation",
+   "microblocks-with-edu-pico",
+   "microblocks-with-edu-pico-buzzer",
+   "microblocks-with-edu-pico-water-drinking-reminder",
+   "microblocks-with-edu-pico-project-automated-waste-bin",
+   "microblocks-with-edu-pico-mini-activity-oled-module",
+   "microblocks-with-edu-pico-rgb-servo-and-proximity",
+   "microblocks-with-edu-pico-challenge-2-hearing-reaction-game",
+   "microblocks-with-edu-pico-project-hearing-reaction",
+   "microblocks-with-edu-pico-challenge-1-hearing-reaction-game",
+   "microblocks-with-edu-pico-challenge-water-drinking-reminder",
+   "microblocks-with-edu-pico-challenge-automated-waste-bin",
+   "microblocks-with-edu-pico-mini-activity-proximity"
+  ]
+ },
+ "getting-started-with-motion-bit-pro": {
+  "title": "Getting Started with MOTION:BIT Pro",
+  "parts": [
+   "getting-started-with-motion-bit-pro",
+   "getting-started-with-motion-bit-pro-extension-and-flashing-the-code",
+   "getting-started-with-motion-bit-pro-battery-external-switch",
+   "getting-started-with-motion-bit-pro-dc-motor",
+   "getting-started-with-motion-bit-pro-5v-external-vin-servo-motor",
+   "getting-started-with-motion-bit-pro-maker-ports-and-gpio-breakout",
+   "getting-started-with-motion-bit-pro-rgb-led-and-daisy-chained-rgb-led",
+   "getting-started-with-motion-bit-pro-remote-control-via-bluetooth-using-smartphone"
+  ]
+ },
+ "comprehensive-guide-for-3d-printing-creality-ender-3-v3-se": {
+  "title": "Comprehensive Guide for 3D Printing: Creality Ender 3 V3 SE",
+  "parts": [
+   "comprehensive-guide-for-3d-printing-creality-ender-3-v3-se",
+   "what-should-know-about-3d-Printing",
+   "importance-of-computer-aided-design",
+   "open-source-3D-Model",
+   "materials-filament",
+   "getting-started-with-ender-3-v3-se",
+   "filament-loading-and-unloading",
+   "3d-printer-calibration",
+   "3d-printing-your-first-item",
+   "getting-started-with-3d-design-using-tinkercad",
+   "getting-started-with-slicer-software",
+   "special-tips-and-trick",
+   "p-wireless-control-enhance-your-3d-printer-ability",
+   "p-updating-firmware",
+   "p-application-of-3d-printing-robotics",
+   "application-of-3d-printing-special-product",
+   "p-application-of-3d-printing-for-community"
+  ]
+ },
+ "getting-started-guide-with-maker-uno-rp2040": {
+  "title": "Getting Started with Maker Uno RP2040",
+  "parts": [
+   "getting-started-guide-with-maker-uno-rp2040",
+   "getting-started-guide-with-maker-uno-rp2040-arduino-ide",
+   "power-up-maker-uno-rp2040-arduino",
+   "setting-up-maker-uno-rp2040-arduino",
+   "blink-uno-rp2040-arduino-ide",
+   "rgb-uno-rp2040-arduino-ide",
+   "button-uno-rp2040-arduino-ide",
+   "buzzer-uno-rp2040-arduino-ide",
+   "servo-uno-rp2040-arduino-ide",
+   "sensor-uno-rp2040-arduino-ide",
+   "oled-uno-rp2040-arduino-ide",
+   "getting-started-guide-with-maker-uno-rp2040-circuitpython",
+   "power-up-maker-uno-rp2040",
+   "setting-up-maker-uno-rp2040-circuitpython",
+   "blink-uno-rp2040--circuitpython",
+   "neopixel-unorp2040-circuitpython",
+   "button-unorp2040-circuitpython",
+   "buzzer-unorp2040-circuitpython",
+   "servo-unorp2040-circuitpython",
+   "sensor-uno-rp2040-circuitpython",
+   "oled-unorp2040-circuitpython"
+  ]
+ },
+ "SumoRobot1KG": {
+  "title": "Let’s Upgrade your Mini Sumo to 1kg Sumo Robot",
+  "parts": [
+   "SumoRobot1KG",
+   "1kg_sumoRobot",
+   "Programming_1KG_Autonomous_Sumo_Robot",
+   "BasicNavigation",
+   "GameStrategies",
+   "LetsFighting!"
+  ]
+ },
+ "getting-started-with-robo-pico-using-circuitpython": {
+  "title": "Getting Started Guide with Robo Pico using CircuitPython",
+  "parts": [
+   "getting-started-with-robo-pico-using-circuitpython",
+   "get-started-robo-pico-circuitpython-setting-up-robo-pico",
+   "get-started-robo-pico-circuitpython-power-up-robo-pico",
+   "get-started-robo-pico-circuitpython-blink",
+   "get-started-robo-pico-circuitpyhton-lighting-up-the-rgb-led",
+   "get-started-robo-pico-circuitpython-press-the-buttons",
+   "get-started-robo-pico-circuitpython-turn-on-the-music",
+   "get-started-robo-pico-circuitpython-dc-motor",
+   "get-started-robo-pico-circuitpython-micro-servo-motor",
+   "get-started-robo-pico-circuitpython-read-analog-sensor-value",
+   "get-started-robo-pico-circuitpython-display-text-on-oled",
+   "get-started-robo-pico-circuitpython-ntp-clock",
+   "getting-started-with-robo-pico-iot-simple-http-server",
+   "getting-started-with-robo-pico-iot-thingspeak",
+   "getting-started-with-robo-pico-iot-blynk"
+  ]
+ },
+ "build-bocobot-car-with-robo-pico": {
+  "title": "Learn Robotics with Bocobot Car Kit and Robo Pico",
+  "parts": [
+   "build-bocobot-car-with-robo-pico",
+   "basic-movement",
+   "obstacle-avoidance",
+   "light-searching",
+   "line-following",
+   "wifi-control-car"
+  ]
+ },
+ "Easy-Machine-Learning-Project-with-REKABIT-and-Teachable-Machine": {
+  "title": "Easy Machine Learning Project with REKABIT Teachable Machine",
+  "parts": [
+   "Easy-Machine-Learning-Project-with-REKABIT-and-Teachable-Machine",
+   "train-your-ai-model",
+   "program-your-microbit",
+   "execute-the-ai-image-processing"
+  ]
+ },
+ "getting-started-with-motion-bit-and-projects-guide": {
+  "title": "Getting Started with MOTION:BIT & Projects Guide",
+  "parts": [
+   "getting-started-with-motion-bit-and-projects-guide",
+   "getting-started-with-motion-bit-and-projects-guide-makecode-extension-and-flashing-the-code",
+   "getting-started-with-motion-bit-and-projects-guide-dc-motor",
+   "getting-started-with-motion-bit-and-projects-guide-micro-servo-motor",
+   "getting-started-with-motion-bit-and-projects-guide-maker-ports-and-gpio-breakout",
+   "getting-started-with-motion-bit-and-projects-guide-rgb-led-and-daisy-chained-rgb-led",
+   "getting-started-with-motion-bit-and-projects-guide-li-ion-battery-and-external-switch",
+   "getting-started-with-motion-bit-and-projects-guide-remote-control-via-bluetooth-using-smartphone"
+  ]
+ },
+ "getting-started-with-edgebox-rpi-200": {
+  "title": "Getting Started With EdgeBox RPi 200",
+  "parts": [
+   "getting-started-with-edgebox-rpi-200",
+   "getting-started-with-edgebox-RPi-200-and-node-red",
+   "getting-started-with-edgebox-rpi-200-and-codesys",
+   "edgebox-rpi-200-and-codesys-digital-input",
+   "edgeboxrpi-200-and-codesys-digital-output"
+  ]
+ },
+ "getting-started-with-cm4-maker-board": {
+  "title": "Getting Started with CM4 Maker Board",
+  "parts": [
+   "getting-started-with-cm4-maker-board",
+   "boot-up-raspberry-pi-cm4-on-cm4-maker-board",
+   "lesson-1-gpio-grove-port-maker-port",
+   "lesson-2-buzzer-buttons",
+   "lesson-3-camera",
+   "lesson-4-setup-switch-on-off-button",
+   "lesson-5-rtc",
+   "lesson-6-audio-jack"
+  ]
+ },
+ "Getting-Started-With-Maker-Nano-RP2040": {
+  "title": "Getting Started With Maker Nano RP2040",
+  "parts": [
+   "Getting-Started-With-Maker-Nano-RP2040",
+   "getting-started-with-makernanorp2040-and-arduino-ide",
+   "getting-started-with-maker-nano-rp2040-lesson-1-led-blink",
+   "getting-started-with-maker-nano-rp2040-lesson-2-siren",
+   "getting-started-with-maker-nano-rp2040-lesson-3-digital-input",
+   "getting-started-with-maker-nano-rp2040-lesson-4-analog-input",
+   "getting-started-with-maker-nano-rp2040-lesson-5-light-dependent-resistor",
+   "getting-started-with-maker-nano-rp2040-lesson-6-temperature-sensor",
+   "getting-started-with-maker-nano-rp2040-lesson-7-dc-motor",
+   "getting-started-with-maker-nano-rp2040-lesson-8-neopixel",
+   "getting-started-with-maker-nano-rp2040-project-1-knight-rider",
+   "getting-started-with-maker-nano-rp2040-project-2-interactive-traffic-light",
+   "getting-started-with-maker-nano-rp2040-project-3-temperature-alarm",
+   "getting-started-with-maker-nano-rp2040-project-4-light-theremin"
+  ]
+ },
+ "how-does-stepper-motor-works-part-1": {
+  "title": "How does Stepper Motor Works - Part 1",
+  "parts": [
+   "how-does-stepper-motor-works-part-1",
+   "how-does-stepper-motor-works-part-2"
+  ]
+ },
+ "getting-started-with-robo-base": {
+  "title": "Getting Started with Robo Base",
+  "parts": [
+   "getting-started-with-robo-base",
+   "getting-started-with-rb-assembly-guide",
+   "getting-started-with-rb-double-base-2wd-full-assembly",
+   "getting-started-with-rb-double-base-4wd-full-assembly",
+   "getting-started-with-rb-dc-motor-and-castors",
+   "getting-started-with-rb-ultrasonic-sensor",
+   "getting-started-with-rb-maker-line",
+   "getting-started-with-rb-micro-servo-motor",
+   "getting-started-with-rb-12v-dc-motor",
+   "getting-started-with-rb-mounting-main-controller-boards",
+   "getting-started-with-rb-reka-bit",
+   "getting-started-with-rb-motion-series",
+   "getting-started-with-rb-uno",
+   "getting-started-with-rb-robo-series",
+   "getting-started-with-rb-maker-pi-rp2040",
+   "getting-started-with-rb-raspberry-pi",
+   "getting-started-with-rb-jetson-series"
+  ]
+ },
+ "getting-started-with-robo-base-mini": {
+  "title": "Getting Started with Robo Base Mini",
+  "parts": [
+   "getting-started-with-robo-base-mini",
+   "getting-started-with-rbm-assembly-guide",
+   "getting-started-with-rbm-double-base-2wd",
+   "getting-started-with-rbm-double-base-4wd",
+   "getting-started-with-rbm-dc-motor-castor",
+   "getting-started-with-rbm-maker-line",
+   "getting-started-with-rbm-ultrasonic-sensor",
+   "getting-started-with-rbm-micro-servo-motor",
+   "getting-started-with-rbm-battery",
+   "getting-started-with-rbm-board-mounting",
+   "getting-started-with-rbm-rekabit",
+   "getting-started-with-rbm-motion-series",
+   "getting-started-with-rbm-maker-uno-arduino-uno",
+   "getting-started-with-rbm-robo-series",
+   "getting-started-with-rbm-maker-pi-rp2040",
+   "getting-started-with-rbm-raspberry-pi-4-or-5",
+   "getting-started-with-rbm-jetson-series"
+  ]
+ },
+ "1kg_sumo_robot_urc10": {
+  "title": "1KG Autonomous Sumo Robot Starter Kit User Guide using URC10",
+  "parts": [
+   "1kg_sumo_robot_urc10",
+   "introduction_progamming_1kg_sumo",
+   "progamming_1kg_sumo_urc10",
+   "calibrating_autonomous_sumo_robot_urc10"
+  ]
+ },
+ "getting-started-with-motion-2350-pro-cp": {
+  "title": "Getting Started with MOTION 2350 Pro using CircuitPython",
+  "parts": [
+   "getting-started-with-motion-2350-pro-cp",
+   "get-started-motion-2350-pro-circuitpython-setting-up-robo-pico",
+   "get-started-motion-2350-pro-circuitpython-power-up",
+   "get-started-motion-2350-pro-circuitpython-external-switch",
+   "get-started-motion-2350-pro-circuitpython-blink",
+   "get-started-motion-2350-pro-circuitpyhton-lighting-up-the-rgb-led",
+   "get-started-motion-2350-pro-circuitpython-press-the-buttons",
+   "get-started-motion-2350-pro-circuitpython-turn-on-the-music",
+   "get-started-motion-2350-pro-circuitpython-dc-motor",
+   "get-started-motion-2350-pro-circuitpython-micro-servo-motor",
+   "get-started-motion-2350-pro-circuitpython-read-sensor-value",
+   "get-started-motion-2350-pro-circuitpython-display-text-on-oled",
+   "get-started-motion-2350-pro-circuitpyhton-flash-resetting-rp2350"
+  ]
+ },
+ "iriv-picontrol-hands-on-using-nodered-in-industry-4": {
+  "title": "IRIV PiControl hands-on using Node-RED in Industry 4.0 (13 tutorials)",
+  "parts": [
+   "iriv-picontrol-hands-on-using-nodered-in-industry-4",
+   "how-to-flash-os-into-iriv-picontrol",
+   "iriv-picontrol-accessing-raspberry-pi-console",
+   "iriv-picontrol-remote-control-with-vnc-viewer",
+   "iriv-picontrol-getting-started-with-node-red",
+   "iriv-picontrol-node-red-digital-input-and-output",
+   "iriv-picontrol-controlling-a-24v-relay-with-push-button",
+   "iriv-picontrol-oled-display-with-node-red",
+   "iriv-picontrol-modbus-temperature-humidity-sensor",
+   "iriv-node-red-modbus-rtu-power-meter",
+   "iriv-picontrol-logging-real-time-data-to-csv",
+   "iriv-node-red-monitor-using-thingspeak",
+   "iriv-control-and-monitor-using-blynk-with-node-red",
+   "iriv-logging-data-to-mysql-with-node-red"
+  ]
+ },
+ "getting-started-with-maker-nano-rp2040-and-blynk-iot": {
+  "title": "Getting Started With Maker Nano RP2040 & Blynk IoT",
+  "parts": [
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-1-getting-connected",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-2-simple-led-control",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-3-push-button-as-input",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-4-analog-input",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-5-temperature-sensor",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-6-neopixel-color",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-7-motor-speed-controller",
+   "getting-started-with-maker-nano-rp2040-and-blynk-iot-lesson-8-going-mobile"
+  ]
+ }
+}

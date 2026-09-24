@@ -185,3 +185,8 @@ footer li a:hover{color:#fff}
   .pagination{flex-direction:column;gap:10px;align-items:flex-start}
   .post-col h1{font-size:22px;line-height:30px}
 }
+
+/* page tree (series) as on the live article sidebar */
+.page-tree{margin-bottom:24px}.page-tree h4{font-size:15px;margin:0 0 8px}.page-tree h4 a{color:#333}
+.page-tree ul.tree{list-style:none;margin:0;padding:0 0 0 6px}.page-tree ul.tree li a{display:block;padding:5px 0;color:#0da9dd;font-size:13.5px}
+.page-tree ul.tree li.active a{color:#333;font-weight:700}

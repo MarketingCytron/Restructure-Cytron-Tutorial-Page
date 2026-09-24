@@ -23,6 +23,15 @@ remembered in the browser (and carried between pages even when the files are ope
 any time from the Education / Industry toggle in the header. For demos: `new-c/index.html?mode=reset` shows the popup
 again, `?mode=industry` / `?mode=education` forces a view.
 
+**Series (24 Sep 2026).** The CMS lets a post carry child pages — a "page tree" shown in the live article sidebar
+with Previous / Next — and those child pages are **not in the tutorial listing**. Scanning every article found **85
+series with 466 child pages** (e.g. *Getting Started with MDDRC5* → Board Layout → Operation → Firmware & Programming;
+*Getting Started with Robo ESP32* has 24 parts). They are captured in `data/parts.js|json` + `data/series.json` and
+inherit their parent's categories. The redesign shows a "Series · n parts" badge on parent cards, a *Step-by-step
+series* strip on the home page (`category.html?series=1` lists them all), and on every series page an *In this series*
+panel with numbered parts plus Part n ‹ › navigation. The `/current` mirror shows the same page tree the live site does.
+The Excel export gains Series / Part / In listing columns and 466 extra rows for the child pages.
+
 Two earlier explorations — Option A (hub + filter bar) and Option B (Random-Nerd-Tutorials style) — were merged
 into C and removed from the repo on 23 Sep 2026; they remain in the git history (`git log -- new new-b`) and are
 described in `docs/redesign-notes.md`.
@@ -90,7 +99,7 @@ columns are marked "n/a – not public".
 | Stage | State |
 |---|---|
 | Current-state audit | Done |
-| Data capture (933 posts, categories, tags, views) — refreshed 23 Sep | Done |
+| Data capture (933 posts + 466 series pages, categories, tags, views) — refreshed 24 Sep | Done |
 | `/current` mirror (listing + article) | Done |
 | `/new-c` redesign (A + B merged; the only option kept from 23 Sep) | Done — being refined |
 | Category clean-up (separate task) | Review sheet done; awaiting CMS approval |

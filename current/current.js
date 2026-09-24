@@ -235,9 +235,11 @@
     if (!t) { app.innerHTML = header() + `<div class="container"><p style="padding:40px 0">Tutorial not found. <a href="${ROOT}/index.html">Back to tutorials</a></p></div>` + footer(); return; }
     document.title = t.title;
     const art = ARTICLES[slug];
+    const S = window.CY.seriesOf(t); const pos = S ? S.parts.indexOf(t) : -1;   // the live "page tree": prev/next stay inside the series
     const idx = T.indexOf(t); // T is in "latest first" order as scraped
-    const newer = T[idx - 1], older = T[idx + 1];
-    const link = x => x ? `<a href="${ROOT}/tutorial.html?slug=${encodeURIComponent(x.slug)}"><small>${x === newer ? '‹ Newer' : 'Older ›'}</small>${esc(x.title)}</a>` : '<span></span>';
+    const newer = S ? S.parts[pos + 1] : T[idx - 1], older = S ? S.parts[pos - 1] : T[idx + 1];
+    const link = x => x ? `<a href="${ROOT}/tutorial.html?slug=${encodeURIComponent(x.slug)}"><small>${x === newer ? (S ? 'Next ›' : '‹ Newer') : (S ? '‹ Previous' : 'Older ›')}</small>${esc(x.title)}</a>` : '<span></span>';
+    const tree = S ? `<div class="blog_categories page-tree"><h4><a href="${ROOT}/tutorial.html?slug=${encodeURIComponent(S.parts[0].slug)}">${esc(S.title)}</a></h4><ul class="tree">${S.parts.slice(1).map(p => `<li class="${p === t ? 'active' : ''}"><a href="${ROOT}/tutorial.html?slug=${encodeURIComponent(p.slug)}">▸ <span>${esc(p.title)}</span></a></li>`).join('')}</ul></div>` : '';
     const products = (art && art.products && art.products.length) ? `
 <h2>Hardware Components</h2>
 <div class="product-grid">${art.products.map(p => `<div class="product-thumb">${p.stock ? `<span class="label-outofstock">${esc(p.stock)}</span>` : ''}<a href="${esc(p.url)}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(p.img)}" alt="${esc(p.name)}"></a><h4 class="name"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a></h4><p class="price">${esc(p.price)}${p.oldPrice ? `<span class="price-old">${esc(p.oldPrice)}</span>` : ''}</p><div class="qty">${esc(p.qty || '')}</div><a class="btn-atc" href="#" onclick="return false">Add to Cart</a></div>`).join('')}</div><hr>` : '';
@@ -266,6 +268,7 @@
       ${products}
     </div>
     <div class="col-sm-3 side-column">
+      ${tree}
       <div class="search tags"><h4>Tags</h4><ul>${(t.tags || []).map(tag => `<li><a href="${ROOT}/index.html?q=${encodeURIComponent(tag)}">${esc(tag)}</a></li>`).join('') || '<li style="color:#999;font-size:13px">No tags</li>'}</ul></div>
     </div>
   </div>

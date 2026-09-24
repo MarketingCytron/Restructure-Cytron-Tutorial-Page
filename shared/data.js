@@ -13,8 +13,14 @@
   const catById = {};
   TAX.categories.forEach(c => { catById[c.id] = { ...c, parentId: null }; (c.children || []).forEach(ch => { catById[ch.id] = { ...ch, parentId: c.id }; }); });
 
+  // Series: the CMS "page tree" — a listed parent post with unlisted child pages (PARTS). Parts are not in T
+  // (they are not in the live listing either) but are addressable by slug and carry their parent's categories.
+  const PARTS = (window.CYTRON_PARTS || []).map(t => { if (t.hero && !t.cover) t.cover = t.hero; return t; });
+  const SERIES = window.CYTRON_SERIES || {};
   const bySlug = {};
   T.forEach(t => { bySlug[t.slug] = t; });
+  PARTS.forEach(t => { bySlug[t.slug] = t; });
+  function seriesOf(t) { const key = t && t.series; if (!key || !SERIES[key]) return null; const s = SERIES[key]; return { key, title: s.title, parts: s.parts.map(slug => bySlug[slug]).filter(Boolean) }; }
 
   const TYPE_CODES = { T: 'Tutorial', P: 'Project', R: 'Protip', S: 'Success Stories', U: 'Uncategorized' };
   const LEVEL_COLORS = { Beginner: '#27ae60', Intermediate: '#f1c40f', Advanced: '#e67e22', Expert: '#c0392b' };
@@ -68,5 +74,5 @@
     return { items: list.slice((page - 1) * per, page * per), page, pages, total: list.length, from: list.length ? (page - 1) * per + 1 : 0, to: Math.min(page * per, list.length), per };
   }
 
-  window.CY = { T, TAX, ARTICLES, catById, bySlug, TYPE_CODES, LEVEL_COLORS, qs, qsAll, esc, fmtNum, catName, catPath, readTime, filter, sort, paginate };
+  window.CY = { T, PARTS, SERIES, seriesOf, TAX, ARTICLES, catById, bySlug, TYPE_CODES, LEVEL_COLORS, qs, qsAll, esc, fmtNum, catName, catPath, readTime, filter, sort, paginate };
 })();

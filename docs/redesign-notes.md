@@ -166,6 +166,18 @@ where industry and education content appear together. Every post now carries exa
    for WorldSkills at TVET MARA Sungai Petani*) is flagged Education rather than Industry, so it is missing from the
    Industry view's workshop band. *(Fixed in the CMS on 24 Sep — the band now shows all five.)*
 
+## Series (page tree)
+
+The live CMS supports multi-page posts: a parent tutorial with child pages, rendered as a `.page-tree` in the
+article sidebar and `#post-prev-page` / `#post-next-page` buttons. The listing and the search only know the parent;
+the 466 child pages (85 series, 24 Sep 2026) are invisible until a reader opens the parent. In the redesign a series
+is a first-class object: parent cards carry a **Series · n parts** badge; the home page has a *Step-by-step series*
+strip (four most-read series, each with its part list) linking to `category.html?series=1`; every series page — parent
+or part — gets an *In this series* panel with numbered parts, a "Part n of N" tag, breadcrumb back to the parent and
+Part n ‹ › navigation instead of the generic Older / Newer. Part pages are rendered from `data/parts.js` with their own
+views, dates and tags and inherit the parent's categories and audience. Search still matches listed posts only, as on
+the live site; making part titles searchable would be a one-line change (`filter` over `T.concat(PARTS)`).
+
 ## Behaviour worth carrying into the real build
 
 - Search matches title, excerpt, tags and author; 220ms debounce.
