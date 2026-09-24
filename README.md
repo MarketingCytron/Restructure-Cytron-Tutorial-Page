@@ -14,10 +14,11 @@ of four posts per platform, rich cards with Like/Bookmark on hover, and an artic
 **Education / Industry (23 Sep 2026).** Like the live site, the redesign asks first-time visitors *"What type of
 project are you working on?"* — Education, Industry / Enterprise, or continue as guest — once, on the home page. On the
 live site that choice only changes the store; here it scopes the tutorial page. **Industry** shows only the posts in the
-live site's *Industry* topic (`post_type=industry`, 112 posts today), **arranged by hardware** — an *Industrial Workshops*
+live site's *Industry* topic (`post_type=industry`, 119 posts today), **arranged by hardware** — an *Industrial Workshops*
 showcase band first, a *Success stories* section (the my.cytron.io/success-stories view inside the Industry scope), then the Industry category's sub-categories (IRIV Pi Control, IRIV EdgeAI, IRIV SmartHub, LoRaWAN,
 IRIV IOC) as chips and rows, then Raspberry Pi in Industry, then a catch-all row; the slider, Latest Posts, Most viewed, search and category pages all
-work inside that set, and empty sections disappear. **Education** and guest show the whole archive in the maker-first layout. The choice is
+work inside that set, and empty sections disappear. **Education** shows only the Education topic (814 posts) — industry posts and the Industry / Raspberry Pi in Industry
+platforms are removed from rows, chips, filters and search. Guest shows the whole archive. The choice is
 remembered in the browser (and carried between pages even when the files are opened from disk) and can be switched
 any time from the Education / Industry toggle in the header. For demos: `new-c/index.html?mode=reset` shows the popup
 again, `?mode=industry` / `?mode=education` forces a view.

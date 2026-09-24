@@ -136,15 +136,15 @@ and switches the store; the tutorial listing ignores it, although the sidebar al
 (`/tutorial-search?post_type=industry`). The redesign keeps the dialog (same three choices, home page only, asked once)
 and uses the answer as the **scope of the page**:
 
-| | Education / guest | Industry |
+| | Education | Industry |
 |---|---|---|
-| Posts shown anywhere | whole archive (933) | the Industry topic only (`post_type=industry`, 111) |
-| Rows and board chips | the 14 platforms, archive-size order | **arranged by hardware**: an *Industrial Workshops* showcase band first (navy panel, four latest workshop stories, "View all" + "Request a workshop" → my.cytron.io/cytron-workshop), then a *Success stories* section (latest story large, five more as a list, "All n success stories" → the Success Stories type filter — the equivalent of my.cytron.io/success-stories inside the Industry scope; workshop posts are left to the band above), then the Industry category's hardware sub-categories (IRIV Pi Control · IRIV EdgeAI · IRIV SmartHub · LoRaWAN · IRIV IOC), then Raspberry Pi in Industry, then "More industry guides" for industry posts filed under none of them; empty ones hidden |
+| Posts shown anywhere | the Education topic only (`post_type=education`, 814) — industry posts and the *Industry* / *Raspberry Pi in Industry* platforms are hidden everywhere (rows, chips, filter, search, category pages) | the Industry topic only (`post_type=industry`, 119) |
+| Rows and board chips | the 12 non-industrial platforms, archive-size order | **arranged by hardware**: an *Industrial Workshops* showcase band first (navy panel, four latest workshop stories, "View all" + "Request a workshop" → my.cytron.io/cytron-workshop), then a *Success stories* section (latest story large, five more as a list, "All n success stories" → the Success Stories type filter — the equivalent of my.cytron.io/success-stories inside the Industry scope; workshop posts are left to the band above), then the Industry category's hardware sub-categories (IRIV Pi Control · IRIV EdgeAI · IRIV SmartHub · LoRaWAN · IRIV IOC), then Raspberry Pi in Industry, then "More industry guides" for industry posts filed under none of them; empty ones hidden |
 | Featured slider | most-viewed getting-started guides | most-viewed industry posts |
 | Latest Posts / Most viewed / search / category pages / related | whole archive | inside the Industry topic; category sidebar becomes "Browse by hardware" |
-| Filter bar | Level · Type · Platform · For education / For industry | Level · Type · Platform (audience is implied) |
+| Filter bar | Level · Type · Platform (industrial platforms removed; audience implied) | Level · Type · Platform (audience is implied) |
 | Board chips | platforms | Industrial Workshops · hardware sub-categories · Raspberry Pi in Industry · Success Stories · All |
-| Title block | "Tutorials for digital makers" | "Tutorials for industry — 111 guides…" |
+| Title block | "Tutorials for digital makers — 814 builds" | "Tutorials for industry — 111 guides…" |
 | Kits & programs band | shown | hidden |
 
 State: `localStorage.cy_audience` (`education` · `industry` · `guest`), mirrored in `window.name` so it survives
@@ -152,11 +152,14 @@ page-to-page navigation when the prototype is opened from disk; `<html data-audi
 switch; `?mode=` query for demos. In production the same rule reads the existing session context and adds
 `post_type=industry` to every query.
 
+**Continue as guest** shows the whole archive (933 posts, all 14 platforms, both audience filters) — the only view
+where industry and education content appear together. Every post now carries exactly one of the two flags.
+
 **Data caveat for the content team:** two tagging gaps decide how good this view looks.
 1. The *Industry* topic flag (`post_type=industry`) is what admits a post: only 1 NVIDIA Jetson and 1 RDK X5 post carry
    it, and 11 of the 76 *Raspberry Pi in Industry* posts do not.
-2. The hardware sub-categories are thin: of the 111 industry posts only 10 are in IRIV Pi Control, 6 in IRIV EdgeAI,
-   4 in Industrial Workshop, 1 in IRIV SmartHub, 1 in LoRaWAN and 0 in IRIV IOC — 89 sit in none of them (60 of those only in Raspberry Pi in
+2. The hardware sub-categories are thin: of the 119 industry posts (24 Sep) only 11 are in IRIV Pi Control, 7 in IRIV EdgeAI,
+   5 in Industrial Workshop, 3 in IRIV SmartHub, 1 in LoRaWAN and 0 in IRIV IOC — most sit in none of them (60 of those only in Raspberry Pi in
    Industry, 29 in nothing more specific than "Industry"). Several clearly belong to a controller (e.g. *How to read the
    analog value using PiControl* is not in IRIV Pi Control). The clean-up dashboard already suggests these from
    keywords; filing them fills the hardware rows directly. One of the five Industrial Workshop posts (*IRIV PiControl

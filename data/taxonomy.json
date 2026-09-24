@@ -29,13 +29,13 @@
      "count": 14
     }
    ],
-   "count": 317
+   "count": 316
   },
   {
    "id": 27,
    "name": "Raspberry Pi in Industry",
    "children": [],
-   "count": 76
+   "count": 74
   },
   {
    "id": 4,
@@ -181,7 +181,7 @@
      "id": 37,
      "name": "IRIV Pi Control",
      "parent": 28,
-     "count": 10
+     "count": 11
     },
     {
      "id": 38,
@@ -193,7 +193,7 @@
      "id": 40,
      "name": "IRIV EdgeAI",
      "parent": 28,
-     "count": 6
+     "count": 7
     },
     {
      "id": 39,
@@ -208,7 +208,7 @@
      "count": 5
     }
    ],
-   "count": 93
+   "count": 94
   },
   {
    "id": 10,

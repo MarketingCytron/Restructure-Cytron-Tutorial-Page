@@ -25,7 +25,9 @@
   };
   const ORDER = [2, 1, 13, 19, 16, 28, 4, 7, 10, 27, 11, 43, 9, 24];           // education / guest: archive-size order
   const ORDER_INDUSTRY = [28, 27, 11, 43, 9, 13, 2, 1, 19, 16, 7, 10, 4, 24];  // industry: industrial platforms first
-  const rowOrder = () => AUD === 'industry' ? ORDER_INDUSTRY : ORDER;
+  const IND_PLATFORMS = [28, 27];                                             // Industry, Raspberry Pi in Industry — not shown on the Education side
+  const ORDER_EDU = ORDER.filter(id => !IND_PLATFORMS.includes(id));
+  const rowOrder = () => AUD === 'industry' ? ORDER_INDUSTRY : AUD === 'education' ? ORDER_EDU : ORDER;
 
   /* ---------- audience (the "Personalize Your Cytron Experience" choice) ----------
      The live site asks Education / Industry once and keeps it in the session; the tutorial page
@@ -54,13 +56,16 @@
   }
   let currentRender = null;
   // Industry view = the live site's "Industry" topic (post_type=industry): only those posts are shown.
-  // Education / guest = the whole archive.
+  // Education view = the "Education" topic (post_type=education): industry posts and the industrial platforms are hidden.
+  // Guest = the whole archive.
   const isInd = t => t.audience.includes('industry');
-  const SCOPE = () => AUD === 'industry' ? T.filter(isInd) : T;
-  const scopeAud = () => AUD === 'industry' ? ['industry'] : [];
+  const isEdu = t => t.audience.includes('education');
+  const SCOPE = () => AUD === 'industry' ? T.filter(isInd) : AUD === 'education' ? T.filter(isEdu) : T;
+  const scopeAud = () => AUD === 'industry' ? ['industry'] : AUD === 'education' ? ['education'] : [];
   const audPool = SCOPE;
   const inCat = id => filter({ categories: [id], audience: scopeAud() });
-  const scopeNote = () => AUD === 'industry' ? ' in the Industry topic' : '';
+  const scopeNote = () => AUD === 'industry' ? ' in the Industry topic' : AUD === 'education' ? ' in the Education topic' : '';
+  const hiddenCat = id => AUD === 'education' && (IND_PLATFORMS.includes(id) || IND_PLATFORMS.includes(catById[id]?.parentId));
   // Industry view is arranged by hardware, i.e. the sub-categories of the live "Industry" category,
   // plus Raspberry Pi in Industry and a catch-all for industry posts filed under none of them.
   const IND_PARENT = 28;
@@ -313,14 +318,14 @@
   function filterbar(s, list) {
     const all = s.fixedCat ? inCat(s.fixedCat) : SCOPE();
     const cc = id => countIn(all, t => t.categories.includes(id));
-    const cats = (s.fixedCat ? TAX.categories.filter(c => c.id === s.fixedCat) : TAX.categories).map(c => {
+    const cats = (s.fixedCat ? TAX.categories.filter(c => c.id === s.fixedCat) : TAX.categories.filter(c => !hiddenCat(c.id))).map(c => {
       const kids = (c.children || []).filter(ch => cc(ch.id) > 0);
       return (s.fixedCat ? '' : `<label><input type="checkbox" name="cat" value="${c.id}" ${s.cats.includes(c.id) ? 'checked' : ''}> ${esc(c.name)}<span class="cnt">${cc(c.id)}</span></label>`) +
         kids.map(ch => `<label class="${s.fixedCat ? '' : 'child'}"><input type="checkbox" name="cat" value="${ch.id}" ${s.cats.includes(ch.id) ? 'checked' : ''}> ${esc(ch.name)}<span class="cnt">${cc(ch.id)}</span></label>`).join('');
     }).join('');
     const levels = ['Beginner', 'Intermediate', 'Advanced', 'Unrated'].map(l => `<label><input type="checkbox" name="level" value="${l}" ${s.levels.includes(l) ? 'checked' : ''}><span class="dot" style="background:var(--lvl-${l === 'Unrated' ? 'none' : l.toLowerCase()})"></span>${l}<span class="cnt">${countIn(all, t => (t.level || 'Unrated') === l)}</span></label>`).join('');
     const types = ['Tutorial', 'Project', 'Protip', 'Success Stories'].map(ty => `<label><input type="checkbox" name="type" value="${ty}" ${s.types.includes(ty) ? 'checked' : ''}> ${TYPE_LABEL[ty]}<span class="cnt">${countIn(all, t => t.type === ty)}</span></label>`).join('') +
-      (AUD === 'industry' ? '' : `<hr style="border:0;border-top:1px solid var(--line-2);margin:6px 0">` + ['education', 'industry'].map(a => `<label><input type="checkbox" name="aud" value="${a}" ${s.aud.includes(a) ? 'checked' : ''}> For ${a}<span class="cnt">${countIn(all, t => t.audience.includes(a))}</span></label>`).join(''));
+      (AUD === 'industry' || AUD === 'education' ? '' : `<hr style="border:0;border-top:1px solid var(--line-2);margin:6px 0">` + ['education', 'industry'].map(a => `<label><input type="checkbox" name="aud" value="${a}" ${s.aud.includes(a) ? 'checked' : ''}> For ${a}<span class="cnt">${countIn(all, t => t.audience.includes(a))}</span></label>`).join(''));
     const n = k => s[k].length ? `<span class="n">${s[k].length}</span>` : '';
     const active = s.levels.length + s.types.length + s.aud.length + s.cats.length;
     const hasCatKids = !s.fixedCat || (catById[s.fixedCat].children || []).some(ch => cc(ch.id) > 0);
@@ -402,7 +407,7 @@
       app.innerHTML = header('home') + `
 ${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(SCOPE().length)} electronics and digital-making guides</h1>` : (AUD === 'industry'
   ? `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron · Industry view</p><h1>Tutorials for <em>industry</em></h1><p class="lead">${fmtNum(SCOPE().length)} step-by-step guides from the Industry topic, arranged by hardware — IRIV PiControl, IRIV EdgeAI, IRIV SmartHub, LoRaWAN and Raspberry Pi in industry. Switch to Education in the header for the full maker archive.</p></div></section>`
-  : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">Step-by-step builds for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`)}
+  : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron${AUD === 'education' ? ' · Education view' : ''}</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">${AUD === 'education' ? fmtNum(SCOPE().length) + ' step-by-step builds' : 'Step-by-step builds'} for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`)}
 ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${featured()}${latestPanel()}</div>
 </div></section>`}` +
         filterbar(s, list) +
