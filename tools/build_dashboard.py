@@ -27,7 +27,10 @@ for pc in TAX['categories']:
 RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics',   # Robot Kits merged into Robotics, 18 Sep 2026
           'RP2040/PICO': 'RP2040'}                                                    # renamed 23 Sep 2026; Teensy and rero were deleted (names simply drop out)
 # curated categories: membership is an editorial choice, so no keyword support is not a finding
-CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)'}
+CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop'}
+# a post filed here is deliberately NOT also filed there: do not re-suggest the listed categories
+EXCLUSIVE_SUGGEST = {'Industrial Workshop': {'IRIV Pi Control', 'IRIV EdgeAI', 'Seminars & Workshop', 'Miscellaneous'},
+                     'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'Raspberry Pi Pico'}}
 def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
@@ -50,6 +53,7 @@ rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
 rules['ZOOM:BIT'].update(['zoom:bit', 'zoombit', 'zoom bit']); rules['Robotics'].discard('zoombit')
 rules['Raspberry Pi Pico'].update(['raspberry pi pico', 'pi pico']); rules['Raspberry Pi Zero'].update(['raspberry pi zero', 'pi zero'])
 rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
+rules['Industrial Workshop'].update(['iriv picontrol workshop', 'iriv edgeai workshop', 'industrial workshop'])
 rules = {c: ks for c, ks in rules.items() if c in ID}
 
 def kw_hits(cat, text):
@@ -142,6 +146,8 @@ def evaluate(t, prev):
         p = PARENT.get(c)
         if p and p not in cur and p not in add:
             add.append(p); segs[p] = f'+{p} — parent of {c}'
+    for k, drop in EXCLUSIVE_SUGGEST.items():
+        if k in cur: add = [c for c in add if c not in drop]
     add = by_id(add); quest = by_id(quest)
     keep = set(add) | set(quest)
     def segkey(c):

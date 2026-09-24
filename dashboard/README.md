@@ -144,14 +144,15 @@ id, title, slug, prio, current, add, quest, reason, type, level, date, views, ta
 | Review only | 40 | An assigned category with no keyword support — skim, don't bulk-action |
 | No change needed | 404 | Clean; excluded from the progress meter |
 
-Counts as of 23 Sep 2026, 933 posts (16 Sep audit: 41 / 437 / 36 / 416). The taxonomy has been reworked on
+Counts as of 24 Sep 2026, 933 posts (16 Sep audit: 41 / 437 / 36 / 416). The taxonomy has been reworked on
 the live site since the audit: **RDK X5**, **Raspberry Pi in Industry** and **Artificial Intelligence (AI)**
-are new top-level categories; **Raspberry Pi Pico**, **Raspberry Pi Zero**, **ZOOM:BIT** and **Jetson Orin
-Nano** are new sub-categories; Robot Kits was merged into Robotics; Teensy and rero were deleted;
+are new top-level categories; **Raspberry Pi Pico**, **Raspberry Pi Zero**, **ZOOM:BIT**, **Jetson Orin
+Nano** and **Industrial Workshop** (24 Sep) are new sub-categories; Robot Kits was merged into Robotics; Teensy and rero were deleted;
 RP2040/PICO became RP2040. New sub-categories get keyword rules that run over every post, which is why
 "Missing category" grew — 76 posts mention a Pico, 12 a Pi Zero and 23 an Orin Nano without being filed
 there. The chips follow the mirror's `data/taxonomy.json`; retired names are mapped in
-`tools/build_dashboard.py`; *Raspberry Pi in Industry* and *AI* are treated as curated (no keyword check).
+`tools/build_dashboard.py`; *Raspberry Pi in Industry*, *AI* and *Industrial Workshop* are treated as curated (no keyword check), and a post
+filed under Industrial Workshop or RDK X5 is not re-suggested for the categories it was deliberately moved out of.
 
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an

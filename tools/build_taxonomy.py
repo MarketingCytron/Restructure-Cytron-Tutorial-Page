@@ -1,7 +1,7 @@
 """Write /home/claude/scrape/taxonomy.json (names + tree, live sidebar order). Retired ids: 9 rero→AI, 20 Teensy→Raspberry Pi Pico, 31 Robot Kits→Raspberry Pi Zero (ids were reused by the CMS).
 Counts are filled in by build_data.py from categories.json."""
 import json
-TREE = [  # (id, name, [children])  — order and names exactly as the live #categoryDropdown lists them (23 Sep 2026)
+TREE = [  # (id, name, [children])  — order and names exactly as the live #categoryDropdown lists them (24 Sep 2026)
  (1, 'Arduino Ecosystem', []),
  (2, 'Raspberry Pi', [(20, 'Raspberry Pi Pico'), (31, 'Raspberry Pi Zero'), (3, 'RP2040')]),
  (27, 'Raspberry Pi in Industry', []),
@@ -11,7 +11,7 @@ TREE = [  # (id, name, [children])  — order and names exactly as the live #cat
  (9, 'Artificial Intelligence (AI)', []),
  (11, 'NVIDIA AI', [(12, 'Jetson Nano'), (35, 'Jetson Orin Nano'), (36, 'Jetson Orin NX')]),
  (43, 'RDK X5', []),
- (28, 'Industry', [(41, 'LoRaWAN'), (37, 'IRIV Pi Control'), (38, 'IRIV IOC'), (40, 'IRIV EdgeAI'), (39, 'IRIV SmartHub')]),
+ (28, 'Industry', [(41, 'LoRaWAN'), (37, 'IRIV Pi Control'), (38, 'IRIV IOC'), (40, 'IRIV EdgeAI'), (39, 'IRIV SmartHub'), (45, 'Industrial Workshop')]),
  (10, '3D Modelling', []),
  (19, 'Other Controllers', [(21, 'Makers'), (22, 'PIC Microcontroller'), (23, 'Python for MCU')]),
  (16, 'Components', [(17, 'Sensor'), (18, 'DIY')]),

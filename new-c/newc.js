@@ -53,9 +53,35 @@
     if (rerender && currentRender) currentRender();
   }
   let currentRender = null;
+  // Industry view = the live site's "Industry" topic (post_type=industry): only those posts are shown.
+  // Education / guest = the whole archive.
   const isInd = t => t.audience.includes('industry');
-  const bias = list => AUD === 'industry' ? list.filter(isInd).concat(list.filter(t => !isInd(t))) : list;   // stable: industry first
-  const audPool = () => AUD === 'industry' ? T.filter(isInd) : T;
+  const SCOPE = () => AUD === 'industry' ? T.filter(isInd) : T;
+  const scopeAud = () => AUD === 'industry' ? ['industry'] : [];
+  const audPool = SCOPE;
+  const inCat = id => filter({ categories: [id], audience: scopeAud() });
+  const scopeNote = () => AUD === 'industry' ? ' in the Industry topic' : '';
+  // Industry view is arranged by hardware, i.e. the sub-categories of the live "Industry" category,
+  // plus Raspberry Pi in Industry and a catch-all for industry posts filed under none of them.
+  const IND_PARENT = 28;
+  const IND_SUBS = [37, 40, 39, 41, 38];   // IRIV Pi Control · IRIV EdgeAI · IRIV SmartHub · LoRaWAN · IRIV IOC
+  const IND_WORKSHOP = 45;                  // Industrial Workshop — highlighted in its own showcase band, not a plain row
+  const IND_BLURB = {
+    37: 'Raspberry Pi based industrial controller — wiring, digital and analogue I/O, Modbus, Node-RED and PLC integration.',
+    40: 'Edge-AI industrial computer on Raspberry Pi CM5 — vision, CCTV analytics and inference on the factory floor.',
+    39: 'Industrial IoT gateway — connect sensors and machines to the cloud.',
+    41: 'Long-range, low-power sensor networks — gateways, nodes and cloud platforms.',
+    38: 'IRIV IO Controller — remote digital and analogue I/O for automation.',
+    27: PLATFORM[27].blurb
+  };
+  function industrySections() {
+    const inSub = t => t.categories.some(id => IND_SUBS.includes(id) || id === IND_WORKSHOP);
+    const secs = IND_SUBS.map(id => ({ key: id, title: catById[id].name, blurb: IND_BLURB[id], list: inCat(id), href: catHref(IND_PARENT, id) }));
+    if (catById[IND_WORKSHOP]) secs.unshift({ key: IND_WORKSHOP, title: 'Industrial Workshops', blurb: 'Hands-on IRIV PiControl and EdgeAI workshops with companies and TVET institutions.', list: inCat(IND_WORKSHOP), href: catHref(IND_PARENT, IND_WORKSHOP), showcase: true });
+    secs.push({ key: 27, title: PLATFORM[27].title, blurb: IND_BLURB[27], list: inCat(27), href: catHref(27) });
+    secs.push({ key: 'other', title: 'More industry guides', blurb: 'Case studies, product comparisons and industrial projects not tied to one controller.', list: SCOPE().filter(t => !inSub(t) && !t.categories.includes(27)), href: `${ROOT}/category.html` });
+    return secs.filter(x => x.list.length);
+  }
   document.documentElement.setAttribute('data-audience', AUD || 'unset');
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
   const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];
@@ -69,7 +95,6 @@
     share: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>'
   };
   const latest = l => sort(l, 'latest');
-  const inCat = id => filter({ categories: [id] });
   const countIn = (list, p) => list.reduce((n, t) => n + (p(t) ? 1 : 0), 0);
   const href = t => `${ROOT}/tutorial.html?slug=${encodeURIComponent(t.slug)}`;
   const catHref = (id, sub) => `${ROOT}/category.html?id=${id}${sub ? '&cat=' + sub : ''}`;
@@ -77,6 +102,7 @@
 
   /* ---------- chrome ---------- */
   function header(active) {
+    if (active && typeof active === 'object') { var activeSub = active.sub; active = active.id; }
     const dd = (label, items) => `<details><summary>${label}</summary><div>${items.map(x => `<a href="#" onclick="return false">${x}</a>`).join('')}</div></details>`;
     return `
 <header class="head"><div class="wrap">
@@ -87,20 +113,23 @@
     ${dd('Programs', ['RAC2026 Competition', 'EDU:BIT Certification', 'ZOOM:BIT Certification', 'EDU PICO Certification'])}
     ${dd('Community', ['micro:bit', 'Arduino/Maker Boards', 'Raspberry Pi', '3D Printing', 'Nvidia Jetson'])}
   </nav>
-  <form class="search" action="${ROOT}/category.html" method="get" role="search"><input type="search" name="q" placeholder="Search ${fmtNum(T.length)} tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
+  <form class="search" action="${ROOT}/category.html" method="get" role="search"><input type="search" name="q" placeholder="Search ${fmtNum(SCOPE().length)} tutorials" aria-label="Search tutorials" value="${esc(qs('q', ''))}"><button type="submit" aria-label="Search">${I.search}</button></form>
   <div class="aud-switch" role="group" aria-label="I am here for">${[['education', 'Education'], ['industry', 'Industry']].map(([a, l]) => `<button type="button" class="${AUD === a ? 'on' : ''}" data-aud="${a}" aria-pressed="${AUD === a}">${l}</button>`).join('')}</div>
   <a class="store" href="${LIVE}/">${I.cart} Store</a>
   <button class="burger" aria-label="Menu" aria-expanded="false" data-burger>${I.burger}</button>
   <details class="mnav" data-mnav><summary>Menu</summary>
     <form class="msearch" action="${ROOT}/category.html" method="get" role="search"><input type="search" name="q" placeholder="Search tutorials" aria-label="Search tutorials"><button type="submit" aria-label="Search">${I.search}</button></form>
     <div class="aud-switch m" role="group" aria-label="I am here for"><span>I'm here for</span>${[['education', 'Education'], ['industry', 'Industry']].map(([a, l]) => `<button type="button" class="${AUD === a ? 'on' : ''}" data-aud="${a}" aria-pressed="${AUD === a}">${l}</button>`).join('')}</div>
-    <a href="${ROOT}/index.html">Tutorials</a>${rowOrder().slice(0, 8).map(id => `<a href="${catHref(id)}">${PLATFORM[id].chip}</a>`).join('')}<a href="${ROOT}/category.html">All tutorials</a><a href="${LIVE}/">Store</a>
+    <a href="${ROOT}/index.html">Tutorials</a>${AUD === 'industry' ? industrySections().filter(x => x.key !== 'other').map(x => `<a href="${x.href}">${esc(x.title)}</a>`).join('') : rowOrder().filter(id => inCat(id).length).slice(0, 8).map(id => `<a href="${catHref(id)}">${PLATFORM[id].chip}</a>`).join('')}<a href="${ROOT}/category.html">All tutorials</a><a href="${LIVE}/">Store</a>
   </details>
 </div></header>
 <div class="boards"><div class="wrap"><ul>
   <li><a class="${active === 'home' ? 'on' : ''}" href="${ROOT}/index.html">Home</a></li>
-  ${rowOrder().filter(id => id !== 24).map(id => `<li><a class="${active === id ? 'on' : ''}" href="${catHref(id)}">${PLATFORM[id].chip}<span class="n">${inCat(id).length}</span></a></li>`).join('')}
-  <li><a class="${active === 'all' ? 'on' : ''}" href="${ROOT}/category.html">All<span class="n">${fmtNum(T.length)}</span></a></li>
+  ${AUD === 'industry'
+    ? industrySections().filter(x => x.key !== 'other').map(x => `<li><a class="${active === x.key || activeSub === x.key ? 'on' : ''}" href="${x.href}">${esc(x.title)}<span class="n">${x.list.length}</span></a></li>`).join('')
+    : rowOrder().filter(id => id !== 24 && inCat(id).length).map(id => `<li><a class="${active === id ? 'on' : ''}" href="${catHref(id)}">${PLATFORM[id].chip}<span class="n">${inCat(id).length}</span></a></li>`).join('')}
+  ${AUD === 'industry' ? `<li><a class="${active === 'stories' ? 'on' : ''}" href="${storiesHref()}">Success Stories<span class="n">${SCOPE().filter(t => t.type === 'Success Stories').length}</span></a></li>` : ''}
+  <li><a class="${active === 'all' ? 'on' : ''}" href="${ROOT}/category.html">All<span class="n">${fmtNum(SCOPE().length)}</span></a></li>
 </ul></div></div>`;
   }
   function footer() {
@@ -181,7 +210,37 @@
     const kids = (catById[id].children || []).map(ch => ({ ch, n: inCat(ch.id).length })).filter(x => x.n >= 3);
     return `<section class="sec"><div class="wrap">
   <div class="sec-head"><div><h2>${esc(PLATFORM[id].title)}</h2><p>${esc(PLATFORM[id].blurb)}</p>${kids.length ? `<div class="sub">${kids.map(k => `<a href="${catHref(id, k.ch.id)}">${esc(k.ch.name)} · ${k.n}</a>`).join('')}</div>` : ''}</div><a class="viewall" href="${catHref(id)}">View all ${fmtNum(list.length)} →</a></div>
-  <div class="grid">${bias(latest(list)).slice(0, 4).map(card).join('')}</div>
+  <div class="grid">${latest(list).slice(0, 4).map(card).join('')}</div>
+</div></section>`;
+  }
+  function workshopBand(x) {
+    const posts = latest(x.list).slice(0, 4);
+    return `<section class="band workshops"><div class="wrap"><div class="band-inner">
+  <div class="band-head"><div><p class="eyebrow">Industrial Workshop</p><h2>Workshops on the factory floor — and in the classroom</h2><p>${esc(x.blurb)} Each story shows what a team built in two days with IRIV hardware, Node-RED and edge AI.</p></div>
+  <div class="band-cta"><a class="btn" href="${x.href}">View all ${fmtNum(x.list.length)} workshops →</a><a class="btn btn-ghost-light" href="${LIVE}/cytron-workshop" target="_blank" rel="noopener">Request a workshop</a></div></div>
+  <div class="ws-row">${posts.map(t => `<a class="ws" href="${href(t)}">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span class="ph"></span>'}<span class="ws-body"><span class="ws-kind">${esc(TYPE_LABEL[t.type] || t.type || 'Post')} · ${esc(t.date || '')}</span><b>${esc(t.title)}</b><span class="ws-ex">${esc(t.excerpt || '')}</span></span></a>`).join('')}</div>
+</div></div></section>`;
+  }
+  const storiesHref = () => `${ROOT}/category.html?type=${encodeURIComponent('Success Stories')}`;
+  function successSection() {
+    const all = SCOPE().filter(t => t.type === 'Success Stories');
+    const list = latest(all.filter(t => !t.categories.includes(IND_WORKSHOP)));   // workshops already have their own band
+    if (!list.length) return '';
+    const lead = list[0], rest = list.slice(1, 6);
+    const org = t => (t.excerpt || '').split(/[.!?]/)[0];
+    return `<section class="sec stories"><div class="wrap">
+  <div class="sec-head"><div><p class="eyebrow">Industry implementation</p><h2>Success stories</h2><p>Real projects, real impact — how businesses scale with IRIV, Raspberry Pi and IR 4.0 technology.</p></div><a class="viewall" href="${storiesHref()}">All ${fmtNum(all.length)} success stories →</a></div>
+  <div class="stories-grid">
+    <a class="story-lead" href="${href(lead)}">${lead.hero || lead.cover ? `<img src="${esc(lead.hero || lead.cover)}" alt="" loading="lazy">` : ''}<span class="cap"><span class="eyebrow">Latest story · ${esc(lead.date || '')}</span><b>${esc(lead.title)}</b><span class="ex">${esc(lead.excerpt || '')}</span><span class="more">Read the story »</span></span></a>
+    <ol class="story-list">${rest.map(t => `<li><a href="${href(t)}">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span class="ph"></span>'}<span><b>${esc(t.title)}</b><small>${esc(t.date || '')}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</small></span></a></li>`).join('')}</ol>
+  </div>
+</div></section>`;
+  }
+  function sectionRow(x) {
+    if (x.showcase) return workshopBand(x) + successSection();
+    return `<section class="sec"><div class="wrap">
+  <div class="sec-head"><div><h2>${esc(x.title)}</h2><p>${esc(x.blurb)}</p></div><a class="viewall" href="${x.href}">View all ${fmtNum(x.list.length)} →</a></div>
+  <div class="grid">${latest(x.list).slice(0, 4).map(card).join('')}</div>
 </div></section>`;
   }
   function featured() {
@@ -193,7 +252,7 @@
       pool = T.filter(t => /getting started|get started|beginner'?s guide|introduction to/i.test(t.title) && (t.hero || t.cover));
       pool = (HAS_VIEWS ? sort(pool, 'popular') : latest(pool)).slice(0, 5);
     }
-    if (pool.length < 3) pool = latest(T.filter(t => t.hero || t.cover)).slice(0, 5);
+    if (pool.length < 3) pool = latest(SCOPE().filter(t => t.hero || t.cover)).slice(0, 5);
     return `<div class="featured slider" data-slider aria-roledescription="carousel">
   ${pool.map((t, i) => { const pc = primaryCat(t); return `<div class="slide ${i === 0 ? 'on' : ''}" role="group" aria-label="${i + 1} of ${pool.length}"><img src="${esc(t.hero || t.cover)}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}<div class="cap"><span class="eyebrow">${AUD === 'industry' ? 'Featured for industry' : 'Featured guide'}${pc ? ` · ${esc(pc.parentId ? catById[pc.parentId].name : pc.name)}` : ''}${t.views != null ? ` · ${fmtNum(t.views)} views` : ''}</span><h2><a href="${href(t)}">${esc(t.title)}</a></h2><p>${esc(t.excerpt || '')}</p><a class="btn" href="${href(t)}">Read More »</a></div></div>`; }).join('')}
   <button class="arrow prev" aria-label="Previous" data-prev>‹</button><button class="arrow next" aria-label="Next" data-next>›</button>
@@ -214,13 +273,13 @@
   }
   function latestPanel() {
     const ind = AUD === 'industry';
-    return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html${ind ? '?aud=industry' : ''}">${ind ? 'All industry tutorials →' : 'All tutorials →'}</a></div><ul>${latest(audPool()).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
+    return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html">${ind ? 'All industry tutorials →' : 'All tutorials →'}</a></div><ul>${latest(audPool()).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
   }
   function popularStrip() {
     if (!HAS_VIEWS) return '';
     const ind = AUD === 'industry';
     const top = sort(audPool().filter(t => t.type !== 'Success Stories'), 'popular').slice(0, 5);
-    return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>${ind ? 'Most read by engineers and integrators.' : 'All-time favourites across the archive.'}</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular${ind ? '&aud=industry' : ''}">See ranking →</a></div><div class="row">${top.map(mini).join('')}</div></div></section>`;
+    return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>${ind ? 'Most read by engineers and integrators.' : 'All-time favourites across the archive.'}</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular">See ranking →</a></div><div class="row">${top.map(mini).join('')}</div></div></section>`;
   }
   function band() {
     return `<section class="band"><div class="wrap"><div class="band-inner">
@@ -249,10 +308,10 @@
   const isFiltering = s => !!(s.q || s.cats.length || s.types.length || s.levels.length || s.aud.length);
   function run(s) {
     const scoped = s.cats.length ? s.cats : (s.fixedCat ? [s.fixedCat] : []);
-    return bias(sort(filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud }), s.sort));
+    return sort(filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud.length ? s.aud : scopeAud() }), s.sort);
   }
   function filterbar(s, list) {
-    const all = s.fixedCat ? inCat(s.fixedCat) : T;
+    const all = s.fixedCat ? inCat(s.fixedCat) : SCOPE();
     const cc = id => countIn(all, t => t.categories.includes(id));
     const cats = (s.fixedCat ? TAX.categories.filter(c => c.id === s.fixedCat) : TAX.categories).map(c => {
       const kids = (c.children || []).filter(ch => cc(ch.id) > 0);
@@ -261,7 +320,7 @@
     }).join('');
     const levels = ['Beginner', 'Intermediate', 'Advanced', 'Unrated'].map(l => `<label><input type="checkbox" name="level" value="${l}" ${s.levels.includes(l) ? 'checked' : ''}><span class="dot" style="background:var(--lvl-${l === 'Unrated' ? 'none' : l.toLowerCase()})"></span>${l}<span class="cnt">${countIn(all, t => (t.level || 'Unrated') === l)}</span></label>`).join('');
     const types = ['Tutorial', 'Project', 'Protip', 'Success Stories'].map(ty => `<label><input type="checkbox" name="type" value="${ty}" ${s.types.includes(ty) ? 'checked' : ''}> ${TYPE_LABEL[ty]}<span class="cnt">${countIn(all, t => t.type === ty)}</span></label>`).join('') +
-      `<hr style="border:0;border-top:1px solid var(--line-2);margin:6px 0">` + ['education', 'industry'].map(a => `<label><input type="checkbox" name="aud" value="${a}" ${s.aud.includes(a) ? 'checked' : ''}> For ${a}<span class="cnt">${countIn(all, t => t.audience.includes(a))}</span></label>`).join('');
+      (AUD === 'industry' ? '' : `<hr style="border:0;border-top:1px solid var(--line-2);margin:6px 0">` + ['education', 'industry'].map(a => `<label><input type="checkbox" name="aud" value="${a}" ${s.aud.includes(a) ? 'checked' : ''}> For ${a}<span class="cnt">${countIn(all, t => t.audience.includes(a))}</span></label>`).join(''));
     const n = k => s[k].length ? `<span class="n">${s[k].length}</span>` : '';
     const active = s.levels.length + s.types.length + s.aud.length + s.cats.length;
     const hasCatKids = !s.fixedCat || (catById[s.fixedCat].children || []).some(ch => cc(ch.id) > 0);
@@ -341,15 +400,15 @@
       history.replaceState(null, '', location.pathname + (toQuery(s) ? '?' + toQuery(s) : ''));
       const pos = keepFocus ? document.querySelector('[data-q]')?.selectionStart : null;
       app.innerHTML = header('home') + `
-${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(T.length)} electronics and digital-making guides</h1>` : (AUD === 'industry'
-  ? `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron · Industry view</p><h1>Tutorials for <em>industry</em></h1><p class="lead">Step-by-step guides for IRIV controllers, Raspberry Pi and edge AI on the factory floor — with the full maker archive one click away.</p></div></section>`
+${f ? `<h1 class="sr-only">Cytron Tutorials — ${fmtNum(SCOPE().length)} electronics and digital-making guides</h1>` : (AUD === 'industry'
+  ? `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron · Industry view</p><h1>Tutorials for <em>industry</em></h1><p class="lead">${fmtNum(SCOPE().length)} step-by-step guides from the Industry topic, arranged by hardware — IRIV PiControl, IRIV EdgeAI, IRIV SmartHub, LoRaWAN and Raspberry Pi in industry. Switch to Education in the header for the full maker archive.</p></div></section>`
   : `<section class="intro"><div class="wrap"><p class="eyebrow">Cytron</p><h1>Tutorials for <em>digital makers</em></h1><p class="lead">Step-by-step builds for Maker boards, micro:bit, Raspberry Pi, robots and edge AI. Pick a board, pick a level, start making.</p></div></section>`)}
 ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${featured()}${latestPanel()}</div>
 </div></section>`}` +
         filterbar(s, list) +
         (f ? resultsBlock(s, list, 'Results') :
           popularStrip() +
-          rowOrder().map(platformRow).join('') +
+          (AUD === 'industry' ? industrySections().map(sectionRow).join('') : rowOrder().map(platformRow).join('')) +
           (AUD === 'industry' ? '' : band()) +
           `<div style="height:30px"></div>`) + footer() + welcome('home');
       document.title = f ? 'Search · Cytron Tutorials' : 'Cytron Tutorials — Learn Raspberry Pi, Arduino, ESP32, micro:bit and more';
@@ -368,16 +427,16 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     const draw = (keepFocus) => {
       const list = run(s);
       history.replaceState(null, '', location.pathname + (toQuery(s) ? '?' + toQuery(s) : ''));
-      const all = c ? inCat(id) : T;
+      const all = c ? inCat(id) : SCOPE();
       const kids = c ? (c.children || []).map(ch => ({ ch, n: inCat(ch.id).length })).filter(x => x.n > 0) : [];
       const title = c ? (s.cats.length === 1 ? catById[s.cats[0]].name : PLATFORM[id]?.title || c.name) : (s.q ? `Search: “${s.q}”` : 'All tutorials');
       const pos = keepFocus ? document.querySelector('[data-q]')?.selectionStart : null;
-      app.innerHTML = header(c ? id : 'all') + `
+      app.innerHTML = header(c ? (s.cats.length === 1 ? { sub: s.cats[0], id } : id) : (s.types.length === 1 && s.types[0] === 'Success Stories' && !s.q ? 'stories' : 'all')) + `
 <section class="cat-hero"><div class="wrap">
   <ul class="crumbs"><li><a href="${ROOT}/index.html">Tutorials</a></li>${c ? `<li>${esc(c.name)}</li>` : `<li>${s.q ? 'Search' : 'All'}</li>`}</ul>
   ${c ? `<span class="ref">${PLATFORM[id]?.ref || 'CAT'} · PLATFORM</span>` : ''}
   <h1>${esc(c ? PLATFORM[id]?.title || c.name : (s.q ? `“${s.q}”` : 'All tutorials'))}</h1>
-  <p>${c ? esc(PLATFORM[id]?.blurb || '') + ' ' : ''}<span class="mono">${fmtNum(all.length)} posts${c ? ' in this platform' : ' in the archive'}.</span></p>
+  <p>${c ? esc(PLATFORM[id]?.blurb || '') + ' ' : ''}<span class="mono">${fmtNum(all.length)} posts${c ? ' in this platform' : ' in the archive'}${scopeNote()}.</span></p>
   ${kids.length ? `<div class="subs"><a class="${!s.cats.length ? 'on' : ''}" href="?id=${id}" data-sub="">All<small>${all.length}</small></a>${kids.map(k => `<a class="${s.cats.includes(k.ch.id) ? 'on' : ''}" href="?id=${id}&cat=${k.ch.id}" data-sub="${k.ch.id}">${esc(k.ch.name)}<small>${k.n}</small></a>`).join('')}</div>` : ''}
 </div></section>` +
         filterbar(s, list) +
@@ -385,7 +444,9 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
   <div>${resultsBlock(s, list, esc(title), true).replace('<div class="wrap">', '<div>')}</div>
   <aside class="side">
     ${HAS_VIEWS ? `<div class="panel"><h4>Most viewed${c ? ' here' : ''}</h4><ul>${sort(all, 'popular').slice(0, 5).map(t => `<li><a href="${href(t)}">${esc(t.title)}</a><small>${fmtNum(t.views)} views</small></li>`).join('')}</ul></div>` : ''}
-    <div class="panel"><h4>Browse by platform</h4><ul class="cats">${rowOrder().map(x => ({ x, n: inCat(x).length })).filter(o => o.n).map(({ x, n }) => `<li><a href="${catHref(x)}" ${x === id ? 'style="color:var(--cyan-ink)"' : ''}>${esc(PLATFORM[x].title)}</a><span>${n}</span></li>`).join('')}</ul></div>
+    ${AUD === 'industry'
+      ? `<div class="panel"><h4>Browse by hardware</h4><ul class="cats">${industrySections().map(x => `<li><a href="${x.href}" ${x.key === id || s.cats.includes(x.key) ? 'style="color:var(--cyan-ink)"' : ''}>${esc(x.title)}</a><span>${x.list.length}</span></li>`).join('')}</ul></div>`
+      : `<div class="panel"><h4>Browse by platform</h4><ul class="cats">${rowOrder().map(x => ({ x, n: inCat(x).length })).filter(o => o.n).map(({ x, n }) => `<li><a href="${catHref(x)}" ${x === id ? 'style="color:var(--cyan-ink)"' : ''}>${esc(PLATFORM[x].title)}</a><span>${n}</span></li>`).join('')}</ul></div>`}
   </aside>
 </div>` + footer();
       document.title = `${title} · Cytron Tutorials`;
@@ -408,7 +469,7 @@ ${f ? '' : `<section class="hero"><div class="wrap"><div class="hero-grid">${fea
     const idx = T.indexOf(t); const newer = T[idx - 1], older = T[idx + 1];
     let body = art ? fixLinks(art.body) : `<div class="notice"><strong>Body not mirrored in this prototype.</strong> Five sample articles carry their full text; every other post has its real title, cover, author, level, categories, tags and view count. <a href="${LIVE}/tutorial/${esc(slug)}" target="_blank" rel="noopener">Read the original on my.cytron.io ↗</a></div><h2>Introduction</h2><p>${esc(t.excerpt || '')}</p>`;
     const toc = []; body = body.replace(/<h2>(.*?)<\/h2>/g, (m, txt) => { const id = 'h-' + toc.length + '-' + txt.replace(/<[^>]+>/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); toc.push([id, txt.replace(/<[^>]+>/g, '')]); return `<h2 id="${id}">${txt}</h2>`; });
-    const related = parent ? sort(T.filter(x => x !== t && x.categories.some(id => id === parent.id || catById[id]?.parentId === parent.id)), HAS_VIEWS ? 'popular' : 'latest').slice(0, 4) : [];
+    const related = parent ? sort(SCOPE().filter(x => x !== t && x.categories.some(id => id === parent.id || catById[id]?.parentId === parent.id)), HAS_VIEWS ? 'popular' : 'latest').slice(0, 4) : [];
     app.innerHTML = header(parent ? parent.id : null) + `
 <div class="wrap"><ul class="crumbs"><li><a href="${ROOT}/index.html">Tutorials</a></li>${parent ? `<li><a href="${catHref(parent.id)}">${esc(parent.name)}</a></li>` : ''}${pc && pc.parentId ? `<li><a href="${catHref(parent.id, pc.id)}">${esc(pc.name)}</a></li>` : ''}<li>${esc(t.title)}</li></ul></div>
 <div class="wrap article-wrap">

@@ -181,7 +181,7 @@
      "id": 37,
      "name": "IRIV Pi Control",
      "parent": 28,
-     "count": 14
+     "count": 10
     },
     {
      "id": 38,
@@ -193,13 +193,19 @@
      "id": 40,
      "name": "IRIV EdgeAI",
      "parent": 28,
-     "count": 7
+     "count": 6
     },
     {
      "id": 39,
      "name": "IRIV SmartHub",
      "parent": 28,
      "count": 3
+    },
+    {
+     "id": 45,
+     "name": "Industrial Workshop",
+     "parent": 28,
+     "count": 5
     }
    ],
    "count": 93
@@ -268,10 +274,10 @@
      "id": 26,
      "name": "Seminars & Workshop",
      "parent": 24,
-     "count": 4
+     "count": 1
     }
    ],
-   "count": 41
+   "count": 38
   }
  ],
  "postTypes": [

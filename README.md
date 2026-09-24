@@ -11,15 +11,16 @@ hero, an instant filter bar (search · level · type · platform · sort, URL-ba
 of four posts per platform, rich cards with Like/Bookmark on hover, and an article layout with a sticky rail
 (TOC, hardware list, tags, more in platform). White ground, soft shadows, sentence-case Barlow Condensed headings.
 
-**Education / Industry personalisation (23 Sep 2026).** Like the live site, the redesign asks first-time visitors
-*"What type of project are you working on?"* — Education, Industry / Enterprise, or continue as guest. On the live
-site that choice only changes the store; here it personalises the tutorial page without hiding anything: an
-Industry visitor gets the industrial platforms (Industry, Raspberry Pi in Industry, NVIDIA Jetson, RDK X5, AI)
-first, an industry-led featured slider, Latest Posts and Most viewed, and industry posts ranked first inside every
-row and result list. Education and guest keep the maker-first layout. The dialog appears once, on the home page only; the choice is remembered in the browser (and carried
-between pages even when the files are opened from disk) and can be switched any time from the Education / Industry
-toggle in the header. For demos: `new-c/index.html?mode=reset`
-shows the popup again, `?mode=industry` / `?mode=education` forces a view.
+**Education / Industry (23 Sep 2026).** Like the live site, the redesign asks first-time visitors *"What type of
+project are you working on?"* — Education, Industry / Enterprise, or continue as guest — once, on the home page. On the
+live site that choice only changes the store; here it scopes the tutorial page. **Industry** shows only the posts in the
+live site's *Industry* topic (`post_type=industry`, 112 posts today), **arranged by hardware** — an *Industrial Workshops*
+showcase band first, a *Success stories* section (the my.cytron.io/success-stories view inside the Industry scope), then the Industry category's sub-categories (IRIV Pi Control, IRIV EdgeAI, IRIV SmartHub, LoRaWAN,
+IRIV IOC) as chips and rows, then Raspberry Pi in Industry, then a catch-all row; the slider, Latest Posts, Most viewed, search and category pages all
+work inside that set, and empty sections disappear. **Education** and guest show the whole archive in the maker-first layout. The choice is
+remembered in the browser (and carried between pages even when the files are opened from disk) and can be switched
+any time from the Education / Industry toggle in the header. For demos: `new-c/index.html?mode=reset` shows the popup
+again, `?mode=industry` / `?mode=education` forces a view.
 
 Two earlier explorations — Option A (hub + filter bar) and Option B (Random-Nerd-Tutorials style) — were merged
 into C and removed from the repo on 23 Sep 2026; they remain in the git history (`git log -- new new-b`) and are
