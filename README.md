@@ -90,9 +90,10 @@ Other Controllers / PIC Microcontroller in the CMS; the prototype hides those me
 rule in `tools/build_data.py`) and the clean-up dashboard flags them for removal. The Excel export reports the CMS as is.
 
 **`data/cytron-tutorials-export.xlsx`** — the same data as a spreadsheet: one row per tutorial with title,
-description, publish date, category / sub-category, views, likes, author, type, level, link, tags and audience,
-plus Summary and Notes sheets. Bookmark and thumbs-up/down counts are not shown publicly by the site, so those
-columns are marked "n/a – not public".
+description, publish date, category / sub-category, views, likes, author, type, level, link, series / part,
+tags and audience, plus Summary and Notes sheets (1,399 rows: 933 listed posts + 466 series child pages).
+Bookmark and thumbs-up/down counts are not shown publicly by the site and are not exported. The team-editable copy
+lives in Google Sheets (`cytron-tutorials-export`, Cytron Drive) — regenerating this file does not touch that sheet.
 
 ## Status
 

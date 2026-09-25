@@ -6,12 +6,25 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
-SITE='/home/claude/site/data'
+import os
+SITE=os.environ.get('SITE_DATA') or os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','data')
 OUT=sys.argv[1] if len(sys.argv)>1 else '/home/claude/site/data/cytron-tutorials-export.xlsx'
 T=json.load(open(f'{SITE}/tutorials.json'))
 TAX=json.load(open(f'{SITE}/taxonomy.json'))
-det=json.load(open('/home/claude/scrape2/details.json'))
+det=json.load(open(os.environ.get('DETAILS') or '/home/claude/scrape2/details.json')) if os.path.exists(os.environ.get('DETAILS') or '/home/claude/scrape2/details.json') else {}
+# the spreadsheet reports what the CMS holds, so undo the prototype-only overrides
+OVR=json.load(open(f'{SITE}/cms-overrides.json'))
+for t in T:
+    if t['slug'] in OVR: t['categories']=sorted(set(t['categories'])|set(OVR[t['slug']]['removed']))
 SNAP=datetime.now().strftime('%d %b %Y')
+# series: parent posts are in the listing; their child pages are not, so they are appended as extra rows
+PARTS=json.load(open(f'{SITE}/parts.json')) if __import__('os').path.exists(f'{SITE}/parts.json') else []
+SERIES=json.load(open(f'{SITE}/series.json')) if __import__('os').path.exists(f'{SITE}/series.json') else {}
+for t in PARTS: t['_part']=True
+T=T+PARTS
+def series_cols(t):
+    if not t.get('series') or t['series'] not in SERIES: return '',''
+    return SERIES[t['series']]['title'], f"{t['part']+1} of {t['parts']}"
 
 parent={}; name={}
 for p in TAX['categories']:
@@ -29,9 +42,9 @@ def split_cats(ids):
             if name.get(i) and name[i] not in parents: parents.append(name[i])
     return ', '.join(parents), ', '.join(subs)
 
-NA='n/a – not public'   # bookmark / thumbs counts are stored in the CMS but never rendered on the page
-HEAD=['Tutorial','Description','Publish Date','Category','Views','Like','Bookmark','Thumbs Up','Thumbs Down',
-      'Authors','Type','Level','Sub-category','Link','Tags','Audience','Post ID','Word count']
+# Bookmark / Thumbs Up / Thumbs Down were dropped on 24 Sep 2026: the site never shows those counters publicly.
+HEAD=['Tutorial','Description','Publish Date','Category','Views','Like',
+      'Authors','Type','Level','Sub-category','Link','Series','Part','In listing','Tags','Audience','Post ID','Word count']
 
 wb=Workbook()
 ws=wb.active; ws.title='Tutorials'
@@ -47,12 +60,13 @@ for t in T:
         cat,
         t.get('views'),
         t.get('likes'),
-        NA, NA, NA,
         t.get('author') or '',
         t.get('type') or '',
         t.get('level') or '',
         sub,
         f"https://my.cytron.io/tutorial/{t['slug']}",
+        *series_cols(t),
+        'No – series page' if t.get('_part') else 'Yes',
         ', '.join(t.get('tags') or []),
         ', '.join(a.capitalize() for a in (t.get('audience') or [])),
         d.get('id'),
@@ -67,12 +81,11 @@ for c in ws[1]:
 for row in ws.iter_rows(min_row=2,max_row=n):
     for c in row:
         c.font=Font(name='Arial',size=10); c.border=Border(bottom=thin)
-        c.alignment=Alignment(vertical='top',wrap_text=(c.column in (1,2,15)))
+        c.alignment=Alignment(vertical='top',wrap_text=(c.column in (1,2,12,15)))
     row[2].number_format='DD MMM YYYY'
     row[4].number_format='#,##0'; row[5].number_format='#,##0'
-    row[13].hyperlink=row[13].value; row[13].font=Font(name='Arial',size=10,color='087FA8',underline='single')
-    for i in (6,7,8): row[i].font=Font(name='Arial',size=10,color='8A97A5',italic=True)
-widths=[46,60,13,22,9,7,15,15,15,24,14,12,24,58,40,20,8,10]
+    row[10].hyperlink=row[10].value; row[10].font=Font(name='Arial',size=10,color='087FA8',underline='single')
+widths=[46,60,13,22,9,7,24,14,12,24,58,34,9,14,40,20,8,10]
 for i,w in enumerate(widths,1): ws.column_dimensions[get_column_letter(i)].width=w
 ws.row_dimensions[1].height=30
 ws.freeze_panes='B2'
@@ -84,7 +97,7 @@ bold=Font(name='Arial',bold=True,size=10); norm=Font(name='Arial',size=10)
 def put(r,c,v,f=norm):
     cell=s.cell(row=r,column=c,value=v); cell.font=f; return cell
 put(1,1,'Cytron Tutorials export',Font(name='Arial',bold=True,size=14))
-put(2,1,f'Snapshot of https://my.cytron.io/tutorial taken {SNAP} — {len(T)} posts.')
+put(2,1,f'Snapshot of https://my.cytron.io/tutorial taken {SNAP} — {len(T)-len(PARTS)} listed posts + {len(PARTS)} series pages not in the listing = {len(T)} rows.')
 r=4
 put(r,1,'Posts by type',bold); r+=1
 from collections import Counter
@@ -114,13 +127,14 @@ notes=[
  ('Category / Sub-category','The site has a two-level taxonomy. "Category" lists the parent(s) (e.g. Wireless & IoT); "Sub-category" lists the child(ren) (e.g. ESP32, Maker ESP32). A post can belong to several. Blank = the post has no category assigned on the live site.'),
  ('Views','"View Count" from the article meta row at the time of the snapshot.'),
  ('Like','Public like counter shown next to the Like button on the article page.'),
- ('Bookmark / Thumbs Up / Thumbs Down','The buttons exist on every article, but the site does not display these counters to visitors (they are only recorded in the CMS database). They cannot be scraped and are marked "n/a – not public". IT can export them from the eblog tables (route eblog/epost/bookmark and vote-helpful) if needed.'),
+ ('Bookmark / Thumbs Up / Thumbs Down','Not included (removed 24 Sep 2026). The buttons exist on every article but the site never displays these counters to visitors, so they cannot be read from the public pages. IT can export them from the eblog tables (bookmark / vote-helpful) if ever needed.'),
  ('Authors','Author name from the article meta row / card ("Tutorial by …").'),
  ('Type','Post type: Tutorial, Project, Protip, Success Stories, Uncategorized.'),
  ('Level','Project level badge: Beginner, Intermediate, Advanced (no post is tagged Expert; blank = not set).'),
  ('Link','Direct URL of the article.'),
+ ('Series / Part / In listing','The CMS lets a post carry child pages (shown as a "page tree" in the article sidebar with Previous/Next). The parent is a normal listed tutorial; its child pages are NOT in the tutorial listing and are only reachable from the parent. "Series" is the parent title, "Part" the position (parent = 1), "In listing" says whether the row is a listed post (Yes) or a child page (No – series page). Child pages inherit the parent\'s categories in this sheet.'),
  ('Tags / Audience / Post ID / Word count','Extra columns not requested but captured while scraping: tags from the article sidebar, Education/Industry audience flag from the post_type filter, the internal post id, and an approximate body word count.'),
- ('Assumption','The requested column list contained "Category" twice; it is interpreted as parent Category (column D) and Sub-category (column M).'),
+ ('Assumption','The requested column list contained "Category" twice; it is interpreted as parent Category (column D) and Sub-category (column J).'),
 ]
 put=lambda r,c,v,f=norm: (lambda cell: (setattr(cell,'font',f), setattr(cell,'alignment',Alignment(wrap_text=True,vertical='top')), cell)[-1])(nt.cell(row=r,column=c,value=v))
 put(1,1,'Field',bold); put(1,2,'Meaning / how it was collected',bold)
