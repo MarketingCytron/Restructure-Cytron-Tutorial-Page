@@ -1,11 +1,15 @@
 /* /new-c — Option C: A + B merged. Static, client-rendered from ../data/*.js.
    Pages: index.html (home), category.html?id=N, tutorial.html?slug=S */
 (function () {
-  const { T, PARTS, SERIES, seriesOf, TAX, ARTICLES, esc, qs, qsAll, catById, bySlug, filter, sort, paginate, fmtNum, readTime } = window.CY;
+  const { T, PARTS, SERIES, TREND, seriesOf, TAX, ARTICLES, esc, qs, qsAll, catById, bySlug, filter, sort, paginate, fmtNum, readTime } = window.CY;
   const ROOT = document.documentElement.getAttribute('data-root') || '.';
   const LIVE = 'https://my.cytron.io';
   const PER = 20;
   const HAS_VIEWS = T.some(t => t.views != null);
+  const HAS_TREND = !!TREND && T.some(t => t.gain != null);
+  // Trending = views gained in a recent window (prototype: the two snapshots we hold; live site: rolling 30 days)
+  const trendWindow = () => TREND ? `${fmtDay(TREND.from)} – ${fmtDay(TREND.to)}` : '';
+  function fmtDay(iso) { const [y, m, d] = iso.split('-'); return `${+d} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m - 1]}`; }
 
   const PLATFORM = {
     2: { ref: 'RPI', chip: 'Raspberry Pi', title: 'Raspberry Pi', blurb: 'Raspberry Pi single-board computers, Pico and RP2040 microcontrollers, Zero, cameras, HATs and edge AI.' },
@@ -89,7 +93,7 @@
   }
   document.documentElement.setAttribute('data-audience', AUD || 'unset');
   const TYPE_LABEL = { Tutorial: 'Tutorial', Project: 'Project', Protip: 'Protip', 'Success Stories': 'Success story', Uncategorized: 'Post' };
-  const SORTS = [['latest', 'Latest'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];
+  const SORTS = [['latest', 'Latest'], ['trending', 'Trending'], ['popular', 'Most viewed'], ['liked', 'Most liked'], ['easy', 'Easiest first'], ['oldest', 'Oldest'], ['az', 'A – Z']];
   const I = {
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
     burger: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
@@ -188,9 +192,10 @@
   });
 
   /* ---------- pieces ---------- */
+  let CARD_TREND = false;   // set while rendering a list sorted by 'trending'
   function card(t) {
     const pc = primaryCat(t);
-    const nums = [t.views != null ? `${fmtNum(t.views)} views` : '', t.words ? readTime(t.words) : ''].filter(Boolean);
+    const nums = [CARD_TREND && t.gain != null ? `▲ ${fmtNum(t.gain)} this month` : '', t.views != null ? `${fmtNum(t.views)} views` : '', t.words ? readTime(t.words) : ''].filter(Boolean);
     return `<article class="card">
   <div class="cover"><a href="${href(t)}" tabindex="-1" aria-hidden="true">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}</a>${t.level ? `<span class="lvl ${t.level}">${esc(t.level)}</span>` : ''}${seriesBadge(t)}
     <div class="quick"><button type="button" class="qa" data-qlike="${t.id}" aria-pressed="${liked.has(t.id)}" aria-label="Like ${esc(t.title)}">${I.heart}<span>${(t.likes ?? 0) + (liked.has(t.id) ? 1 : 0)}</span></button><button type="button" class="qa" data-qbookmark="${t.id}" aria-pressed="${saved.has(t.id)}" aria-label="Bookmark ${esc(t.title)}">${I.bookmark}</button></div>
@@ -203,8 +208,9 @@
   </div>
 </article>`;
   }
-  function mini(t, i) {
-    return `<a class="mini" href="${href(t)}">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}${i != null ? `<span class="rank">${i + 1}</span>` : ''}<span class="t">${esc(t.title)}</span><span class="v">${fmtNum(t.views)} views · ${esc(t.level || 'Unrated')}</span></a>`;
+  function mini(t, i, trend) {
+    const v = trend && t.gain != null ? `<span class="up">▲ ${fmtNum(t.gain)} this month</span> · ${fmtNum(t.views)} views` : `${fmtNum(t.views)} views · ${esc(t.level || 'Unrated')}`;
+    return `<a class="mini" href="${href(t)}">${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : ''}${i != null ? `<span class="rank">${i + 1}</span>` : ''}<span class="t">${esc(t.title)}</span><span class="v">${v}</span></a>`;
   }
   function tiles() {
     const rows = ORDER.map(id => ({ id, n: inCat(id).length })).filter(x => x.n);
@@ -296,10 +302,17 @@
     return `<div class="latest"><div class="lh"><h2>Latest Posts</h2><a href="${ROOT}/category.html">${ind ? 'All industry tutorials →' : 'All tutorials →'}</a></div><ul>${latest(audPool()).slice(0, 5).map(t => `<li>${t.cover ? `<img loading="lazy" src="${esc(t.cover)}" alt="">` : '<span></span>'}<div><a class="t" href="${href(t)}">${esc(t.title)}</a><div class="m">${esc(t.date || '')}${t.level ? ' · ' + esc(t.level) : ''}</div></div></li>`).join('')}</ul></div>`;
   }
   function popularStrip() {
+    // "Trending": the tutorials that gained the most views recently, so the list refreshes itself every month.
+    // Falls back to the all-time "Most viewed" list when no view-gain data is present.
     if (!HAS_VIEWS) return '';
     const ind = AUD === 'industry';
-    const top = sort(audPool().filter(t => t.type !== 'Success Stories'), 'popular').slice(0, 5);
-    return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>${ind ? 'Most read by engineers and integrators.' : 'All-time favourites across the archive.'}</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular">See ranking →</a></div><div class="row">${top.map(mini).join('')}</div></div></section>`;
+    const pool = audPool().filter(t => t.type !== 'Success Stories');
+    if (!HAS_TREND) {
+      const top = sort(pool, 'popular').slice(0, 5);
+      return `<section class="sec strip"><div class="wrap"><div class="sec-head"><div><h2>Most viewed</h2><p>${ind ? 'Most read by engineers and integrators.' : 'All-time favourites across the archive.'}</p></div><a class="viewall" href="${ROOT}/category.html?sort=popular">See ranking →</a></div><div class="row">${top.map((t, i) => mini(t, i)).join('')}</div></div></section>`;
+    }
+    const top = sort(pool.filter(t => t.gain), 'trending').slice(0, 5);
+    return `<section class="sec strip trending"><div class="wrap"><div class="sec-head"><div><h2>Trending</h2><p>${ind ? 'What engineers and integrators are reading this month.' : 'The most visited tutorials in the last 30 days — refreshed automatically.'}</p></div><div class="sec-side"><a class="viewall" href="${ROOT}/category.html?sort=trending">See ranking →</a><a class="viewall ghost" href="${ROOT}/category.html?sort=popular">All-time →</a></div></div><div class="row">${top.map((t, i) => mini(t, i, true)).join('')}</div><p class="strip-note">Prototype data: ranked by views gained between ${esc(trendWindow())} ${new Date(TREND.to).getFullYear()} (the two snapshots we hold). On the live site this should be a rolling 30-day window.</p></div></section>`;
   }
   function band() {
     return `<section class="band"><div class="wrap"><div class="band-inner">
@@ -328,6 +341,7 @@
   }
   const isFiltering = s => !!(s.q || s.cats.length || s.types.length || s.levels.length || s.aud.length);
   function run(s) {
+    CARD_TREND = s.sort === 'trending';
     const scoped = s.cats.length ? s.cats : (s.fixedCat ? [s.fixedCat] : []);
     const list = filter({ q: s.q, categories: scoped, types: s.types, levels: s.levels, audience: s.aud.length ? s.aud : scopeAud() });
     return sort(s.series ? list.filter(isSeries) : list, s.sort);
@@ -353,7 +367,7 @@
   <details class="fsel"><summary>Type ${n('types')}</summary><div>${types}</div></details>
   ${hasCatKids ? `<details class="fsel"><summary>${s.fixedCat ? 'Sub-category' : 'Platform'} ${n('cats')}</summary><div>${cats}</div></details>` : ''}
   <button class="more" type="button" data-open-sheet>${I.filter} Filters ${active ? `<span class="n">${active}</span>` : ''}</button>
-  <div class="sort"><label for="sort" class="eyebrow">Sort</label><select id="sort" data-sort>${SORTS.filter(([v]) => HAS_VIEWS || (v !== 'popular' && v !== 'liked')).map(([v, l]) => `<option value="${v}" ${s.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+  <div class="sort"><label for="sort" class="eyebrow">Sort</label><select id="sort" data-sort>${SORTS.filter(([v]) => (HAS_VIEWS || (v !== 'popular' && v !== 'liked')) && (HAS_TREND || v !== 'trending')).map(([v, l]) => `<option value="${v}" ${s.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
   <div class="applied" data-applied>${chips(s, list)}</div>
 </div></div>
 <div class="sheet" data-sheet><div>

@@ -17,6 +17,7 @@
   // (they are not in the live listing either) but are addressable by slug and carry their parent's categories.
   const PARTS = (window.CYTRON_PARTS || []).map(t => { if (t.hero && !t.cover) t.cover = t.hero; return t; });
   const SERIES = window.CYTRON_SERIES || {};
+  const TREND = window.CYTRON_TREND || null;   // {from,to,days} of the view-gain window behind t.gain (see tools/build_data.py)
   const bySlug = {};
   T.forEach(t => { bySlug[t.slug] = t; });
   PARTS.forEach(t => { bySlug[t.slug] = t; });
@@ -61,6 +62,7 @@
     const l = list.slice();
     switch (mode) {
       case 'popular': return l.sort((a, b) => (b.views || 0) - (a.views || 0));
+      case 'trending': return l.sort((a, b) => (b.gain || 0) - (a.gain || 0) || (b.views || 0) - (a.views || 0));
       case 'liked': return l.sort((a, b) => (b.likes || 0) - (a.likes || 0) || (b.views || 0) - (a.views || 0));
       case 'oldest': return l.sort((a, b) => (a.iso || '').localeCompare(b.iso || ''));
       case 'az': return l.sort((a, b) => a.title.localeCompare(b.title));
@@ -74,5 +76,5 @@
     return { items: list.slice((page - 1) * per, page * per), page, pages, total: list.length, from: list.length ? (page - 1) * per + 1 : 0, to: Math.min(page * per, list.length), per };
   }
 
-  window.CY = { T, PARTS, SERIES, seriesOf, TAX, ARTICLES, catById, bySlug, TYPE_CODES, LEVEL_COLORS, qs, qsAll, esc, fmtNum, catName, catPath, readTime, filter, sort, paginate };
+  window.CY = { T, PARTS, SERIES, TREND, seriesOf, TAX, ARTICLES, catById, bySlug, TYPE_CODES, LEVEL_COLORS, qs, qsAll, esc, fmtNum, catName, catPath, readTime, filter, sort, paginate };
 })();

@@ -16,7 +16,7 @@ project are you working on?"* — Education, Industry / Enterprise, or continue 
 live site that choice only changes the store; here it scopes the tutorial page. **Industry** shows only the posts in the
 live site's *Industry* topic (`post_type=industry`, 119 posts today), **arranged by hardware** — an *Industrial Workshops*
 showcase band first, a *Success stories* section (the my.cytron.io/success-stories view inside the Industry scope), then the Industry category's sub-categories (IRIV Pi Control, IRIV EdgeAI, IRIV SmartHub, LoRaWAN,
-IRIV IOC) as chips and rows, then Raspberry Pi in Industry, then a catch-all row; the slider, Latest Posts, Most viewed, search and category pages all
+IRIV IOC) as chips and rows, then Raspberry Pi in Industry, then a catch-all row; the slider, Latest Posts, Trending, search and category pages all
 work inside that set, and empty sections disappear. **Education** shows only the Education topic (814 posts) — industry posts and the Industry / Raspberry Pi in Industry
 platforms are removed from rows, chips, filters and search. Guest shows the whole archive. The choice is
 remembered in the browser (and carried between pages even when the files are opened from disk) and can be switched

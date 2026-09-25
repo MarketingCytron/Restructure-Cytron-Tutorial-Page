@@ -29,7 +29,7 @@ After reviewing A and B side by side, the decision was to combine them. Option C
 | Platform tile grid with live counts and sub-category chips (lightened: white tiles, cyan edge) | Featured guide + Latest list hero | Translucent sticky header; chips and controls as pills |
 | Rich card: type · platform › sub · title · excerpt · author · date · views · read time | One row of four per platform with "View all n →" (top 6 platforms on the home page; the rest via tiles) | Sentence-case Barlow Condensed headings (A used all-caps) |
 | Article layout with sticky rail: on-page TOC, hardware list, tags | Category page sidebar (most viewed here, browse by platform) and article rail extras (more in platform) | Kits & programs band restyled as a navy panel with a cyan glow |
-| "Most viewed" strip (now ranked 1–5) | Light category hero with sub-category pills | Hover lift on cards/tiles; `prefers-reduced-motion` respected |
+| "Most viewed" strip (now ranked 1–5; since 25 Sep a *Trending* strip) | Light category hero with sub-category pills | Hover lift on cards/tiles; `prefers-reduced-motion` respected |
 
 Behaviour: the home page collapses to a results grid as soon as any filter or search is active (hero,
 tiles and rows hide), and returns when filters are cleared — so the same URL serves both browsing and
@@ -44,7 +44,7 @@ current/                   Faithful static mirror of my.cytron.io/tutorial (Sep 
   index.html               Listing + sidebar filters + pagination  (?q= &categories= &post_type= &project_level= &page=)
   tutorial.html            Article template                        (?slug=)
 new-c/                     The redesign (Option C)
-  index.html               Chips, title block, featured slider + Latest Posts, filter bar, most viewed, one row per platform, kits band
+  index.html               Chips, title block, featured slider + Latest Posts, filter bar, trending, one row per platform, kits band
   category.html            Platform / search / all listing with sidebar  (?id= [&cat=] [&q=] [&level=] [&type=] [&aud=] [&sort=] [&page=])
   tutorial.html            Article + rail (TOC, hardware, tags, more in platform) + related row
   newc.css                 Tokens in :root — the design system to hand to IT
@@ -89,12 +89,12 @@ page shows the real metadata and links back to the original.
 | 3 | No `<h1>` on the listing | `<h1>Tutorials for digital makers</h1>`, per-platform `<h1>` on category pages. |
 | 4 | 930 posts, 62 pages, sequential paging is the only route in | **Browse by platform** shelf with live counts; category landing pages; sub-category chips. |
 | 5 | Filters apply only after clicking "Search"; no chips, no URL state | Filters apply instantly, show as removable chips with a result count, and are reflected in the URL (shareable, back-button safe). |
-| 6 | "Sort By" has one option | Latest · Most viewed · Most liked · Easiest first · Oldest · A–Z. View counts come from the article pages. |
+| 6 | "Sort By" has one option | Latest · Trending · Most viewed · Most liked · Easiest first · Oldest · A–Z. View counts come from the article pages. |
 | 7 | Categories are product-named and deep | Platform tiles carry short blurbs and surface the sub-categories that have ≥3 posts; near-empty ones (IRIV IOC 0, Battle Robot 1, ZOOM:BIT 1) are folded away instead of listed. |
 | 8 | Fixed 430px card with empty space | Card height follows content; 2-line excerpt clamp keeps rows even. |
 | 9 | Justified text | Left-aligned throughout, including inside article bodies. |
 | 10 | Cards show no category/tags | Card shows type, platform › sub-category (linked), views and read time. |
-| 11 | Front page is 15 same-day ESP32 posts | Hub + "Most viewed" strip show the depth of the archive before the latest grid. |
+| 11 | Front page is 15 same-day ESP32 posts | Hub + "Trending" strip show the depth of the archive before the latest grid. |
 | 12 | "Success Stories" not in the type filter | Added as a type. |
 | 13 | Dead sidebar column on scroll | No sidebar on listing pages; article pages get a sticky rail with on-page TOC, hardware list, tags. |
 
@@ -141,7 +141,7 @@ and uses the answer as the **scope of the page**:
 | Posts shown anywhere | the Education topic only (`post_type=education`, 814) — industry posts and the *Industry* / *Raspberry Pi in Industry* platforms are hidden everywhere (rows, chips, filter, search, category pages) | the Industry topic only (`post_type=industry`, 119) |
 | Rows and board chips | the 12 non-industrial platforms, archive-size order | **arranged by hardware**: an *Industrial Workshops* showcase band first (navy panel, four latest workshop stories, "View all" + "Request a workshop" → my.cytron.io/cytron-workshop), then a *Success stories* section (latest story large, five more as a list, "All n success stories" → the Success Stories type filter — the equivalent of my.cytron.io/success-stories inside the Industry scope; workshop posts are left to the band above), then the Industry category's hardware sub-categories (IRIV Pi Control · IRIV EdgeAI · IRIV SmartHub · LoRaWAN · IRIV IOC), then Raspberry Pi in Industry, then "More industry guides" for industry posts filed under none of them; empty ones hidden |
 | Featured slider | most-viewed getting-started guides | most-viewed industry posts |
-| Latest Posts / Most viewed / search / category pages / related | whole archive | inside the Industry topic; category sidebar becomes "Browse by hardware" |
+| Latest Posts / Trending / search / category pages / related | whole archive | inside the Industry topic; category sidebar becomes "Browse by hardware" |
 | Filter bar | Level · Type · Platform (industrial platforms removed; audience implied) | Level · Type · Platform (audience is implied) |
 | Board chips | platforms | Industrial Workshops · hardware sub-categories · Raspberry Pi in Industry · Success Stories · All |
 | Title block | "Tutorials for digital makers — 814 builds" | "Tutorials for industry — 111 guides…" |
@@ -177,6 +177,20 @@ or part — gets an *In this series* panel with numbered parts, a "Part n of N" 
 Part n ‹ › navigation instead of the generic Older / Newer. Part pages are rendered from `data/parts.js` with their own
 views, dates and tags and inherit the parent's categories and audience. Search still matches listed posts only, as on
 the live site; making part titles searchable would be a one-line change (`filter` over `T.concat(PARTS)`).
+
+## Trending (replaces "Most viewed", 25 Sep 2026)
+
+An all-time "Most viewed" list never changes — the same 3D-printer firmware and Pi-camera posts would sit there for
+years. The home-page strip is now **Trending**: the five tutorials that gained the most views in a recent window, so
+the list refreshes itself as interest shifts. Each card shows the gain (▲ *n* this month) next to the all-time count;
+"See ranking →" opens `category.html?sort=trending` (a new sort option, also in the toolbar) and "All-time →" keeps the
+old ranking one click away. The strip is audience-scoped like everything else (industry visitors see the trending
+industry posts). Data: `tools/build_data.py` computes `gain` per post as the difference between two article-page
+snapshots and writes the window to `window.CYTRON_TREND`; a post published inside the window counts all its views.
+The prototype only holds snapshots from 15 and 17 Sep 2026, so its ranking is a two-day proxy and the strip says so
+in a footnote. **For the real build** the CMS (or GA4) should supply a rolling 30-day view count per post
+(`views_30d`), which is what the "last 30 days" copy promises; if no gain data is present the strip falls back to
+"Most viewed" automatically.
 
 ## Behaviour worth carrying into the real build
 
