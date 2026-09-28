@@ -4,7 +4,7 @@
    "id": 1,
    "name": "Arduino Ecosystem",
    "children": [],
-   "count": 170
+   "count": 169
   },
   {
    "id": 2,
@@ -14,7 +14,7 @@
      "id": 20,
      "name": "Raspberry Pi Pico",
      "parent": 2,
-     "count": 1
+     "count": 2
     },
     {
      "id": 31,
@@ -29,13 +29,13 @@
      "count": 14
     }
    ],
-   "count": 316
+   "count": 315
   },
   {
    "id": 27,
    "name": "Raspberry Pi in Industry",
    "children": [],
-   "count": 74
+   "count": 76
   },
   {
    "id": 4,
@@ -51,7 +51,7 @@
      "id": 6,
      "name": "REKA:BIT",
      "parent": 4,
-     "count": 7
+     "count": 8
     },
     {
      "id": 30,
@@ -66,7 +66,7 @@
      "count": 1
     }
    ],
-   "count": 89
+   "count": 90
   },
   {
    "id": 7,
@@ -88,7 +88,7 @@
      "id": 32,
      "name": "Soccer Robot",
      "parent": 7,
-     "count": 3
+     "count": 5
     },
     {
      "id": 33,
@@ -103,7 +103,7 @@
      "count": 13
     }
    ],
-   "count": 89
+   "count": 92
   },
   {
    "id": 13,
@@ -119,16 +119,16 @@
      "id": 15,
      "name": "ESP32",
      "parent": 13,
-     "count": 39
+     "count": 38
     },
     {
      "id": 42,
      "name": "Maker ESP32",
      "parent": 13,
-     "count": 23
+     "count": 15
     }
    ],
-   "count": 160
+   "count": 163
   },
   {
    "id": 9,
@@ -181,7 +181,7 @@
      "id": 37,
      "name": "IRIV Pi Control",
      "parent": 28,
-     "count": 11
+     "count": 12
     },
     {
      "id": 38,
@@ -193,7 +193,7 @@
      "id": 40,
      "name": "IRIV EdgeAI",
      "parent": 28,
-     "count": 7
+     "count": 8
     },
     {
      "id": 39,
@@ -208,7 +208,7 @@
      "count": 5
     }
    ],
-   "count": 94
+   "count": 96
   },
   {
    "id": 10,
@@ -224,7 +224,7 @@
      "id": 21,
      "name": "Makers",
      "parent": 19,
-     "count": 85
+     "count": 84
     },
     {
      "id": 22,
@@ -239,7 +239,7 @@
      "count": 33
     }
    ],
-   "count": 122
+   "count": 121
   },
   {
    "id": 16,

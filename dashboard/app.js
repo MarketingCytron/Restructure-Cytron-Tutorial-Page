@@ -5,16 +5,18 @@
   "use strict";
 
   var CFG = window.DASHBOARD_CONFIG || {};
-  var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12};
+  var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12,dept:13};
   var BAND = {1:{key:'p1',label:'Uncategorised'},2:{key:'p2',label:'Missing category'},
               4:{key:'p4',label:'Review only'},0:{key:'p0',label:'No change needed'}};
   var STATUS = [['todo','To do'],['doing','In progress'],['done','Done'],['skip','Skipped']];
+  var DEPTS = ['Industry','Education','Commerce','Unassigned'];
+  var DEPT_CLASS = {Industry:'d-ind', Education:'d-edu', Commerce:'d-com', Unassigned:'d-una'};
 
   var ROWS = [], CATS = [], byId = Object.create(null), SOURCE = '';
   var state = Object.create(null);
   var pending = Object.create(null), timers = Object.create(null);
   var online = false, writable = false, lastSync = 0;
-  var view = {band:'all', q:'', status:'', owner:'', sort:'prio'};
+  var view = {band:'all', dept:'all', q:'', status:'', owner:'', sort:'prio'};
   var shown = 60, openId = null;
 
   function el(id){ return document.getElementById(id); }
@@ -124,6 +126,11 @@
     el('cAll').textContent = ROWS.length;
     el('c1').textContent = bands[1]; el('c2').textContent = bands[2];
     el('c4').textContent = bands[4]; el('c0').textContent = bands[0];
+    var dn = {}; DEPTS.forEach(function(d){ dn[d]=0; });
+    for (var j=0;j<ROWS.length;j++){ var dd = ROWS[j][F.dept]||'Unassigned';
+      if (ROWS[j][F.prio]) dn[dd] = (dn[dd]||0)+1; }
+    DEPTS.forEach(function(d){ var n = el('dc-'+d); if (n) n.textContent = dn[d]; });
+    var da = el('dc-all'); if (da) da.textContent = DEPTS.reduce(function(a,d){return a+dn[d];},0);
   }
 
   function refreshOwners(){
@@ -143,10 +150,11 @@
     var q = view.q.trim().toLowerCase();
     var out = ROWS.filter(function(r){
       if (view.band!=='all' && r[F.prio]!==Number(view.band)) return false;
+      if (view.dept!=='all' && (r[F.dept]||'Unassigned')!==view.dept) return false;
       if (view.status && statusOf(r)!==view.status) return false;
       if (view.owner){ var s=rec(r[F.id]); if (!s || s.owner!==view.owner) return false; }
       if (q){
-        var hay = (r[F.title]+' '+r[F.slug]+' '+r[F.tags]+' '+r[F.current]+' '+r[F.add]).toLowerCase();
+        var hay = (r[F.title]+' '+r[F.slug]+' '+r[F.tags]+' '+r[F.current]+' '+r[F.add]+' '+(r[F.dept]||'')).toLowerCase();
         if (hay.indexOf(q)<0) return false;
       }
       return true;
@@ -180,6 +188,7 @@
           + ' <span class="sep">·</span> '+esc(r[F.date])+'</span>'
           + '<span class="catline">'+line+'</span></span>'
         + '<span class="rright">'
+          + '<span class="dept-tag '+(DEPT_CLASS[r[F.dept]]||'d-una')+'">'+esc(r[F.dept]||'Unassigned')+'</span>'
           + (s.owner?'<span class="owner-tag">'+esc(s.owner)+'</span>':'')
           + '<span class="views">'+Number(r[F.views]).toLocaleString()+' views</span>'
           + (s.note?'<span class="views">note</span>':'')
@@ -280,6 +289,14 @@
       render();
     });
   });
+  Array.prototype.forEach.call(document.querySelectorAll('.chip[data-dept]'), function(b){
+    b.addEventListener('click', function(){
+      view.dept = b.dataset.dept; shown = 60;
+      Array.prototype.forEach.call(document.querySelectorAll('.chip[data-dept]'), function(o){
+        o.setAttribute('aria-pressed', String(o===b)); });
+      render();
+    });
+  });
   el('q').addEventListener('input', function(){ view.q=this.value; shown=60; render(); });
   el('fStatus').addEventListener('change', function(){ view.status=this.value; shown=60; render(); });
   el('fOwner').addEventListener('change', function(){ view.owner=this.value; shown=60; render(); });
@@ -287,13 +304,13 @@
   el('btnMore').addEventListener('click', function(){ shown+=120; render(); });
 
   el('btnCsv').addEventListener('click', function(){
-    var head = ['Slug','Title','Priority','Status','Owner','Current categories','Suggested additions',
+    var head = ['Slug','Title','Department','Priority','Status','Owner','Current categories','Suggested additions',
                 'Applied categories','Note','Reason','Views','URL'];
     function q(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
     var lines = [head.map(q).join(',')];
     filtered().forEach(function(r){
       var s = rec(r[F.id])||{};
-      lines.push([r[F.slug], r[F.title], (BAND[r[F.prio]]||{}).label||'', labelOf(statusOf(r)),
+      lines.push([r[F.slug], r[F.title], r[F.dept]||'Unassigned', (BAND[r[F.prio]]||{}).label||'', labelOf(statusOf(r)),
         s.owner||'', r[F.current], r[F.add], (s.applied||[]).join('; '), s.note||'', r[F.reason],
         r[F.views], tutorialUrl(r[F.slug])].map(q).join(','));
     });

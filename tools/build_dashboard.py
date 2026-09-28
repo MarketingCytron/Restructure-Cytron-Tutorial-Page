@@ -8,6 +8,7 @@ the categories the CMS holds now, and adds findings for posts that are new or wh
 """
 import json, re, hashlib, sys, collections
 from datetime import date
+import departments as DEPT   # tools/departments.py
 OLD = sys.argv[1]            # existing dashboard/data/tutorials.json
 OUT = sys.argv[2]
 import os
@@ -35,6 +36,7 @@ def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
 PARENT = {c['name']: NAME[c['parent']] for c in CATS if c['parent']}
+DEPT.set_names(NAME)
 T = json.load(open(f'{SITE}/tutorials.json'))
 # the board tracks the CMS, so put back the categories the prototype hides and flag them for removal
 OVR = json.load(open(f'{SITE}/cms-overrides.json'))
@@ -167,17 +169,20 @@ for t in T:
     cur, add, quest, reason, prio = evaluate(t, prev)
     if prev is None: changes['new post'] += 1
     elif prev[F['prio']] != prio: changes[f'{prev[F["prio"]]}->{prio}'] += 1
+    dept, _why = DEPT.route(t['categories'], t['title'], t['tags'], t.get('excerpt'))
     rows.append([pid(t['slug']), t['title'], t['slug'], prio, ', '.join(cur), ', '.join(add), ', '.join(quest),
-                 reason, t['type'] or '', t['level'] or '', t['iso'] or '', t['views'] or 0, ', '.join(t['tags'])])
+                 reason, t['type'] or '', t['level'] or '', t['iso'] or '', t['views'] or 0, ', '.join(t['tags']), dept])
 # same order as before: priority band (1,2,4,0), then views desc
 order = {1: 0, 2: 1, 4: 2, 0: 3}
 rows.sort(key=lambda r: (order[r[3]], -r[11]))
 out = {'generated': date.today().isoformat(),
        'source': f'data/tutorials.json ({len(rows)} posts; listing and categories re-read {date.today().strftime("%-d %b %Y")}, views from 17 Sep 2026; findings from the 16 Sep audit re-checked against the CMS)',
-       'fields': old['fields'], 'cats': CATS, 'rows': rows}
+       'fields': [f for f in old['fields'] if f != 'dept'] + ['dept'], 'cats': CATS,
+       'depts': DEPT.DEPTS, 'rows': rows}
 json.dump(out, open(OUT, 'w'), ensure_ascii=False)
 print('new categories ruled everywhere:', NEW_CATS)
 bands = collections.Counter(r[3] for r in rows)
 print('rows', len(rows), 'bands', dict(bands), 'need fix', sum(v for k, v in bands.items() if k), 'changes', dict(changes))
+print('departments', dict(collections.Counter(r[13] for r in rows)))
 gone = [s for s in oldrow if s not in {t['slug'] for t in T}]
 print('slugs gone:', gone)

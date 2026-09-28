@@ -161,3 +161,18 @@ footer{color:var(--faint);font-size:12px;margin-top:28px;line-height:1.7;border-
 .banner b{color:inherit}
 .banner code{font-family:var(--mono);font-size:12px}
 .loading{padding:60px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px}
+
+/* ---- departments ---- */
+:root{ --d-ind:#7A4FCF; --d-edu:#0E8A6B; --d-com:#1F6FD0; --d-una:#8A929E; }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --d-ind:#B18CF0; --d-edu:#45C3A0; --d-com:#6BA6F0; --d-una:#98A2B0; }}
+:root[data-theme="dark"]{ --d-ind:#B18CF0; --d-edu:#45C3A0; --d-com:#6BA6F0; --d-una:#98A2B0; }
+.tools.depts{margin-top:10px}
+.toollabel{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--faint);font-weight:600;margin-right:2px;flex:0 0 auto}
+.dotc.d-ind{background:var(--d-ind)} .dotc.d-edu{background:var(--d-edu)}
+.dotc.d-com{background:var(--d-com)} .dotc.d-una{background:var(--d-una)}
+.dept-tag{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+  font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;border:1px solid currentColor}
+.dept-tag.d-ind{color:var(--d-ind)} .dept-tag.d-edu{color:var(--d-edu)}
+.dept-tag.d-com{color:var(--d-com)} .dept-tag.d-una{color:var(--d-una)}
