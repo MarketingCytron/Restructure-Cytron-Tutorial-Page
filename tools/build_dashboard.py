@@ -26,12 +26,16 @@ for pc in TAX['categories']:
         CATS.append({'id': ch['id'], 'name': ch['name'], 'parent': pc['id']})
 # names used in earlier findings that no longer exist on the site -> their replacement
 RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics',   # Robot Kits merged into Robotics, 18 Sep 2026
-          'RP2040/PICO': 'RP2040'}                                                    # renamed 23 Sep 2026; Teensy and rero were deleted (names simply drop out)
+          'RP2040/PICO': 'RP2040/Pico', 'RP2040': 'RP2040/Pico',                      # renamed 23 Sep, renamed again 28 Sep 2026
+          'Raspberry Pi Pico': 'RP2040/Pico',                                         # 28 Sep 2026: Pico merged into RP2040/Pico (id 20 emptied, kept for re-use)
+          'Raspberry Pi Zero': 'Raspberry Pi'}                                        # 28 Sep 2026: Zero folded into Raspberry Pi (id 31 emptied, kept for re-use)
+# ids 20 and 31 still exist in the CMS with 0 posts; nothing may be suggested into them until they are renamed
+EMPTIED = {'Raspberry Pi Pico', 'Raspberry Pi Zero'}
 # curated categories: membership is an editorial choice, so no keyword support is not a finding
 CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop'}
 # a post filed here is deliberately NOT also filed there: do not re-suggest the listed categories
 EXCLUSIVE_SUGGEST = {'Industrial Workshop': {'IRIV Pi Control', 'IRIV EdgeAI', 'Seminars & Workshop', 'Miscellaneous'},
-                     'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'Raspberry Pi Pico'}}
+                     'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'RP2040/Pico'}}
 def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
@@ -53,10 +57,11 @@ rules['Motor Driver'].add('mddrc5'); rules['Motor Driver'].add('mddrc10')
 rules['Sumo Robot'].add('robot sumo')
 rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
 rules['ZOOM:BIT'].update(['zoom:bit', 'zoombit', 'zoom bit']); rules['Robotics'].discard('zoombit')
-rules['Raspberry Pi Pico'].update(['raspberry pi pico', 'pi pico']); rules['Raspberry Pi Zero'].update(['raspberry pi zero', 'pi zero'])
+rules['RP2040/Pico'].update(['raspberry pi pico', 'pi pico', 'rp2040', 'pico w'])
+rules['Raspberry Pi'].update(['raspberry pi zero', 'pi zero'])   # Zero posts now sit in Raspberry Pi itself
 rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
 rules['Industrial Workshop'].update(['iriv picontrol workshop', 'iriv edgeai workshop', 'industrial workshop'])
-rules = {c: ks for c, ks in rules.items() if c in ID}
+rules = {c: ks for c, ks in rules.items() if c in ID and c not in EMPTIED}
 
 def kw_hits(cat, text):
     return sorted(k for k in rules.get(cat, ()) if re.search(r'(?<![a-z0-9])' + re.escape(k) + r'(?![a-z0-9])', text))
@@ -71,6 +76,12 @@ seen = set()
 for r in old['rows']:
     for k in ('current', 'add', 'quest'): seen.update(rn(x) for x in split(r[F[k]]))
 NEW_CATS = [c for c in ID if c not in seen and c in rules]
+# categories that absorbed a merge on 28 Sep: their rules must run over every post, not just the
+# posts that happened to carry a suggestion for one of the merged-away names
+MERGED = [c for c in ('RP2040/Pico',) if c in rules]
+NEW_CATS += [c for c in MERGED if c not in NEW_CATS]
+NOTE = {c: '(category created after the 16 Sep audit)' for c in NEW_CATS}
+NOTE.update({c: '(Raspberry Pi Pico and RP2040 merged into it on 28 Sep)' for c in MERGED})
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
 
 def evaluate(t, prev):
@@ -106,7 +117,7 @@ def evaluate(t, prev):
             if c in cur or c in padd: continue
             h = kw_hits(c, tt); where = 'title/tag'
             if not h: h = kw_hits(c, ex); where = 'excerpt'
-            if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)} (category created after the 16 Sep audit)'
+            if h: padd.append(c); segs[c] = f'+{c} — {where} mentions {", ".join(h)} {NOTE[c]}'
         # suggestions still open
         for c in padd:
             if c in cur:

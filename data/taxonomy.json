@@ -14,22 +14,22 @@
      "id": 20,
      "name": "Raspberry Pi Pico",
      "parent": 2,
-     "count": 2
+     "count": 0
     },
     {
      "id": 31,
      "name": "Raspberry Pi Zero",
      "parent": 2,
-     "count": 1
+     "count": 0
     },
     {
      "id": 3,
-     "name": "RP2040",
+     "name": "RP2040/Pico",
      "parent": 2,
-     "count": 14
+     "count": 16
     }
    ],
-   "count": 315
+   "count": 318
   },
   {
    "id": 27,
@@ -125,7 +125,7 @@
      "id": 42,
      "name": "Maker ESP32",
      "parent": 13,
-     "count": 15
+     "count": 27
     }
    ],
    "count": 163

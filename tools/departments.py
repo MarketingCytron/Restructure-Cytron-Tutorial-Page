@@ -10,7 +10,11 @@ Precedence — first match wins, because a post can carry signals for several:
                   3D printers, generic ESP32 and components.
   4. Unassigned — no clear signal. Left for a human to route; not a guess.
 
-Categories are stronger evidence than keywords, so they are checked first within each tier.
+Within a tier, a category is stronger evidence than a keyword — but a tier's title/tag keywords are
+checked before the NEXT tier's categories. That matters for Cytron's own boards that live in a
+third-party platform category: "AI HuskyLens With EDU PICO V2" is filed under Raspberry Pi, yet the
+board in the title is Cytron's, so it is Education's, not Commerce's. Excerpt keywords are weak and
+are only consulted once every category and title/tag test has failed.
 """
 import re
 
@@ -38,7 +42,9 @@ EDU_KW = ['edu pico', 'edupico', 'edu:bit', 'edubit', 'reka:bit', 'rekabit', 'su
           'maker phat', 'maker soil', 'maker mini sumo', 'cytron maker', 'robo pico', 'robo base',
           'robo esp32', 'robo uno', 'robo grip', 'robo soccer', 'bocobot', 'motion 2350',
           'urc10', 'mddrc', 'md10', 'md13', 'mdds', 'mdd3a', 'smartdriveduo', 'imd16',
-          'micro:bit', 'microbit', 'makecode', 'rbt', 'stem', 'ojanbot', 'ojan bot', 'rainbot',
+          'micro:bit', 'microbit', 'makecode', 'rbt', 'ojanbot', 'ojan bot', 'rainbot',
+          # 'stem' is deliberately absent: it is a blanket marketing tag on ~90 posts of every kind
+          # and routed Raspberry Pi Pico W and Pi Zero articles to Education
           'workshop', 'sumo robot', 'robot battle', 'line following', 'soccer robot']
 COM_KW = ['raspberry pi', 'raspberrypi', 'rpi', 'pi 4', 'pi 5', 'pi zero', 'pi pico', 'pico w',
           'rp2040', 'compute module', 'cm4', 'cm5', 'jetson', 'orin', 'nvidia', 'jetpack',
@@ -62,14 +68,11 @@ def route(cat_ids, title, tags, excerpt):
     strong = (title + ' ' + ' '.join(tags)).lower()
     weak = (excerpt or '').lower()
 
-    hit = ids & IND_CATS
-    if hit: return 'Industry', 'filed under ' + _first(hit)
-    hit = ids & EDU_CATS
-    if hit: return 'Education', 'filed under ' + _first(hit)
-    hit = ids & COM_CATS
-    if hit: return 'Commerce', 'filed under ' + _first(hit)
-
-    for dept, kws in (('Industry', IND_KW), ('Education', EDU_KW), ('Commerce', COM_KW)):
+    for dept, cats, kws in (('Industry', IND_CATS, IND_KW),
+                            ('Education', EDU_CATS, EDU_KW),
+                            ('Commerce', COM_CATS, COM_KW)):
+        hit = ids & cats
+        if hit: return dept, 'filed under ' + _first(hit)
         w = _hit(kws, strong)
         if w: return dept, f'title/tag mentions {w}'
     for dept, kws in (('Industry', IND_KW), ('Education', EDU_KW), ('Commerce', COM_KW)):
