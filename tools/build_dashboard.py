@@ -71,6 +71,28 @@ rules = {c: ks for c, ks in rules.items() if c in ID and c not in EMPTIED}
 def kw_hits(cat, text):
     return sorted(k for k in rules.get(cat, ()) if re.search(r'(?<![a-z0-9])' + re.escape(k) + r'(?![a-z0-9])', text))
 
+
+# ---------------------------------------------------------------- house rule (29 Sep 2026)
+# "At least one category, at most two. If a post already has one, do not add another unless
+#  what it has is wrong."  A parent and its child count as ONE place, because the CMS ticks the
+#  parent automatically — Raspberry Pi > EDU PICO is one shelf, not two.
+MAX_PLACES = 2
+PLACE = {c['name']: (NAME[c['parent']] if c['parent'] else c['name']) for c in CATS}
+# these are not hardware, so they do not make a 3D-printing post "electronic"
+NOT_HARDWARE = {'3D Modelling', 'Miscellaneous', 'News', 'Seminars & Workshop',
+                'Artificial Intelligence (AI)'}
+
+def places(names): return {PLACE[n] for n in names if n in PLACE}
+
+def strength(name, tt, ex):
+    """2 = named in the title or tags, 1 = only in the excerpt, 0 = no keyword support."""
+    if kw_hits(name, tt): return 2
+    if kw_hits(name, ex): return 1
+    return 0
+
+def place_strength(place, cur, tt, ex):
+    return max([strength(n, tt, ex) for n in cur if PLACE.get(n) == place] or [0])
+
 def split(s): return [x for x in s.split(', ') if x]
 def by_id(names): return sorted(set(names), key=lambda n: ID[n])
 def pid(slug): return hashlib.sha1(slug.encode()).hexdigest()[:10]
@@ -88,6 +110,18 @@ NEW_CATS += [c for c in MERGED if c not in NEW_CATS]
 NOTE = {c: '(category created after the 16 Sep audit)' for c in NEW_CATS}
 NOTE.update({c: '(Raspberry Pi Pico and RP2040 merged into it on 28 Sep)' for c in MERGED})
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
+
+
+def trim_to_one_place(add, tt, ex):
+    """Keep the best shelf out of a suggestion list, parent and child together.
+    If two shelves are equally well supported, keep both and let a human choose — guessing on
+    category id order picked Raspberry Pi over Robotics for a robot controller."""
+    if not add: return [], None
+    sc = {pl: max(strength(n, tt, ex) for n in add if PLACE.get(n) == pl) for pl in places(add)}
+    top = max(sc.values())
+    win = sorted([pl for pl, v in sc.items() if v == top], key=lambda pl: ID.get(pl, 999))
+    note = ('%d shelves fit equally well (%s) — pick one' % (len(win), ', '.join(win))) if len(win) > 1 else None
+    return [c for c in add if PLACE.get(c) in win], note
 
 def evaluate(t, prev):
     removed = [NAME[i] for i in OVR.get(t['slug'], {}).get('removed', []) if i in NAME]
@@ -179,30 +213,79 @@ def evaluate(t, prev):
     reason = ' ; '.join(segs[c] for c in sorted((c for c in keep if c in segs), key=segkey))
     if applied_since:
         reason = (reason + ' ; ' if reason else '') + '✓ applied in CMS since the 15 Sep audit: ' + ', '.join(applied_since)
-    prio = 1 if not cur else 2 if add else 4 if quest else 0
-    return cur, add, quest, reason, prio
+    # ---- house rule: at least one place, at most two -------------------------------------
+    drop, notes = [], []
+
+    # 3D Modelling is for pure 3D work. If the post also sits on a hardware shelf, it comes off.
+    if '3D Modelling' in cur and (places(cur) - NOT_HARDWARE):
+        drop.append('3D Modelling')
+        notes.append('-3D Modelling — the post also covers electronics, so it is not pure 3D work')
+
+    kept = [c for c in cur if c not in drop]
+    have = places(kept)
+
+    if have:
+        # It already has a shelf. Nothing gets added — unless every shelf it has looks wrong.
+        all_wrong = have and all(p in {PLACE.get(q) for q in quest} for p in have)
+        if not all_wrong:
+            add = []
+        else:
+            add, tie = trim_to_one_place(add, tt, ex)
+            notes.append('the category it has looks wrong, so a replacement is suggested')
+            if tie: notes.append(tie)
+
+        # Over the limit: name the weakest shelves, but let a human make the final call.
+        if len(have) > MAX_PLACES:
+            ranked = sorted(have, key=lambda pl: (-place_strength(pl, kept, tt, ex), ID.get(pl, 999)))
+            for pl in ranked[MAX_PLACES:]:
+                for c in kept:
+                    if PLACE.get(c) == pl and c not in drop: drop.append(c)
+            notes.append('%d shelves, keep %d — weakest first: %s'
+                         % (len(have), MAX_PLACES, ', '.join(ranked[MAX_PLACES:])))
+    else:
+        # Nothing at all (or only a shelf we are removing): give it exactly one.
+        add, tie = trim_to_one_place(add, tt, ex)
+        if tie: notes.append(tie)
+
+    quest = [c for c in quest if c in kept and c not in drop]
+    drop = by_id(drop)
+    # Strip "+X" segments for anything no longer being suggested, so the reason matches the ask.
+    keepseg = []
+    for seg in reason.split(' ; '):
+        m2 = re.match(r'\+(.+?) — ', seg)
+        if m2 and m2.group(1) not in add: continue
+        keepseg.append(seg)
+    reason = ' ; '.join([x for x in keepseg if x])
+    if notes:
+        reason = (reason + ' ; ' if reason else '') + ' ; '.join(notes)
+
+    prio = 1 if not kept else 2 if (drop or add) else 4 if quest else 0
+    return cur, add, quest, reason, prio, drop
 
 rows = []
 changes = collections.Counter()
 for t in T:
     prev = oldrow.get(t['slug'])
-    cur, add, quest, reason, prio = evaluate(t, prev)
+    cur, add, quest, reason, prio, drop = evaluate(t, prev)
     if prev is None: changes['new post'] += 1
     elif prev[F['prio']] != prio: changes[f'{prev[F["prio"]]}->{prio}'] += 1
     dept, _why = DEPT.route(t['categories'], t['title'], t['tags'], t.get('excerpt'))
     rows.append([pid(t['slug']), t['title'], t['slug'], prio, ', '.join(cur), ', '.join(add), ', '.join(quest),
-                 reason, t['type'] or '', t['level'] or '', t['iso'] or '', t['views'] or 0, ', '.join(t['tags']), dept])
+                 reason, t['type'] or '', t['level'] or '', t['iso'] or '', t['views'] or 0, ', '.join(t['tags']),
+                 dept, ', '.join(drop)])
 # same order as before: priority band (1,2,4,0), then views desc
 order = {1: 0, 2: 1, 4: 2, 0: 3}
 rows.sort(key=lambda r: (order[r[3]], -r[11]))
 out = {'generated': date.today().isoformat(),
        'source': f'data/tutorials.json ({len(rows)} posts; listing and categories re-read {date.today().strftime("%-d %b %Y")}, views from 17 Sep 2026; findings from the 16 Sep audit re-checked against the CMS)',
-       'fields': [f for f in old['fields'] if f != 'dept'] + ['dept'], 'cats': CATS,
+       'fields': [f for f in old['fields'] if f not in ('dept', 'drop')] + ['dept', 'drop'], 'cats': CATS,
        'depts': DEPT.DEPTS, 'rows': rows}
 json.dump(out, open(OUT, 'w'), ensure_ascii=False)
 print('new categories ruled everywhere:', NEW_CATS)
 bands = collections.Counter(r[3] for r in rows)
 print('rows', len(rows), 'bands', dict(bands), 'need fix', sum(v for k, v in bands.items() if k), 'changes', dict(changes))
 print('departments', dict(collections.Counter(r[13] for r in rows)))
+print('posts with something to remove:', sum(1 for r in rows if r[14]))
+print('posts to add a first category :', sum(1 for r in rows if r[5]))
 gone = [s for s in oldrow if s not in {t['slug'] for t in T}]
 print('slugs gone:', gone)

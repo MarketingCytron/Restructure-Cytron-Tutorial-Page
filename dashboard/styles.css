@@ -221,3 +221,5 @@ footer{color:var(--faint);font-size:12px;margin-top:28px;line-height:1.7;border-
 .copybtn.warn{opacity:1;border-color:var(--urgent);color:var(--urgent)}
 @media (hover:none){ .copybtn{opacity:1} }
 .build{font-family:var(--mono);font-size:11px;opacity:.6;white-space:nowrap}
+.drop{color:var(--urgent);text-decoration:line-through;text-decoration-thickness:1px}
+.cat.off{border-color:var(--urgent);color:var(--urgent);text-decoration:line-through}

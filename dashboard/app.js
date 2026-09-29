@@ -4,10 +4,11 @@
 (function () {
   "use strict";
 
+  var BUILD = '20260929d';   // keep in step with the ?v= in index.html
   var CFG = window.DASHBOARD_CONFIG || {};
-  var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12,dept:13};
-  var BAND = {1:{key:'p1',label:'Uncategorised'},2:{key:'p2',label:'Missing category'},
-              4:{key:'p4',label:'Review only'},0:{key:'p0',label:'No change needed'}};
+  var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12,dept:13,drop:14};
+  var BAND = {1:{key:'p1',label:'No category'},2:{key:'p2',label:'Needs an edit'},
+              4:{key:'p4',label:'Check only'},0:{key:'p0',label:'No change needed'}};
   var STATUS = [['todo','To do'],['doing','In progress'],['done','Done'],['skip','Skipped']];
   /* The four routed by tools/departments.py, plus anything added in config.js.
      A department set here is an override: it wins over the routed value and is
@@ -42,7 +43,13 @@
   function deptOverridden(r){ var s=rec(r[F.id]); return !!(s && s.dept && s.dept !== autoDept(r)); }
   /* The ticked categories. null means "nobody has touched this row", which is why an
      empty array must stay an empty array — unticking everything is a real answer. */
-  function suggestedCats(r){ return splitCats(r[F.current]).concat(splitCats(r[F.add])); }
+  /* What the post should end up with: what it has, minus what the house rule takes off,
+     plus what is suggested. This is what the chips are pre-ticked to. */
+  function suggestedCats(r){
+    var off = splitCats(r[F.drop]);
+    return splitCats(r[F.current]).filter(function(c){ return off.indexOf(c)<0; })
+           .concat(splitCats(r[F.add]));
+  }
   function appliedCats(r){ var s=rec(r[F.id]); return (s && s.applied) ? s.applied : suggestedCats(r); }
   function catsTouched(r){ var s=rec(r[F.id]); return !!(s && s.applied); }
   function tutorialUrl(slug){ return (CFG.tutorialUrl||'{slug}').replace('{slug}', encodeURIComponent(slug)); }
@@ -223,9 +230,12 @@
     var cur = r[F.current] || '(none)';
     var line;
     if (catsTouched(r)) line = '<b>Ticked:</b> ' + esc(s.applied.join(', ') || '(none)');
-    else if (r[F.add]) line = '<b>'+esc(cur)+'</b> <span class="sep">→ add</span> <span class="add">'+esc(r[F.add])+'</span>';
-    else line = '<b>'+esc(cur)+'</b>';
-    if (r[F.quest] && !catsTouched(r)) line += ' <span class="quest">· check '+esc(r[F.quest])+'</span>';
+    else {
+      line = '<b>'+esc(cur)+'</b>';
+      if (r[F.add])  line += ' <span class="sep">→ add</span> <span class="add">'+esc(r[F.add])+'</span>';
+      if (r[F.drop]) line += ' <span class="sep">→ remove</span> <span class="drop">'+esc(r[F.drop])+'</span>';
+      if (r[F.quest]) line += ' <span class="quest">· check '+esc(r[F.quest])+'</span>';
+    }
     var dep = deptOf(r);
 
     return '<article class="row '+band+(openId===id?' open':'')+'" data-id="'+id+'">'
@@ -255,12 +265,14 @@
   function editorHTML(r){
     var id=r[F.id], s=rec(id)||{}, st=statusOf(r);
     var applied = appliedCats(r);
-    var sug = suggestedCats(r), curCats = splitCats(r[F.current]);
+    var sug = suggestedCats(r), curCats = splitCats(r[F.current]), dropCats = splitCats(r[F.drop]);
     function chip(c){
       var on = applied.indexOf(c.name)>=0;
-      var mark = curCats.indexOf(c.name)>=0 ? ' on-cms' : (sug.indexOf(c.name)>=0 ? ' sug' : '');
-      var why = curCats.indexOf(c.name)>=0 ? 'Already on the post in the CMS'
-              : (sug.indexOf(c.name)>=0 ? 'Suggested by the keyword rules' : '');
+      var off = dropCats.indexOf(c.name)>=0;
+      var mark = off ? ' off' : (curCats.indexOf(c.name)>=0 ? ' on-cms' : (sug.indexOf(c.name)>=0 ? ' sug' : ''));
+      var why = off ? 'House rule says take this one off'
+              : (curCats.indexOf(c.name)>=0 ? 'Already on the post in the CMS'
+              : (sug.indexOf(c.name)>=0 ? 'Suggested by the keyword rules' : ''));
       return '<button class="cat'+(c.parent?' child':'')+mark+'" data-act="cat" data-cat="'+esc(c.name)+'"'
         + (why?' title="'+why+'"':'') + ' aria-pressed="'+on+'">'+esc(c.name)+'</button>';
     }
@@ -431,14 +443,14 @@
 
   el('btnCsv').addEventListener('click', function(){
     var head = ['Slug','Title','Department','Dept set by','Auto-routed dept','Priority','Status','Owner',
-                'Current categories','Suggested additions','Ticked categories','Note','Reason','Views','URL'];
+                'Current categories','Add','Remove','Check','Ticked categories','Note','Reason','Views','URL'];
     function q(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
     var lines = [head.map(q).join(',')];
     filtered().forEach(function(r){
       var s = rec(r[F.id])||{};
       lines.push([r[F.slug], r[F.title], deptOf(r), deptOverridden(r)?'hand':'auto', autoDept(r),
         (BAND[r[F.prio]]||{}).label||'', labelOf(statusOf(r)),
-        s.owner||'', r[F.current], r[F.add],
+        s.owner||'', r[F.current], r[F.add], r[F.drop], r[F.quest],
         catsTouched(r) ? s.applied.join('; ') : '', s.note||'', r[F.reason],
         r[F.views], tutorialUrl(r[F.slug])].map(q).join(','));
     });
@@ -463,7 +475,8 @@
       ROWS.forEach(function(r){ byId[r[F.id]] = r; });
       el('foot').innerHTML = 'Generated ' + esc(payload.generated||'') + ' from ' + esc(SOURCE) + '. '
         + 'Suggestions come from keyword rules over each post’s title, tags and excerpt — article bodies '
-        + 'were not read, and 139 posts carry no tags, so treat every row as a candidate for a human decision.';
+        + 'were not read, and 139 posts carry no tags, so treat every row as a candidate for a human decision.'
+        + ' <span class="build">build ' + BUILD + '</span>';
       render();
 
       if (!CFG.apiUrl){
