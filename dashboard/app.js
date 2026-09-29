@@ -23,7 +23,7 @@
   var state = Object.create(null);
   var pending = Object.create(null), timers = Object.create(null);
   var online = false, writable = false, lastSync = 0;
-  var view = {band:'all', dept:'all', q:'', status:'', owner:'', sort:'prio'};
+  var view = {band:'all', dept:'all', q:'', status:'', owner:'', sort:'prio', showDone:false};
   var shown = 60, openId = null;
 
   function el(id){ return document.getElementById(id); }
@@ -34,6 +34,8 @@
   function labelOf(st){ if (st==='clean') return 'No change';
     for (var i=0;i<STATUS.length;i++) if (STATUS[i][0]===st) return STATUS[i][1]; return st; }
   function splitCats(s){ return s ? s.split(', ').filter(Boolean) : []; }
+  /* Done and Skipped are both "dealt with": they drop out of the lists and the counts. */
+  function finished(r){ var st=statusOf(r); return st==='done' || st==='skip'; }
   function autoDept(r){ return r[F.dept] || 'Unassigned'; }
   /* The department that counts: a human's override if there is one, else the routed guess. */
   function deptOf(r){ var s=rec(r[F.id]); return (s && s.dept) ? s.dept : autoDept(r); }
@@ -148,12 +150,15 @@
   /* -------------------------------------------------------------- summary */
 
   function summarise(){
-    var need=0, done=0, doing=0, skip=0, bands={0:0,1:0,2:0,4:0};
+    var need=0, done=0, doing=0, skip=0, bands={0:0,1:0,2:0,4:0}, left=0;
     for (var i=0;i<ROWS.length;i++){
-      var r=ROWS[i]; bands[r[F.prio]] = (bands[r[F.prio]]||0)+1;
+      var r=ROWS[i], st=statusOf(r);
+      // The chips count what is still OUTSTANDING. Mark a row Done and it leaves its band
+      // straight away, so "Uncategorised 18" drops to 17 without waiting for a re-scrape.
+      if (!finished(r)) left++;
+      if (view.showDone || !finished(r)) bands[r[F.prio]] = (bands[r[F.prio]]||0)+1;
       if (r[F.prio]===0) continue;
       need++;
-      var st=statusOf(r);
       if (st==='done') done++; else if (st==='doing') doing++; else if (st==='skip') skip++;
     }
     el('mDone').textContent = done;
@@ -164,12 +169,12 @@
       el('bDoing').style.width = (doing/need*100)+'%';
       el('bSkip').style.width = (skip/need*100)+'%';
     }
-    el('cAll').textContent = ROWS.length;
+    el('cAll').textContent = view.showDone ? ROWS.length : left;
     el('c1').textContent = bands[1]; el('c2').textContent = bands[2];
     el('c4').textContent = bands[4]; el('c0').textContent = bands[0];
     var dn = {}; DEPTS.forEach(function(d){ dn[d]=0; });
     for (var j=0;j<ROWS.length;j++){ var dd = deptOf(ROWS[j]);
-      if (ROWS[j][F.prio]) dn[dd] = (dn[dd]||0)+1; }
+      if (ROWS[j][F.prio] && (view.showDone || !finished(ROWS[j]))) dn[dd] = (dn[dd]||0)+1; }
     DEPTS.forEach(function(d){ var n = el('dc-'+cssId(d)); if (n) n.textContent = dn[d]||0; });
     var da = el('dc-all'); if (da) da.textContent = DEPTS.reduce(function(a,d){return a+(dn[d]||0);},0);
   }
@@ -190,6 +195,9 @@
   function filtered(){
     var q = view.q.trim().toLowerCase();
     var out = ROWS.filter(function(r){
+      // Finished rows leave the board, unless you asked to see them — either with the
+      // "Show finished" toggle or by filtering the status down to Done / Skipped.
+      if (!view.showDone && view.status!=='done' && view.status!=='skip' && finished(r)) return false;
       if (view.band!=='all' && r[F.prio]!==Number(view.band)) return false;
       if (view.dept!=='all' && deptOf(r)!==view.dept) return false;
       if (view.status && statusOf(r)!==view.status) return false;
@@ -414,6 +422,12 @@
   el('fOwner').addEventListener('change', function(){ view.owner=this.value; shown=60; render(); });
   el('fSort').addEventListener('change', function(){ view.sort=this.value; shown=60; render(); });
   el('btnMore').addEventListener('click', function(){ shown+=120; render(); });
+  el('btnShowDone').addEventListener('click', function(){
+    view.showDone = !view.showDone; shown = 60;
+    this.setAttribute('aria-pressed', String(view.showDone));
+    this.textContent = view.showDone ? 'Hide finished' : 'Show finished';
+    render();
+  });
 
   el('btnCsv').addEventListener('click', function(){
     var head = ['Slug','Title','Department','Dept set by','Auto-routed dept','Priority','Status','Owner',
