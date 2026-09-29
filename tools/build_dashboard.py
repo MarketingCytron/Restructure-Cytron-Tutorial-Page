@@ -29,13 +29,17 @@ RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics'
           'RP2040/PICO': 'RP2040/Pico', 'RP2040': 'RP2040/Pico',                      # renamed 23 Sep, renamed again 28 Sep 2026
           'Raspberry Pi Pico': 'RP2040/Pico',                                         # 28 Sep 2026: Pico merged into RP2040/Pico (id 20 emptied, kept for re-use)
           'Raspberry Pi Zero': 'Raspberry Pi'}                                        # 28 Sep 2026: Zero folded into Raspberry Pi (id 31 emptied, kept for re-use)
-# ids 20 and 31 still exist in the CMS with 0 posts; nothing may be suggested into them until they are renamed
-EMPTIED = {'Raspberry Pi Pico', 'Raspberry Pi Zero'}
+# 29 Sep 2026: id 19 was briefly renamed 'Cytron Brand' and changed back the same day — no mapping needed.
+# 'Raspberry Pi Pico' is gone as a NAME (id 20 now reads EDU PICO), which is exactly why this
+# pipeline keys on names and never on ids. Only id 31 is still a live-but-empty category.
+EMPTIED = {'Raspberry Pi Zero'}
 # curated categories: membership is an editorial choice, so no keyword support is not a finding
 CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop'}
 # a post filed here is deliberately NOT also filed there: do not re-suggest the listed categories
 EXCLUSIVE_SUGGEST = {'Industrial Workshop': {'IRIV Pi Control', 'IRIV EdgeAI', 'Seminars & Workshop', 'Miscellaneous'},
-                     'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'RP2040/Pico'}}
+                     'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'RP2040/Pico'},
+                     'EDU PICO': {'RP2040/Pico'}}   # one board, one shelf (29 Sep decision)
+SUGGEST_BEATS = {'EDU PICO': {'RP2040/Pico'}}
 def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
 ID = {c['name']: c['id'] for c in CATS}
@@ -59,6 +63,7 @@ rules['RDK X5'].update(['rdk x5', 'rdk x50', 'rdk'])
 rules['ZOOM:BIT'].update(['zoom:bit', 'zoombit', 'zoom bit']); rules['Robotics'].discard('zoombit')
 rules['RP2040/Pico'].update(['raspberry pi pico', 'pi pico', 'rp2040', 'pico w'])
 rules['Raspberry Pi'].update(['raspberry pi zero', 'pi zero'])   # Zero posts now sit in Raspberry Pi itself
+rules['EDU PICO'].update(['edu pico', 'edupico'])
 rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
 rules['Industrial Workshop'].update(['iriv picontrol workshop', 'iriv edgeai workshop', 'industrial workshop'])
 rules = {c: ks for c, ks in rules.items() if c in ID and c not in EMPTIED}
@@ -161,6 +166,10 @@ def evaluate(t, prev):
             add.append(p); segs[p] = f'+{p} — parent of {c}'
     for k, drop in EXCLUSIVE_SUGGEST.items():
         if k in cur: add = [c for c in add if c not in drop]
+    # One board, one shelf: where two sibling categories both fit, the more specific one wins
+    # even before anyone has filed the post — otherwise every EDU PICO post asks for RP2040/Pico too.
+    for k, drop in SUGGEST_BEATS.items():
+        if k in cur or k in add: add = [c for c in add if c not in drop]
     add = by_id(add); quest = by_id(quest)
     keep = set(add) | set(quest)
     def segkey(c):

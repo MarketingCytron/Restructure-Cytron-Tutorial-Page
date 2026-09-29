@@ -1,0 +1,46 @@
+﻿views,title,current categories,department,url
+11741,Gas Detector Using MQ2 on ESP32 and Blynk App,"Arduino Ecosystem, Wireless & IoT, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/gas-detector-using-mq2-on-esp32-and-blynk-app
+10004,Automated Plant Watering with ESP32 and Blynk,"Arduino Ecosystem, Wireless & IoT, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/water-the-plant-using-esp32
+8658,Control LED Strip Using ESP32 and Blynk App,"Arduino Ecosystem, Wireless & IoT, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/control-led-strip-using-esp32-and-blynk-app
+8036,Display Temperature and Humidity on OLED using DHT22 and Arduino,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/display-temperature-and-humidity-on-oled-using-dht22-and-arduino
+7604,Controlling LED on Arduino using IR Remote,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/controlling-led-on-arduino-using-ir-remote
+7242,Safe Box with I2C LCD and 4x4 Keypad Using Arduino,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/safe-box
+6637,How to Display on I2C OLED with Arduino,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/display-i2c-oled-arduino
+6545,Control Solenoid Door Lock using Relay on Arduino,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/control-solenoid-door-lock-using-relay-on-arduino
+6286,Interfacing Raspberry Pi Pico With 0.96,"Arduino Ecosystem, Raspberry Pi, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/pipico-interface-with-0-96display-and-dht22-using-arduinoide
+6221,Night Light,"micro:bit, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/night-light
+6140,How to Make a DIY Concrete Vase with a 3D Printed Mould,"3D Modelling, Components, DIY, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/how-to-make-a-diy-concrete-vase-with-a-3d-printed-mould
+6088,Measure Temperature with Raspberry Pi Pico & Grove Sensor,"Arduino Ecosystem, Raspberry Pi, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/measure-ambient-temperature-with-raspberrypipico-and-grove-temperature-sensor-arduinoide
+5960,Security System with Raspberry Pi & ArduCam 16MP,"Raspberry Pi, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/security-system-using-raspberry-pi-and-arducam-16mp-autofocus
+5858,Build an RGB Color Detector with CircuitPython on Pico,"Raspberry Pi, Cytron Brand, Python for MCU",Commerce,https://my.cytron.io/tutorial/color-rgb-detector-using-circuitpython-on-raspberry-pi-pico
+5757,Program Otto DIY Robot for Basic Movements with CircuitPython,"Robotics, Motor Driver, Cytron Brand, Python for MCU",Education,https://my.cytron.io/tutorial/program-otto-diy-robot-for-basic-movements-with-circuitpython
+5518,Smart Blind Stick,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/smart-blind-stick
+5496,RFID Solenoid Door Lock Using Arduino,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/rfid-solenoid-door-lock-on-arduino
+5439,Notification for Plants using Blynk and Moisture Sensor on ESP32,"Wireless & IoT, ESP32, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/water-notification-for-plants-using-blynk-and-moisture-sensor-on-esp32
+5277,Making A Lucky Draw Device Using Raspberry Pi Pico,"Raspberry Pi, Cytron Brand, Python for MCU",Commerce,https://my.cytron.io/tutorial/making-a-lucky-draw-device-using-raspberry-pi-pico
+5168,Microbit With Arduino IDE,"micro:bit, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/microbit-with-arduino-ide
+5080,Learn Microcontroller Code Easier With MicroPython REPL,"Wireless & IoT, ESP32, Cytron Brand, Python for MCU",Unassigned,https://my.cytron.io/tutorial/learn-microcontroller-code-easier-with-micropython-repl
+5026,Simple GUI to Control LED on Arduino with Processing,"Arduino Ecosystem, Cytron Brand, Makers, Miscellaneous",Education,https://my.cytron.io/tutorial/simple-gui-to-control-led-on-arduino-with-processing
+5003,Automatic Doorbell with PIR Motion Sensor,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/automatic-doorbell-pir-motion-sensor
+4973,Getting Started With Sparkfun RedBoard Qwiic,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/getting-started-with-sparkfun-redboard-qwiic
+4963,Keypad Solenoid Door Lock Using Arduino,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/arduino-solenoid-door-lock-using-keypad
+4822,Using a Magnetic Contact Switch Sensor with Arduino,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers, Miscellaneous",Education,https://my.cytron.io/tutorial/magnetic-contact-switch-sensor-with-arduino
+4812,Smart Dustbin,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/smart-dustbin
+4800,Control A Servo And Display Sensor’s Reading Using The GUI On Arduino.,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers, Miscellaneous",Education,https://my.cytron.io/tutorial/control-servo-and-display-sensors-reading-using-the-gui-on-arduino
+4670,Rain Detector,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/rain-detector
+4645,Object Detection with Edge Impulse Using Mobile Phone,Cytron Brand,Unassigned,https://my.cytron.io/tutorial/object-detection
+4187,Basic Comparison Between MicroPython and Arduino,"Arduino Ecosystem, Cytron Brand, Python for MCU",Commerce,https://my.cytron.io/tutorial/basic-comparison-between-micropython-and-arduino
+3714,Introduction to Edge Impulse,Cytron Brand,Unassigned,https://my.cytron.io/tutorial/introduction-to-edge-impulse
+3638,Smart Parking System Controlled by Blynk App on Arduino.,"Arduino Ecosystem, Wireless & IoT, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/smart-parking-system-controlled-by-blynk-app-on-arduino
+3597,Chocolate Box with Touch Sensor and Arduino,"Arduino Ecosystem, Components, Sensor, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/chocolate-box-with-touch-sensor-and-arduino
+3415,Program Seeeduino XIAO Using CircuitPython,"Cytron Brand, Python for MCU",Unassigned,https://my.cytron.io/tutorial/program-seeeduino-xiao-using-circuitpython
+3402,Soil Moisture Alarm Using CircuitPython on Seeeduino XIAO,"Cytron Brand, Python for MCU",Unassigned,https://my.cytron.io/tutorial/soil-moisture-alarm-using-circuitpython-on-seeeduino-xiao
+3328,Edge Impulse with Mobile Phone Application Using Accelerometer,Cytron Brand,Unassigned,https://my.cytron.io/tutorial/edge-impulse-with-mobile-phone-application
+3265,Voice Recognition with Edge Impulse Using Computer Application,Cytron Brand,Unassigned,https://my.cytron.io/tutorial/edge-impulse-with-computer-application
+3116,Flame Detector,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/flame-detector
+2993,Clap to Turn On The Light!,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/clap-turn-light
+2797,Wire Buzz,"Arduino Ecosystem, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/wire-buzz
+2503,Robot Antenna,"Raspberry Pi, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/robot-antenna
+2249,The Easiest Way to Print Temperature Tower Using Cura 4.9.1 Plugins,"3D Modelling, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/the-easiest-way-to-print-temperature-tower-using-cura-4-9-1-plugins
+1638,3D Printing Pelita Raya,"Arduino Ecosystem, 3D Modelling, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/3d-printing-pelita-raya
+1331,3D Print Lithophane for Hari Raya Aidilfitri,"3D Modelling, Cytron Brand, Makers",Education,https://my.cytron.io/tutorial/lithophane-aidilfitri

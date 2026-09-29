@@ -46,6 +46,30 @@
   function tutorialUrl(slug){ return (CFG.tutorialUrl||'{slug}').replace('{slug}', encodeURIComponent(slug)); }
   function setLive(cls, txt){ var n=el('live'); n.className='livedot '+cls; el('liveTxt').textContent=txt; }
 
+  /* Copy to clipboard, with a fallback for the contexts where the async API is unavailable
+     (an http origin, or the page opened straight off disk). */
+  function copyText(text, btn){
+    function done(ok){
+      if (!btn) return;
+      var old = btn.textContent;
+      btn.textContent = ok ? 'copied' : 'press Ctrl+C';
+      btn.classList.add(ok ? 'ok' : 'warn');
+      setTimeout(function(){ btn.textContent = old; btn.classList.remove('ok','warn'); }, 1400);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ legacy(); });
+    } else legacy();
+    function legacy(){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly','');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove(); done(ok);
+    }
+  }
+
   /* ------------------------------------------------------------------ API */
 
   function apiGet(){
@@ -197,10 +221,13 @@
     var dep = deptOf(r);
 
     return '<article class="row '+band+(openId===id?' open':'')+'" data-id="'+id+'">'
-      + '<button class="rhead" data-act="toggle" aria-expanded="'+(openId===id)+'">'
+      // A div, not a button: the title inside has to be selectable so it can be dragged over
+      // and copied into the admin. role/tabindex/keydown put the keyboard behaviour back.
+      + '<div class="rhead" data-act="toggle" role="button" tabindex="0" aria-expanded="'+(openId===id)+'">'
         + '<span class="stripe"></span>'
         + '<span class="pillcell"><span class="pill s-'+st+'">'+esc(labelOf(st))+'</span></span>'
-        + '<span class="rmain"><span class="rtitle">'+esc(r[F.title])+'</span>'
+        + '<span class="rmain"><span class="titlerow"><span class="rtitle">'+esc(r[F.title])+'</span>'
+          + '<button class="copybtn" data-act="copytitle" title="Copy this title">copy</button></span>'
           + '<span class="rmeta">'+esc(r[F.type])+(r[F.level]?' <span class="sep">·</span> '+esc(r[F.level]):'')
           + ' <span class="sep">·</span> '+esc(r[F.date])+'</span>'
           + '<span class="catline">'+line+'</span></span>'
@@ -212,7 +239,7 @@
           + '<span class="views">'+Number(r[F.views]).toLocaleString()+' views</span>'
           + (s.note?'<span class="views">note</span>':'')
         + '</span>'
-      + '</button>'
+      + '</div>'
       + (openId===id ? editorHTML(r) : '')
       + '</article>';
   }
@@ -293,7 +320,15 @@
     var t = ev.target.closest && ev.target.closest('[data-act]'); if (!t) return;
     var art = t.closest('.row'); var id = art && art.dataset.id;
     var act = t.dataset.act;
+    if (act==='copytitle'){
+      ev.preventDefault(); ev.stopPropagation();
+      copyText((byId[id]||[])[F.title]||'', t);
+      return;
+    }
     if (act==='toggle'){
+      // Finishing a drag-selection over the title still fires a click; don't treat that as a tap.
+      var sel = window.getSelection && window.getSelection();
+      if (sel && String(sel).length > 1 && art.contains(sel.anchorNode)) return;
       openId = (openId===id ? null : id); render();
       if (openId){ var n=document.querySelector('.row[data-id="'+id+'"]'); if (n) n.scrollIntoView({block:'nearest'}); }
       return;
@@ -323,6 +358,15 @@
       return;
     }
     if (act==='deptauto'){ save(id, {dept:''}); return; }
+  });
+
+  /* .rhead is a div now, so Enter / Space have to be wired up by hand. */
+  document.addEventListener('keydown', function(ev){
+    if (ev.key!=='Enter' && ev.key!==' ') return;
+    var t = ev.target;
+    if (!t.dataset || t.dataset.act!=='toggle') return;
+    ev.preventDefault();
+    t.click();
   });
 
   document.addEventListener('input', function(ev){

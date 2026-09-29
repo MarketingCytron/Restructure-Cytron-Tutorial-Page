@@ -207,3 +207,16 @@ footer{color:var(--faint);font-size:12px;margin-top:28px;line-height:1.7;border-
 .catgrp{display:flex;flex-wrap:wrap;gap:5px;padding:4px 6px;border-radius:7px;background:var(--surface)}
 .catgrp .cat.child{margin-left:0}
 .catgrp .cat.child::before{content:"›";margin-right:5px;color:var(--faint)}
+
+/* ---- copyable title (29 Sep 2026) ---- */
+.rhead:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:10px}
+.titlerow{display:flex;align-items:baseline;gap:8px;margin:0 0 3px}
+.rtitle{margin:0;user-select:text;cursor:text}
+.copybtn{flex:0 0 auto;border:1px solid var(--border);background:var(--surface);color:var(--faint);
+  border-radius:5px;padding:1px 7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+  text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .12s}
+.row:hover .copybtn,.row.open .copybtn,.copybtn:focus-visible{opacity:1}
+.copybtn:hover{border-color:var(--accent);color:var(--accent)}
+.copybtn.ok{opacity:1;border-color:var(--done);color:var(--done);background:var(--done-soft)}
+.copybtn.warn{opacity:1;border-color:var(--urgent);color:var(--urgent)}
+@media (hover:none){ .copybtn{opacity:1} }
