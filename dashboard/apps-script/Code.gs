@@ -15,7 +15,9 @@ var SECRET = 'change-me';
 /** Sheet tab that holds the rows. Created automatically on first write. */
 var TAB = 'progress';
 
-var HEADERS = ['id', 'slug', 'title', 'status', 'owner', 'note', 'applied', 'ts', 'updatedAt'];
+/* 'dept' was appended on 29 Sep 2026. New columns go on the END so the indexes
+   of the existing ones never move and no sheet has to be migrated by hand. */
+var HEADERS = ['id', 'slug', 'title', 'status', 'owner', 'note', 'applied', 'ts', 'updatedAt', 'dept'];
 
 /* -------------------------------------------------------------------------- */
 
@@ -26,6 +28,11 @@ function sheet_() {
     sh = ss.insertSheet(TAB);
     sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
     sh.setFrozenRows(1);
+    return sh;
+  }
+  // A sheet created before a column was added: widen the header row in place.
+  if (sh.getLastColumn() < HEADERS.length) {
+    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
   }
   return sh;
 }
@@ -41,15 +48,18 @@ function rowsToObjects_(values) {
   for (var i = 1; i < values.length; i++) {
     var v = values[i];
     if (!v[0]) continue;
-    var applied = [];
-    if (v[6]) {
+    // null = nobody has ticked this row yet, so the board shows the suggestion.
+    // [] = someone ticked everything off, which is a real answer and must survive.
+    var applied = null;
+    if (v[6] !== '' && v[6] != null) {
       try { applied = JSON.parse(v[6]); }
       catch (e) { applied = String(v[6]).split(';').map(function (s) { return s.trim(); }).filter(String); }
+      if (!Array.isArray(applied)) applied = null;
     }
     out.push({
       id: String(v[0]), slug: String(v[1] || ''), title: String(v[2] || ''),
       status: String(v[3] || ''), owner: String(v[4] || ''), note: String(v[5] || ''),
-      applied: applied, ts: Number(v[7] || 0)
+      applied: applied, ts: Number(v[7] || 0), dept: String(v[9] || '')
     });
   }
   return out;
@@ -100,12 +110,12 @@ function doPost(e) {
       if (String(ids[i][0]) === String(body.id)) { rowIndex = i + 2; break; }
     }
 
-    var applied = Array.isArray(body.applied) ? body.applied : [];
+    var applied = Array.isArray(body.applied) ? JSON.stringify(body.applied) : '';
     var ts = Number(body.ts) || Date.now();
     var record = [
       String(body.id), String(body.slug || ''), String(body.title || ''),
       String(body.status || ''), String(body.owner || ''), String(body.note || ''),
-      JSON.stringify(applied), ts, new Date()
+      applied, ts, new Date(), String(body.dept || '')
     ];
 
     if (rowIndex === -1) {

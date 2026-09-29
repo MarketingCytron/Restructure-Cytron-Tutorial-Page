@@ -157,3 +157,36 @@ filed under Industrial Workshop or RDK X5 is not re-suggested for the categories
 The suggestions come from keyword rules over each post's title, tags and excerpt. Article bodies were
 not read, and 139 posts carry no tags at all. Every row is a candidate for a human decision, not an
 instruction.
+
+---
+
+## Upgrading an existing deployment (29 Sep 2026)
+
+This release adds a **department override** per tutorial, so the `progress` sheet needs one more
+column. Nothing is lost and no data has to be moved — `dept` is appended at the end, so every
+existing column keeps its position.
+
+1. Open the Sheet → **Extensions › Apps Script**, replace `Code.gs` with this repo's copy.
+2. **Deploy › Manage deployments › (pencil) › Version: New version › Deploy.**
+   Editing the code is not enough — a deployment serves the version it was created from, so
+   without a *New version* the board will keep talking to the old code and every department you
+   set will be silently dropped.
+3. The header row is widened automatically on the first read, so there is nothing to do in the Sheet.
+
+The URL does not change, so `config.js` needs no edit.
+
+### What the department override does
+
+`tools/departments.py` routes every post to Industry, Education, Commerce or Unassigned from its
+categories, title and tags. That is a guess. Any department picked on the board **overrules the
+guess and is stored in the Sheet**, so it survives every rebuild of `data/tutorials.json` —
+re-running `build_dashboard.py` cannot undo a human's decision. A row whose department was set by
+hand carries a dot on its badge and offers "put it back" to return it to auto-routing.
+
+To add a department beyond the four, list it in `config.js`:
+
+```js
+extraDepartments: ["Marketing", "Support"]
+```
+
+It gets a filter chip and a button on every row; nothing else needs changing.

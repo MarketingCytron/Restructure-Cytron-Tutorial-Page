@@ -9,8 +9,15 @@
   var BAND = {1:{key:'p1',label:'Uncategorised'},2:{key:'p2',label:'Missing category'},
               4:{key:'p4',label:'Review only'},0:{key:'p0',label:'No change needed'}};
   var STATUS = [['todo','To do'],['doing','In progress'],['done','Done'],['skip','Skipped']];
-  var DEPTS = ['Industry','Education','Commerce','Unassigned'];
+  /* The four routed by tools/departments.py, plus anything added in config.js.
+     A department set here is an override: it wins over the routed value and is
+     saved to the sheet, so it survives every rebuild of data/tutorials.json. */
+  var BASE_DEPTS = ['Industry','Education','Commerce','Unassigned'];
+  var DEPTS = BASE_DEPTS.concat((CFG.extraDepartments||[]).filter(function(d){
+    return BASE_DEPTS.indexOf(d) < 0; }));
   var DEPT_CLASS = {Industry:'d-ind', Education:'d-edu', Commerce:'d-com', Unassigned:'d-una'};
+  function deptClass(d){ return DEPT_CLASS[d] || 'd-oth'; }
+  function cssId(d){ return String(d).replace(/[^A-Za-z0-9_-]/g, '_'); }
 
   var ROWS = [], CATS = [], byId = Object.create(null), SOURCE = '';
   var state = Object.create(null);
@@ -27,6 +34,15 @@
   function labelOf(st){ if (st==='clean') return 'No change';
     for (var i=0;i<STATUS.length;i++) if (STATUS[i][0]===st) return STATUS[i][1]; return st; }
   function splitCats(s){ return s ? s.split(', ').filter(Boolean) : []; }
+  function autoDept(r){ return r[F.dept] || 'Unassigned'; }
+  /* The department that counts: a human's override if there is one, else the routed guess. */
+  function deptOf(r){ var s=rec(r[F.id]); return (s && s.dept) ? s.dept : autoDept(r); }
+  function deptOverridden(r){ var s=rec(r[F.id]); return !!(s && s.dept && s.dept !== autoDept(r)); }
+  /* The ticked categories. null means "nobody has touched this row", which is why an
+     empty array must stay an empty array — unticking everything is a real answer. */
+  function suggestedCats(r){ return splitCats(r[F.current]).concat(splitCats(r[F.add])); }
+  function appliedCats(r){ var s=rec(r[F.id]); return (s && s.applied) ? s.applied : suggestedCats(r); }
+  function catsTouched(r){ var s=rec(r[F.id]); return !!(s && s.applied); }
   function tutorialUrl(slug){ return (CFG.tutorialUrl||'{slug}').replace('{slug}', encodeURIComponent(slug)); }
   function setLive(cls, txt){ var n=el('live'); n.className='livedot '+cls; el('liveTxt').textContent=txt; }
 
@@ -60,7 +76,7 @@
       var cur = state[row.id];
       if (cur && cur.ts >= (row.ts||0)) return;
       state[row.id] = {status:row.status||'', owner:row.owner||'', note:row.note||'',
-                       applied: row.applied||[], ts: row.ts||0};
+                       applied: row.applied || null, dept: row.dept||'', ts: row.ts||0};
       changed = true;
     });
     return changed;
@@ -82,7 +98,8 @@
   function flush(id){
     var body = pending[id]; if (!body) return;
     apiPost({action:'save', id:id, slug:(byId[id]||[])[F.slug]||'', title:(byId[id]||[])[F.title]||'',
-             status:body.status, owner:body.owner, note:body.note, applied:body.applied, ts:body.ts})
+             status:body.status, owner:body.owner, note:body.note, applied:body.applied,
+             dept:body.dept, ts:body.ts})
       .then(function(){
         if (pending[id] && pending[id].ts === body.ts) delete pending[id];
         setLive('on','live · saved ' + new Date().toLocaleTimeString());
@@ -96,7 +113,7 @@
   function save(id, patch){
     var prev = state[id] || {};
     var next = {status:prev.status||'', owner:prev.owner||'', note:prev.note||'',
-                applied:prev.applied||[], ts:Date.now()};
+                applied:prev.applied||null, dept:prev.dept||'', ts:Date.now()};
     for (var k in patch) next[k] = patch[k];
     state[id] = next; pending[id] = next;
     render(); refreshOwners();
@@ -127,10 +144,10 @@
     el('c1').textContent = bands[1]; el('c2').textContent = bands[2];
     el('c4').textContent = bands[4]; el('c0').textContent = bands[0];
     var dn = {}; DEPTS.forEach(function(d){ dn[d]=0; });
-    for (var j=0;j<ROWS.length;j++){ var dd = ROWS[j][F.dept]||'Unassigned';
+    for (var j=0;j<ROWS.length;j++){ var dd = deptOf(ROWS[j]);
       if (ROWS[j][F.prio]) dn[dd] = (dn[dd]||0)+1; }
-    DEPTS.forEach(function(d){ var n = el('dc-'+d); if (n) n.textContent = dn[d]; });
-    var da = el('dc-all'); if (da) da.textContent = DEPTS.reduce(function(a,d){return a+dn[d];},0);
+    DEPTS.forEach(function(d){ var n = el('dc-'+cssId(d)); if (n) n.textContent = dn[d]||0; });
+    var da = el('dc-all'); if (da) da.textContent = DEPTS.reduce(function(a,d){return a+(dn[d]||0);},0);
   }
 
   function refreshOwners(){
@@ -150,11 +167,11 @@
     var q = view.q.trim().toLowerCase();
     var out = ROWS.filter(function(r){
       if (view.band!=='all' && r[F.prio]!==Number(view.band)) return false;
-      if (view.dept!=='all' && (r[F.dept]||'Unassigned')!==view.dept) return false;
+      if (view.dept!=='all' && deptOf(r)!==view.dept) return false;
       if (view.status && statusOf(r)!==view.status) return false;
       if (view.owner){ var s=rec(r[F.id]); if (!s || s.owner!==view.owner) return false; }
       if (q){
-        var hay = (r[F.title]+' '+r[F.slug]+' '+r[F.tags]+' '+r[F.current]+' '+r[F.add]+' '+(r[F.dept]||'')).toLowerCase();
+        var hay = (r[F.title]+' '+r[F.slug]+' '+r[F.tags]+' '+r[F.current]+' '+r[F.add]+' '+deptOf(r)).toLowerCase();
         if (hay.indexOf(q)<0) return false;
       }
       return true;
@@ -171,13 +188,13 @@
   function rowHTML(r){
     var id=r[F.id], st=statusOf(r), s=rec(id)||{};
     var band = BAND[r[F.prio]] ? BAND[r[F.prio]].key : 'p0';
-    var applied = (s.applied && s.applied.length) ? s.applied : null;
     var cur = r[F.current] || '(none)';
     var line;
-    if (applied) line = '<b>Applied:</b> ' + esc(applied.join(', '));
+    if (catsTouched(r)) line = '<b>Ticked:</b> ' + esc(s.applied.join(', ') || '(none)');
     else if (r[F.add]) line = '<b>'+esc(cur)+'</b> <span class="sep">→ add</span> <span class="add">'+esc(r[F.add])+'</span>';
     else line = '<b>'+esc(cur)+'</b>';
-    if (r[F.quest] && !applied) line += ' <span class="quest">· check '+esc(r[F.quest])+'</span>';
+    if (r[F.quest] && !catsTouched(r)) line += ' <span class="quest">· check '+esc(r[F.quest])+'</span>';
+    var dep = deptOf(r);
 
     return '<article class="row '+band+(openId===id?' open':'')+'" data-id="'+id+'">'
       + '<button class="rhead" data-act="toggle" aria-expanded="'+(openId===id)+'">'
@@ -188,7 +205,9 @@
           + ' <span class="sep">·</span> '+esc(r[F.date])+'</span>'
           + '<span class="catline">'+line+'</span></span>'
         + '<span class="rright">'
-          + '<span class="dept-tag '+(DEPT_CLASS[r[F.dept]]||'d-una')+'">'+esc(r[F.dept]||'Unassigned')+'</span>'
+          + '<span class="dept-tag '+deptClass(dep)+(deptOverridden(r)?' set':'')+'" title="'
+            + (deptOverridden(r) ? 'Set by hand · auto-routed to '+esc(autoDept(r)) : 'Auto-routed') + '">'
+            + esc(dep) + (deptOverridden(r)?'<i class="pin">●</i>':'') + '</span>'
           + (s.owner?'<span class="owner-tag">'+esc(s.owner)+'</span>':'')
           + '<span class="views">'+Number(r[F.views]).toLocaleString()+' views</span>'
           + (s.note?'<span class="views">note</span>':'')
@@ -200,14 +219,33 @@
 
   function editorHTML(r){
     var id=r[F.id], s=rec(id)||{}, st=statusOf(r);
-    var applied = (s.applied && s.applied.length) ? s.applied
-                  : splitCats(r[F.current]).concat(splitCats(r[F.add]));
-    var chips = CATS.map(function(c){
+    var applied = appliedCats(r);
+    var sug = suggestedCats(r), curCats = splitCats(r[F.current]);
+    function chip(c){
       var on = applied.indexOf(c.name)>=0;
-      return '<button class="cat'+(c.parent?' child':'')+'" data-act="cat" data-cat="'+esc(c.name)+'" aria-pressed="'+on+'">'+esc(c.name)+'</button>';
+      var mark = curCats.indexOf(c.name)>=0 ? ' on-cms' : (sug.indexOf(c.name)>=0 ? ' sug' : '');
+      var why = curCats.indexOf(c.name)>=0 ? 'Already on the post in the CMS'
+              : (sug.indexOf(c.name)>=0 ? 'Suggested by the keyword rules' : '');
+      return '<button class="cat'+(c.parent?' child':'')+mark+'" data-act="cat" data-cat="'+esc(c.name)+'"'
+        + (why?' title="'+why+'"':'') + ' aria-pressed="'+on+'">'+esc(c.name)+'</button>';
+    }
+    // One wrapping group per top-level category, so the picker reads like the CMS tree
+    // instead of one long flat run of 45 chips.
+    var groups = [], g = null;
+    CATS.forEach(function(c){
+      if (!c.parent){ g = [c]; groups.push(g); }
+      else if (g) g.push(c);
+    });
+    var chips = groups.map(function(grp){
+      return '<div class="catgrp">' + grp.map(chip).join('') + '</div>';
     }).join('');
     var sbtns = STATUS.map(function(p){
       return '<button class="sbtn v-'+p[0]+'" data-act="status" data-v="'+p[0]+'" aria-pressed="'+(st===p[0])+'">'+p[1]+'</button>';
+    }).join('');
+    var dep = deptOf(r);
+    var dbtns = DEPTS.map(function(d){
+      return '<button class="dbtn '+deptClass(d)+'" data-act="dept" data-v="'+esc(d)+'" aria-pressed="'
+        + (dep===d) + '">'+esc(d)+'</button>';
     }).join('');
     return '<div class="editor">'
       + (r[F.reason] ? '<div class="reasonbox"><strong>Why it is flagged:</strong> '+esc(r[F.reason])+'</div>'
@@ -217,7 +255,17 @@
         + '<div class="field"><label>Who is on it</label>'
           + '<input type="text" data-act="owner" list="ownerList" value="'+esc(s.owner||'')+'" placeholder="Name or initials"'+(writable?'':' disabled')+'></div>'
       + '</div>'
-      + '<div class="field"><label>Categories applied in the CMS</label><div class="cats">'+chips+'</div></div>'
+      + '<div class="field"><label>Department</label><div class="statusrow">'+dbtns+'</div>'
+        + '<p class="hint">' + (deptOverridden(r)
+            ? 'Set by hand. Auto-routing said <b>'+esc(autoDept(r))+'</b> — '
+              + '<button class="linkbtn" data-act="deptauto">put it back</button>.'
+            : 'Auto-routed from its categories, title and tags. Click any department to overrule it — '
+              + 'your choice is saved and survives every rebuild.') + '</p></div>'
+      + '<div class="field"><label>Categories to apply in the CMS</label><div class="cats">'+chips+'</div>'
+        + '<p class="hint">Solid = already on the post · dashed = suggested. Tick what it should end up with, '
+          + 'then copy that into the admin. '
+          + (catsTouched(r) ? '<button class="linkbtn" data-act="catreset">reset to the suggestion</button>' : '')
+          + '</p></div>'
       + '<div class="field"><label>Note</label>'
         + (writable ? '<textarea data-act="note" placeholder="Anything the next person should know">'+esc(s.note||'')+'</textarea>'
                     : (s.note ? '<p class="note-ro">'+esc(s.note)+'</p>' : '<p class="note-ro">No note.</p>'))
@@ -257,14 +305,24 @@
       return;
     }
     if (act==='cat'){
-      var r = byId[id], s = rec(id) || {};
-      var list = (s.applied && s.applied.length) ? s.applied.slice()
-                 : splitCats(r[F.current]).concat(splitCats(r[F.add]));
+      var r = byId[id];
+      var list = appliedCats(r).slice();
       var name = t.dataset.cat, i = list.indexOf(name);
       if (i>=0) list.splice(i,1); else list.push(name);
+      // Keep the tree order so the list always reads the way the CMS picker does.
+      var order = {}; CATS.forEach(function(c,ix){ order[c.name]=ix; });
+      list.sort(function(a,b){ return (order[a]==null?1e9:order[a]) - (order[b]==null?1e9:order[b]); });
       save(id, {applied:list});
       return;
     }
+    if (act==='catreset'){ save(id, {applied:null}); return; }
+    if (act==='dept'){
+      // Clicking the department it is already on clears the override.
+      var v = t.dataset.v;
+      save(id, {dept: deptOf(byId[id])===v ? '' : v});
+      return;
+    }
+    if (act==='deptauto'){ save(id, {dept:''}); return; }
   });
 
   document.addEventListener('input', function(ev){
@@ -274,7 +332,7 @@
     var id = art.dataset.id;
     var prev = state[id] || {};
     var next = {status:prev.status||'', owner:prev.owner||'', note:prev.note||'',
-                applied:prev.applied||[], ts:Date.now()};
+                applied:prev.applied||null, dept:prev.dept||'', ts:Date.now()};
     next[t.dataset.act] = t.value;
     state[id] = next; pending[id] = next;
     clearTimeout(timers[id]);
@@ -289,6 +347,16 @@
       render();
     });
   });
+  /* Built here rather than in the HTML so an extra department added to config.js
+     gets a filter chip without anyone touching index.html. */
+  (function buildDeptChips(){
+    var host = el('deptChips'); if (!host) return;
+    host.innerHTML = '<button class="chip" data-dept="all" aria-pressed="true">All <span class="n" id="dc-all"></span></button>'
+      + DEPTS.map(function(d){
+          return '<button class="chip" data-dept="'+esc(d)+'" aria-pressed="false"><i class="dotc '
+            + deptClass(d)+'"></i>'+esc(d)+' <span class="n" id="dc-'+cssId(d)+'"></span></button>';
+        }).join('');
+  })();
   Array.prototype.forEach.call(document.querySelectorAll('.chip[data-dept]'), function(b){
     b.addEventListener('click', function(){
       view.dept = b.dataset.dept; shown = 60;
@@ -304,14 +372,16 @@
   el('btnMore').addEventListener('click', function(){ shown+=120; render(); });
 
   el('btnCsv').addEventListener('click', function(){
-    var head = ['Slug','Title','Department','Priority','Status','Owner','Current categories','Suggested additions',
-                'Applied categories','Note','Reason','Views','URL'];
+    var head = ['Slug','Title','Department','Dept set by','Auto-routed dept','Priority','Status','Owner',
+                'Current categories','Suggested additions','Ticked categories','Note','Reason','Views','URL'];
     function q(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
     var lines = [head.map(q).join(',')];
     filtered().forEach(function(r){
       var s = rec(r[F.id])||{};
-      lines.push([r[F.slug], r[F.title], r[F.dept]||'Unassigned', (BAND[r[F.prio]]||{}).label||'', labelOf(statusOf(r)),
-        s.owner||'', r[F.current], r[F.add], (s.applied||[]).join('; '), s.note||'', r[F.reason],
+      lines.push([r[F.slug], r[F.title], deptOf(r), deptOverridden(r)?'hand':'auto', autoDept(r),
+        (BAND[r[F.prio]]||{}).label||'', labelOf(statusOf(r)),
+        s.owner||'', r[F.current], r[F.add],
+        catsTouched(r) ? s.applied.join('; ') : '', s.note||'', r[F.reason],
         r[F.views], tutorialUrl(r[F.slug])].map(q).join(','));
     });
     var blob = new Blob(['﻿'+lines.join('\r\n')], {type:'text/csv;charset=utf-8'});

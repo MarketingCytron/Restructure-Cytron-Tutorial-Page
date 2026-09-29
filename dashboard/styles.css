@@ -176,3 +176,34 @@ footer{color:var(--faint);font-size:12px;margin-top:28px;line-height:1.7;border-
   font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap;border:1px solid currentColor}
 .dept-tag.d-ind{color:var(--d-ind)} .dept-tag.d-edu{color:var(--d-edu)}
 .dept-tag.d-com{color:var(--d-com)} .dept-tag.d-una{color:var(--d-una)}
+
+/* ---- department override + category ticking (29 Sep 2026) ---- */
+:root{ --d-oth:#B5651D; }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){ --d-oth:#E08A4A; }}
+:root[data-theme="dark"]{ --d-oth:#E08A4A; }
+.dotc.d-oth{background:var(--d-oth)}
+.dept-tag.d-oth{color:var(--d-oth)}
+.chipgroup{display:contents}
+.dept-tag.set{background:color-mix(in srgb, currentColor 12%, transparent)}
+.dept-tag .pin{font-style:normal;font-size:7px;vertical-align:middle;margin-left:4px;opacity:.85}
+
+.dbtn{border:1px solid var(--border);background:var(--surface);border-radius:7px;padding:5px 10px;
+  font-size:12.5px;cursor:pointer;color:inherit}
+.dbtn[aria-pressed="true"]{border-color:currentColor;font-weight:600;
+  background:color-mix(in srgb, currentColor 12%, transparent)}
+.dbtn.d-ind[aria-pressed="true"]{color:var(--d-ind)} .dbtn.d-edu[aria-pressed="true"]{color:var(--d-edu)}
+.dbtn.d-com[aria-pressed="true"]{color:var(--d-com)} .dbtn.d-una[aria-pressed="true"]{color:var(--d-una)}
+.dbtn.d-oth[aria-pressed="true"]{color:var(--d-oth)}
+
+.hint{font-size:12px;color:var(--faint);margin:7px 0 0;line-height:1.5}
+.hint b{color:var(--muted)}
+.linkbtn{border:0;background:none;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:underline}
+
+/* solid edge = the CMS already has it; dashed = the rules suggested it */
+.cat.on-cms{border-color:var(--border-strong)}
+.cat.sug{border-style:dashed;border-color:var(--accent)}
+.cat[aria-pressed="true"]{border-style:solid}
+.cats{flex-direction:column;align-items:stretch;gap:4px}
+.catgrp{display:flex;flex-wrap:wrap;gap:5px;padding:4px 6px;border-radius:7px;background:var(--surface)}
+.catgrp .cat.child{margin-left:0}
+.catgrp .cat.child::before{content:"›";margin-right:5px;color:var(--faint)}
