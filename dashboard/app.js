@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  var BUILD = '20261006b';   // keep in step with the ?v= in index.html
+  var BUILD = '20261006c';   // keep in step with the ?v= in index.html
   var CFG = window.DASHBOARD_CONFIG || {};
   var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12,dept:13,drop:14};
   var BAND = {1:{key:'p1',label:'No category'},2:{key:'p2',label:'Needs an edit'},
@@ -20,11 +20,11 @@
   function deptClass(d){ return DEPT_CLASS[d] || 'd-oth'; }
   function cssId(d){ return String(d).replace(/[^A-Za-z0-9_-]/g, '_'); }
 
-  var ROWS = [], CATS = [], byId = Object.create(null), SOURCE = '';
+  var ROWS = [], CATS = [], byId = Object.create(null), SOURCE = '', CATORDER = Object.create(null);
   var state = Object.create(null);
   var pending = Object.create(null), timers = Object.create(null);
   var online = false, writable = false, lastSync = 0;
-  var view = {band:'all', dept:'all', q:'', status:'', owner:'', sort:'prio', showDone:false};
+  var view = {band:'all', dept:'all', q:'', status:'', owner:'', cat:'', sort:'prio', showDone:false};
   var shown = 60, openId = null;
 
   function el(id){ return document.getElementById(id); }
@@ -209,6 +209,8 @@
       if (view.dept!=='all' && deptOf(r)!==view.dept) return false;
       if (view.status && statusOf(r)!==view.status) return false;
       if (view.owner){ var s=rec(r[F.id]); if (!s || s.owner!==view.owner) return false; }
+      // Match on what the post HAS, so filtering to 3D Modelling finds the ones it must come off.
+      if (view.cat && splitCats(r[F.current]).indexOf(view.cat)<0) return false;
       if (q){
         var hay = (r[F.title]+' '+r[F.slug]+' '+r[F.tags]+' '+r[F.current]+' '+r[F.add]+' '+deptOf(r)).toLowerCase();
         if (hay.indexOf(q)<0) return false;
@@ -217,6 +219,10 @@
     });
     if (view.sort==='views') out.sort(function(a,b){ return b[F.views]-a[F.views]; });
     else if (view.sort==='title') out.sort(function(a,b){ return a[F.title].localeCompare(b[F.title]); });
+    else if (view.sort==='cat') out.sort(function(a,b){
+      var ca=splitCats(a[F.current]), cb=splitCats(b[F.current]);
+      var ka=ca.length?CATORDER[ca[0]]:9999, kb=cb.length?CATORDER[cb[0]]:9999;
+      return ka-kb || b[F.views]-a[F.views]; });
     else if (view.sort==='recent') out.sort(function(a,b){
       return ((rec(b[F.id])||{}).ts||0) - ((rec(a[F.id])||{}).ts||0); });
     return out;
@@ -432,6 +438,7 @@
   el('q').addEventListener('input', function(){ view.q=this.value; shown=60; render(); });
   el('fStatus').addEventListener('change', function(){ view.status=this.value; shown=60; render(); });
   el('fOwner').addEventListener('change', function(){ view.owner=this.value; shown=60; render(); });
+  el('fCat').addEventListener('change', function(){ view.cat=this.value; shown=60; render(); });
   el('fSort').addEventListener('change', function(){ view.sort=this.value; shown=60; render(); });
   el('btnMore').addEventListener('click', function(){ shown+=120; render(); });
   el('btnShowDone').addEventListener('click', function(){
@@ -464,6 +471,16 @@
 
   /* ----------------------------------------------------------------- boot */
 
+  /* One option per category, in the CMS's own tree order, with how many posts sit in it. */
+  function buildCatFilter(){
+    var n = Object.create(null);
+    ROWS.forEach(function(r){ splitCats(r[F.current]).forEach(function(c){ n[c]=(n[c]||0)+1; }); });
+    el('fCat').innerHTML = '<option value="">Any category</option>' + CATS.map(function(c){
+      return '<option value="'+esc(c.name)+'">' + (c.parent ? '\u00A0\u00A0› ' : '')
+        + esc(c.name) + ' (' + (n[c.name]||0) + ')</option>';
+    }).join('');
+  }
+
   function showSetup(msg){
     var n = el('setup'); n.hidden = false; n.innerHTML = msg;
   }
@@ -473,6 +490,8 @@
     .then(function(payload){
       ROWS = payload.rows; CATS = payload.cats; SOURCE = payload.source || '';
       ROWS.forEach(function(r){ byId[r[F.id]] = r; });
+      CATS.forEach(function(c, i){ CATORDER[c.name] = i; });
+      buildCatFilter();
       el('foot').innerHTML = 'Generated ' + esc(payload.generated||'') + ' from ' + esc(SOURCE) + '. '
         + 'Suggestions come from keyword rules over each post’s title, tags and excerpt — article bodies '
         + 'were not read, and 139 posts carry no tags, so treat every row as a candidate for a human decision.'
