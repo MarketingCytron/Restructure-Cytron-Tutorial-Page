@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  var BUILD = '20261006e';   // keep in step with the ?v= in index.html
+  var BUILD = '20261006f';   // keep in step with the ?v= in index.html
   var CFG = window.DASHBOARD_CONFIG || {};
   var F = {id:0,title:1,slug:2,prio:3,current:4,add:5,quest:6,reason:7,type:8,level:9,date:10,views:11,tags:12,dept:13,drop:14};
   var BAND = {1:{key:'p1',label:'No category'},2:{key:'p2',label:'Needs an edit'},

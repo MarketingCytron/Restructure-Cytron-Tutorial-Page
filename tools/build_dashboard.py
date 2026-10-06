@@ -78,6 +78,14 @@ rules['Milesight'].update(['milesight', 'ursalink', 'beaveriot', 'ug65', 'ug67',
     'ws301', 'ws302', 'ws303', 'ws52x', 'ws558', 'em300', 'em310', 'em320', 'em400', 'em500',
     'am103', 'am307', 'am319', 'uc300', 'uc500', 'uc501', 'gs301', 'vs121', 'vs133', 'vs350'])
 rules['Milesight'].discard('lorawan')   # LoRaWAN is a protocol; the category is now a brand
+# The IRIV product lines. 85 posts mention IRIV; only 20 carried an IRIV category, because the
+# audit's rules only knew the exact category name. (6 Oct 2026)
+# Every term must carry IRIV or be a Cytron-only product word. The first attempt allowed bare
+# "edge ai" and "pi control" and swept in 25 NVIDIA Jetson posts that have nothing to do with IRIV.
+rules['IRIV Pi Control'].update(['iriv picontrol', 'iriv pi control', 'picontrol'])
+rules['IRIV EdgeAI'].update(['iriv edgeai', 'iriv edge ai'])
+rules['IRIV SmartHub'].update(['iriv smarthub', 'iriv smart hub', 'smarthub'])
+rules['IRIV IOC'].update(['iriv ioc', 'iriv-ioc', 'iriv io controller'])
 # The audit's rules were built from post titles, so whole vocabularies were missing and perfectly
 # correct categories were being doubted — "All You Need to Know About Cura Tree Support" was flagged
 # for sitting in 3D Modelling. (6 Oct 2026)
@@ -109,7 +117,8 @@ NOT_HARDWARE = {'3D Modelling', 'Miscellaneous', 'News', 'Seminars & Workshop',
 # Categories that are still being populated: suggest them wherever the keywords hit, even on a post
 # that already has a shelf. Normally "it already has one, leave it" wins — but a brand-new or
 # just-repurposed category has to be filled before that rule means anything. (6 Oct 2026)
-FORCE_SUGGEST = {'Milesight'}
+FORCE_SUGGEST = {'Milesight', 'IRIV Pi Control', 'IRIV EdgeAI', 'IRIV SmartHub', 'IRIV IOC'}
+IRIV_CATS = {'IRIV Pi Control', 'IRIV EdgeAI', 'IRIV SmartHub', 'IRIV IOC'}
 
 def places(names): return {PLACE[n] for n in names if n in PLACE}
 
@@ -137,11 +146,12 @@ NEW_CATS = [c for c in ID if c not in seen and c in rules]
 MERGED = [c for c in ('RP2040/Pico',) if c in rules]
 # A renamed category keeps its old name in `seen`, so its rules would never be swept over the whole
 # catalogue — which is how five Milesight posts stayed invisible after LoRaWAN was renamed.
-RESWEEP = [c for c in ('Milesight',) if c in rules]
+RESWEEP = [c for c in ('Milesight', 'IRIV Pi Control', 'IRIV EdgeAI', 'IRIV SmartHub',
+                       'IRIV IOC') if c in rules]
 NEW_CATS += [c for c in MERGED + RESWEEP if c not in NEW_CATS]
 NOTE = {c: '(category created after the 16 Sep audit)' for c in NEW_CATS}
 NOTE.update({c: '(Raspberry Pi Pico and RP2040 merged into it on 28 Sep)' for c in MERGED})
-NOTE.update({c: '(category renamed on 6 Oct, so every post was re-checked against it)' for c in RESWEEP})
+NOTE.update({c: '(every post was re-checked against this category on 6 Oct)' for c in RESWEEP})
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
 
 
@@ -287,6 +297,14 @@ def evaluate(t, prev):
         add, tie = trim_to_one_place(add, tt, ex)
         if tie: notes.append(tie)
 
+    # "Mentions IRIV but sits in no IRIV category." Where the product name is clear the rules above
+    # suggest the right child; where it is just "IRIV", say so and let a human pick. (6 Oct 2026)
+    if re.search(r'(?<![a-z0-9])iriv(?![a-z0-9])', tt + ' ' + ex) and not (IRIV_CATS & (set(kept) | set(add))):
+        notes.append('mentions IRIV but is in no IRIV category — pick the right one')
+        iriv_unplaced = True
+    else:
+        iriv_unplaced = False
+
     quest = [c for c in quest if c in kept and c not in drop]
     drop = by_id(drop)
     # Strip "+X" segments for anything no longer being suggested, so the reason matches the ask.
@@ -299,7 +317,7 @@ def evaluate(t, prev):
     if notes:
         reason = (reason + ' ; ' if reason else '') + ' ; '.join(notes)
 
-    prio = 1 if not kept else 2 if (drop or add) else 4 if quest else 0
+    prio = 1 if not kept else 2 if (drop or add) else 4 if (quest or iriv_unplaced) else 0
     return cur, add, quest, reason, prio, drop
 
 rows = []
