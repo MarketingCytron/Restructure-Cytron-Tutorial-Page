@@ -38,7 +38,9 @@ EMPTIED = {'Raspberry Pi Zero'}
 # onto Maker ESP32 hardware, so the label is put on deliberately and means the hardware is
 # changing. Never question it, and never ask for plain ESP32 back. (6 Oct 2026)
 CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop',
-           'Maker ESP32'}
+           'Maker ESP32',
+           # 6 Oct 2026: a post that already carries 3D Modelling keeps it, so doubting it is noise.
+           '3D Modelling'}
 # a post filed here is deliberately NOT also filed there: do not re-suggest the listed categories
 EXCLUSIVE_SUGGEST = {'Industrial Workshop': {'IRIV Pi Control', 'IRIV EdgeAI', 'Seminars & Workshop', 'Miscellaneous'},
                      'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'RP2040/Pico'},
@@ -240,10 +242,10 @@ def evaluate(t, prev):
     # ---- house rule: at least one place, at most two -------------------------------------
     drop, notes = [], []
 
-    # 3D Modelling is for pure 3D work. If the post also sits on a hardware shelf, it comes off.
-    if '3D Modelling' in cur and (places(cur) - NOT_HARDWARE):
-        drop.append('3D Modelling')
-        notes.append('-3D Modelling — the post also covers electronics, so it is not pure 3D work')
+    # 3D Modelling is for pure 3D work, but that rule is applied to NEW filings only: a post that
+    # already carries it keeps it. Taking it off 26 live posts buys nothing. (6 Oct 2026)
+    if '3D Modelling' in add and (places(cur) - NOT_HARDWARE or places(add) - NOT_HARDWARE - {'3D Modelling'}):
+        add = [c for c in add if c != '3D Modelling']
 
     kept = [c for c in cur if c not in drop]
     have = places(kept)
