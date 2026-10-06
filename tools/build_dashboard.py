@@ -28,7 +28,8 @@ for pc in TAX['categories']:
 RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics',   # Robot Kits merged into Robotics, 18 Sep 2026
           'RP2040/PICO': 'RP2040/Pico', 'RP2040': 'RP2040/Pico',                      # renamed 23 Sep, renamed again 28 Sep 2026
           'Raspberry Pi Pico': 'RP2040/Pico',                                         # 28 Sep 2026: Pico merged into RP2040/Pico (id 20 emptied, kept for re-use)
-          'Raspberry Pi Zero': 'Raspberry Pi'}                                        # 28 Sep 2026: Zero folded into Raspberry Pi (id 31 emptied, kept for re-use)
+          'Raspberry Pi Zero': 'Raspberry Pi',
+          'LoRaWAN': 'Milesight'}                                                     # 6 Oct 2026: id 41 renamed                                        # 28 Sep 2026: Zero folded into Raspberry Pi (id 31 emptied, kept for re-use)
 # 29 Sep 2026: id 19 was briefly renamed 'Cytron Brand' and changed back the same day — no mapping needed.
 # 'Raspberry Pi Pico' is gone as a NAME (id 20 now reads EDU PICO), which is exactly why this
 # pipeline keys on names and never on ids. Only id 31 is still a live-but-empty category.
@@ -73,6 +74,10 @@ rules['Raspberry Pi'].update(['raspberry pi zero', 'pi zero'])   # Zero posts no
 rules['EDU PICO'].update(['edu pico', 'edupico'])
 rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
 rules['Industrial Workshop'].update(['iriv picontrol workshop', 'iriv edgeai workshop', 'industrial workshop'])
+rules['Milesight'].update(['milesight', 'ursalink', 'beaveriot', 'ug65', 'ug67', 'ws101', 'ws201',
+    'ws301', 'ws302', 'ws303', 'ws52x', 'ws558', 'em300', 'em310', 'em320', 'em400', 'em500',
+    'am103', 'am307', 'am319', 'uc300', 'uc500', 'uc501', 'gs301', 'vs121', 'vs133', 'vs350'])
+rules['Milesight'].discard('lorawan')   # LoRaWAN is a protocol; the category is now a brand
 # The audit's rules were built from post titles, so whole vocabularies were missing and perfectly
 # correct categories were being doubted — "All You Need to Know About Cura Tree Support" was flagged
 # for sitting in 3D Modelling. (6 Oct 2026)
@@ -101,6 +106,10 @@ PLACE = {c['name']: (NAME[c['parent']] if c['parent'] else c['name']) for c in C
 # these are not hardware, so they do not make a 3D-printing post "electronic"
 NOT_HARDWARE = {'3D Modelling', 'Miscellaneous', 'News', 'Seminars & Workshop',
                 'Artificial Intelligence (AI)'}
+# Categories that are still being populated: suggest them wherever the keywords hit, even on a post
+# that already has a shelf. Normally "it already has one, leave it" wins — but a brand-new or
+# just-repurposed category has to be filled before that rule means anything. (6 Oct 2026)
+FORCE_SUGGEST = {'Milesight'}
 
 def places(names): return {PLACE[n] for n in names if n in PLACE}
 
@@ -126,9 +135,13 @@ NEW_CATS = [c for c in ID if c not in seen and c in rules]
 # categories that absorbed a merge on 28 Sep: their rules must run over every post, not just the
 # posts that happened to carry a suggestion for one of the merged-away names
 MERGED = [c for c in ('RP2040/Pico',) if c in rules]
-NEW_CATS += [c for c in MERGED if c not in NEW_CATS]
+# A renamed category keeps its old name in `seen`, so its rules would never be swept over the whole
+# catalogue — which is how five Milesight posts stayed invisible after LoRaWAN was renamed.
+RESWEEP = [c for c in ('Milesight',) if c in rules]
+NEW_CATS += [c for c in MERGED + RESWEEP if c not in NEW_CATS]
 NOTE = {c: '(category created after the 16 Sep audit)' for c in NEW_CATS}
 NOTE.update({c: '(Raspberry Pi Pico and RP2040 merged into it on 28 Sep)' for c in MERGED})
+NOTE.update({c: '(category renamed on 6 Oct, so every post was re-checked against it)' for c in RESWEEP})
 assert all(pid(s) == r[F['id']] for s, r in oldrow.items()), 'id scheme changed'
 
 
@@ -253,8 +266,14 @@ def evaluate(t, prev):
     if have:
         # It already has a shelf. Nothing gets added — unless every shelf it has looks wrong.
         all_wrong = have and all(p in {PLACE.get(q) for q in quest} for p in have)
+        forced = set()
+        for c in add:
+            if c in FORCE_SUGGEST:
+                forced.add(c)
+                if PARENT.get(c): forced.add(PARENT[c])
         if not all_wrong:
-            add = []
+            add = [c for c in add if c in forced]
+            if add: notes.append('a category still being filled matches this post')
         else:
             add, tie = trim_to_one_place(add, tt, ex)
             notes.append('the category it has looks wrong, so a replacement is suggested')
