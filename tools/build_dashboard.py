@@ -71,6 +71,17 @@ rules['Raspberry Pi'].update(['raspberry pi zero', 'pi zero'])   # Zero posts no
 rules['EDU PICO'].update(['edu pico', 'edupico'])
 rules['Jetson Orin Nano'].update(['jetson orin nano', 'orin nano']); rules['Jetson Orin NX'].update(['jetson orin nx', 'orin nx'])
 rules['Industrial Workshop'].update(['iriv picontrol workshop', 'iriv edgeai workshop', 'industrial workshop'])
+# The audit's rules were built from post titles, so whole vocabularies were missing and perfectly
+# correct categories were being doubted — "All You Need to Know About Cura Tree Support" was flagged
+# for sitting in 3D Modelling. (6 Oct 2026)
+rules['3D Modelling'].update(['cura', 'ender', 'creality', 'stl', 'g-code', 'gcode', 'filament',
+    'pla', 'abs', 'petg', 'tpu', 'resin', 'slicer', 'slicing', '3d print', '3d printing', '3d printer',
+    'tinkercad', 'fusion 360', 'blender', 'nozzle', 'extruder', 'bed leveling', 'bed levelling',
+    'infill', 'overhang', 'stringing', 'raft', 'brim', 'prusa', 'octoprint', 'thingiverse'])
+rules['Sensor'].update(['dht11', 'dht22', 'ds18b20', 'bme280', 'bmp280', 'sht40', 'sht31', 'mq2', 'mq-2',
+    'mq135', 'hc-sr04', 'ultrasonic', 'pir', 'ldr', 'apds9960', 'mpu6050', 'tcs34725', 'ina219',
+    'load cell', 'hx711', 'thermocouple', 'max6675', 'flow sensor', 'soil moisture', 'gesture',
+    'proximity', 'accelerometer', 'gyroscope', 'photoresistor', 'thermistor', 'lidar', 'tof'])
 rules = {c: ks for c, ks in rules.items() if c in ID and c not in EMPTIED}
 
 def kw_hits(cat, text):
@@ -81,6 +92,8 @@ def kw_hits(cat, text):
 # "At least one category, at most two. If a post already has one, do not add another unless
 #  what it has is wrong."  A parent and its child count as ONE place, because the CMS ticks the
 #  parent automatically — Raspberry Pi > EDU PICO is one shelf, not two.
+# Two shelves is the ideal, but it is NOT enforced: a post already carrying three is left alone.
+# Only a wrong category earns an edit. (6 Oct 2026)
 MAX_PLACES = 2
 PLACE = {c['name']: (NAME[c['parent']] if c['parent'] else c['name']) for c in CATS}
 # these are not hardware, so they do not make a 3D-printing post "electronic"
@@ -150,6 +163,7 @@ def evaluate(t, prev):
             for a, b in RENAME.items(): seg = seg.replace(f'parent of {a}', f'parent of {b}')
             segs[c] = seg
         pquest = [c for c in pquest if c not in CURATED]         # a category that later became curated
+        pquest = [c for c in pquest if not kw_hits(c, tt) and not kw_hits(c, ex)]   # rules may have improved
         for c in pquest:                                         # renamed review-only categories keep their segment
             if c not in segs: segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
         if any(x in RENAME for x in padd_raw):                   # a suggestion pointed at a merged/renamed category: re-run the keyword rules
@@ -169,7 +183,11 @@ def evaluate(t, prev):
                 if c not in applied_since: applied_since.append(c)
             elif c not in add: add.append(c)
         # questionable categories still present
-        quest = [c for c in pquest if c in cur and c not in CURATED]
+        # Re-check a carried-over doubt against the CURRENT rules. Without this a category stays
+        # doubted for ever, even after the keyword that justifies it has been added — which is how
+        # the Cura and Ender posts kept getting flagged for sitting in 3D Modelling.
+        quest = [c for c in pquest if c in cur and c not in CURATED
+                 and not kw_hits(c, tt) and not kw_hits(c, ex)]
         # categories removed since the audit: re-check whether keywords still ask for them
         for c in pcur:
             if c not in cur and c not in add:
@@ -240,14 +258,9 @@ def evaluate(t, prev):
             notes.append('the category it has looks wrong, so a replacement is suggested')
             if tie: notes.append(tie)
 
-        # Over the limit: name the weakest shelves, but let a human make the final call.
-        if len(have) > MAX_PLACES:
-            ranked = sorted(have, key=lambda pl: (-place_strength(pl, kept, tt, ex), ID.get(pl, 999)))
-            for pl in ranked[MAX_PLACES:]:
-                for c in kept:
-                    if PLACE.get(c) == pl and c not in drop: drop.append(c)
-            notes.append('%d shelves, keep %d — weakest first: %s'
-                         % (len(have), MAX_PLACES, ', '.join(ranked[MAX_PLACES:])))
+        # 6 Oct 2026: extra categories are acceptable. A post sitting on three or four shelves is
+        # not a problem worth anyone's afternoon — only a WRONG category is. So nothing is
+        # removed for being "one too many"; see MAX_PLACES above.
     else:
         # Nothing at all (or only a shelf we are removing): give it exactly one.
         add, tie = trim_to_one_place(add, tt, ex)
