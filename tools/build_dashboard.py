@@ -34,11 +34,16 @@ RENAME = {'Edu:bit': 'EDU:BIT', 'Reka:bit': 'REKA:BIT', 'Robot Kits': 'Robotics'
 # pipeline keys on names and never on ids. Only id 31 is still a live-but-empty category.
 EMPTIED = {'Raspberry Pi Zero'}
 # curated categories: membership is an editorial choice, so no keyword support is not a finding
-CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop'}
+# 'Maker ESP32' is a migration target, not a keyword match: ESP32 tutorials are being revamped
+# onto Maker ESP32 hardware, so the label is put on deliberately and means the hardware is
+# changing. Never question it, and never ask for plain ESP32 back. (6 Oct 2026)
+CURATED = {'Raspberry Pi in Industry', 'Artificial Intelligence (AI)', 'Industrial Workshop',
+           'Maker ESP32'}
 # a post filed here is deliberately NOT also filed there: do not re-suggest the listed categories
 EXCLUSIVE_SUGGEST = {'Industrial Workshop': {'IRIV Pi Control', 'IRIV EdgeAI', 'Seminars & Workshop', 'Miscellaneous'},
                      'RDK X5': {'Other Controllers', 'Makers', 'PIC Microcontroller', 'Python for MCU', 'RP2040/Pico'},
-                     'EDU PICO': {'RP2040/Pico'}}   # one board, one shelf (29 Sep decision)
+                     'EDU PICO': {'RP2040/Pico'},   # one board, one shelf (29 Sep decision)
+                     'Maker ESP32': {'ESP32'}}      # the migration replaces ESP32, it does not join it
 SUGGEST_BEATS = {'EDU PICO': {'RP2040/Pico'}}
 def rn(name): return RENAME.get(name, name)
 NAME = {c['id']: c['name'] for c in CATS}
@@ -144,6 +149,7 @@ def evaluate(t, prev):
             if c not in ID: continue
             for a, b in RENAME.items(): seg = seg.replace(f'parent of {a}', f'parent of {b}')
             segs[c] = seg
+        pquest = [c for c in pquest if c not in CURATED]         # a category that later became curated
         for c in pquest:                                         # renamed review-only categories keep their segment
             if c not in segs: segs[c] = f'?{c} — no keyword support in title, excerpt or tags'
         if any(x in RENAME for x in padd_raw):                   # a suggestion pointed at a merged/renamed category: re-run the keyword rules
@@ -163,7 +169,7 @@ def evaluate(t, prev):
                 if c not in applied_since: applied_since.append(c)
             elif c not in add: add.append(c)
         # questionable categories still present
-        quest = [c for c in pquest if c in cur]
+        quest = [c for c in pquest if c in cur and c not in CURATED]
         # categories removed since the audit: re-check whether keywords still ask for them
         for c in pcur:
             if c not in cur and c not in add:
